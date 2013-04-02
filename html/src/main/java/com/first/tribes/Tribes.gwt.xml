@@ -1,0 +1,11 @@
+<module rename-to='Tribes'>
+  <inherits name='playn.PlayN'/>
+  <inherits name='TribesAssets'/>
+
+  <source path='core'/>
+  <source path='html'/>
+
+  <public path="resources" />
+
+  <entry-point class='com.first.tribes.html.TribesHtml'/>
+</module>
