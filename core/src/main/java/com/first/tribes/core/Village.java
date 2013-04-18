@@ -20,6 +20,8 @@ public class Village implements Updatee {
     public TribesWorld world;
     public static final float POSITION_DEVIATION = 10.0f;
     public static final float REPRODUCTIVE_BASE_RATE = 0.08f;
+    
+    public float foodPool = 0;
 
     public Village(float x, float y, int numVillagers, TribesWorld world) {
         this.world = world;
@@ -66,9 +68,9 @@ public class Village implements Updatee {
     }
 
     public float reproductiveBaseRate() {
-        return REPRODUCTIVE_BASE_RATE / (float)(Math.sqrt(villagers.size()));
+        return REPRODUCTIVE_BASE_RATE  / 2; /// (float) (Math.sqrt(villagers.size()));
     }
-    
+
     @Override
     public void update(float delta) {
         int villageSize = villagers.size();
@@ -80,12 +82,16 @@ public class Village implements Updatee {
 
         float repAppeal = 0;
         float longevity = 0;
+        float intelligence = 0;
+        float loyalty = 0;
 
         for (Villager villager : villagers) {
             repAppeal += villager.personality.reproductiveAppeal();
             longevity += villager.personality.longevity();
+            intelligence += villager.personality.intelligence();
+            loyalty += villager.personality.loyalty();
         }
-        System.out.println(villagers.size() + "\t" + repAppeal / villagers.size() + "\t" + longevity / villagers.size());
+        System.out.println(villagers.size() + "\t" + foodPool + "\t" + repAppeal / villagers.size() + "\t" + longevity / villagers.size() + "\t" + intelligence / villagers.size()+ "\t" + loyalty / villagers.size());
     }
 
     public void reproduce(Villager matingVillager) {
@@ -115,6 +121,9 @@ public class Village implements Updatee {
             float villagerX = randomDist(xPos(), POSITION_DEVIATION);
             float villagerY = randomDist(yPos(), POSITION_DEVIATION);
 
+            villagerX = matingVillager.xPos;
+            villagerY = matingVillager.yPos;
+            
             Villager child = new Villager(villagerX, villagerY, this);
             child.personality = childPersonality;
             villagers.add(child);
@@ -127,5 +136,13 @@ public class Village implements Updatee {
 
     boolean isUnsafe(float xPos, float yPos) {
         return world.unsafe(xPos, yPos);
+    }
+
+    float gatherFood(Villager villager, float requestedFood) {
+        Tile tile = world.tileAt(villager.xPos, villager.yPos);
+        float foodGathered = Math.min(tile.numFood, requestedFood * (float)Math.pow(1 - villager.personality.intelligence(),5));
+        tile.numFood -= foodGathered;
+        foodGathered = foodGathered / (float)Math.pow(1 - villager.personality.intelligence(),5);
+        return foodGathered;
     }
 }

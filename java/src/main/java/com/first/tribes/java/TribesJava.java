@@ -10,8 +10,8 @@ public class TribesJava {
 
     public static void main(String[] args) {
         Config config = new Config();
-        config.width = 800;
-        config.height = 600;
+        config.width = Tribes.SCREEN_WIDTH;
+        config.height = Tribes.SCREEN_HEIGHT;
         JavaPlatform.register(config);
         PlayN.run(new Tribes());
     }

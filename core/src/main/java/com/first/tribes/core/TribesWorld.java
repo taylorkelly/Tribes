@@ -37,12 +37,10 @@ class TribesWorld {
     MiniMap miniMap = new MiniMap(this);
     private static final float MAX_MAGNIFICATION = 1.0f;
     private static final float MIN_MAGNIFICATION = 0.1f;
-    private static final int SCREEN_WIDTH = 800;
-    private static final int SCREEN_HEIGHT = 600;
 
     public TribesWorld() {
         absoluteSize = new Dimension(10000, 10000);
-        viewPort = new Rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        viewPort = new Rectangle(0, 0, Tribes.SCREEN_WIDTH, Tribes.SCREEN_HEIGHT);
 
         tiles = new Tile[(int) (absoluteSize.width / Tile.TILE_SIZE)][(int) (absoluteSize.height / Tile.TILE_SIZE)];
 
@@ -53,7 +51,16 @@ class TribesWorld {
             }
         }
 
-        generateMap(tiles);
+        generateMap(tiles, absoluteSize);
+
+        // Have the tiles go through several update cycles
+        for (int time = 0; time < (int)(Math.sqrt((absoluteSize.width + absoluteSize.height)/2)*10); time++) {
+            for (int i = 0; i < tiles.length; i++) {
+                for (int j = 0; j < tiles[i].length; j++) {
+                    tiles[i][j].update(100);
+                }
+            }
+        }
 
         boolean isSafe = false;
         float xPos;
@@ -66,11 +73,11 @@ class TribesWorld {
         village = new Village(xPos, yPos, 10, this);
         villagers = village.villagers;
 
-        viewPort.x = village.xPos() - viewPort.width/2;
-        viewPort.y = village.yPos() - viewPort.height/2;
-        
-        groupLayer = graphics().createGroupLayer(SCREEN_WIDTH, SCREEN_HEIGHT);
-        groupLayer.add(graphics().createImmediateLayer(SCREEN_WIDTH, SCREEN_HEIGHT, new ImmediateLayer.Renderer() {
+        viewPort.x = village.xPos() - viewPort.width / 2;
+        viewPort.y = village.yPos() - viewPort.height / 2;
+
+        groupLayer = graphics().createGroupLayer(Tribes.SCREEN_WIDTH, Tribes.SCREEN_HEIGHT);
+        groupLayer.add(graphics().createImmediateLayer(Tribes.SCREEN_WIDTH, Tribes.SCREEN_HEIGHT, new ImmediateLayer.Renderer() {
             @Override
             public void render(Surface surface) {
                 for (int i = 0; i < tiles.length; i++) {
@@ -80,7 +87,7 @@ class TribesWorld {
                 }
             }
         }));
-        groupLayer.add(graphics().createImmediateLayer(SCREEN_WIDTH, SCREEN_HEIGHT, new ImmediateLayer.Renderer() {
+        groupLayer.add(graphics().createImmediateLayer(Tribes.SCREEN_WIDTH, Tribes.SCREEN_HEIGHT, new ImmediateLayer.Renderer() {
             @Override
             public void render(Surface surface) {
                 for (Villager villager : villagers) {
@@ -93,7 +100,7 @@ class TribesWorld {
             public void render(Surface surface) {
                 surface.drawImage(miniMap.image(), 0, 0);
             }
-        }), SCREEN_WIDTH - 150 - 10, 10);
+        }), Tribes.SCREEN_WIDTH - 150 - 10, 10);
 
 //        groupLayer.add(graphics().createImmediateLayer(new ImmediateLayer.Renderer() {
 //            public void render(Surface surface) {
@@ -125,10 +132,15 @@ class TribesWorld {
             }
         }
         village.update(delta);
+        for (int i = 0; i < tiles.length; i++) {
+            for (int j = 0; j < tiles[i].length; j++) {
+                tiles[i][j].update(delta);
+            }
+        }
     }
 
     float scale() {
-        return SCREEN_WIDTH / viewPort.width;
+        return Tribes.SCREEN_WIDTH / viewPort.width;
     }
 
     void moveViewPort(float deltaX, float deltaY) {
@@ -140,15 +152,15 @@ class TribesWorld {
         float newWidth = viewPort.width * zoomAmount;
         float newHeight = viewPort.height * zoomAmount;
 
-        if (SCREEN_WIDTH / newWidth > MAX_MAGNIFICATION) {
-            newWidth = SCREEN_WIDTH / MAX_MAGNIFICATION;
-        } else if (SCREEN_WIDTH / newWidth < MIN_MAGNIFICATION) {
-            newWidth = SCREEN_WIDTH / MIN_MAGNIFICATION;
+        if (Tribes.SCREEN_WIDTH / newWidth > MAX_MAGNIFICATION) {
+            newWidth = Tribes.SCREEN_WIDTH / MAX_MAGNIFICATION;
+        } else if (Tribes.SCREEN_WIDTH / newWidth < MIN_MAGNIFICATION) {
+            newWidth = Tribes.SCREEN_WIDTH / MIN_MAGNIFICATION;
         }
-        if (SCREEN_HEIGHT / newHeight > MAX_MAGNIFICATION) {
-            newHeight = SCREEN_HEIGHT / MAX_MAGNIFICATION;
-        } else if (SCREEN_HEIGHT / newHeight < MIN_MAGNIFICATION) {
-            newHeight = SCREEN_HEIGHT / MIN_MAGNIFICATION;
+        if (Tribes.SCREEN_HEIGHT / newHeight > MAX_MAGNIFICATION) {
+            newHeight = Tribes.SCREEN_HEIGHT / MAX_MAGNIFICATION;
+        } else if (Tribes.SCREEN_HEIGHT / newHeight < MIN_MAGNIFICATION) {
+            newHeight = Tribes.SCREEN_HEIGHT / MIN_MAGNIFICATION;
         }
 
         float deltaWidth = viewPort.width - newWidth;
@@ -207,6 +219,8 @@ class TribesWorld {
         int tileX = (int) (realX / Tile.TILE_SIZE);
         int tileY = (int) (realY / Tile.TILE_SIZE);
 
+        if(tileX < 0) tileX = 0;
+        if(tileY < 0) tileY = 0;
         tiles[tileX][tileY].setHeight(tiles[tileX][tileY].height() - 10);
     }
 
@@ -230,8 +244,8 @@ class TribesWorld {
         return tiles[tileX][tileY].height() < -4;
     }
 
-    private static void generateMap(Tile[][] map) {
-        int tokens = 2000;
+    private static void generateMap(Tile[][] map, Dimension absoluteSize) {
+        int tokens = (int)(0.00002 * (absoluteSize.width * absoluteSize.height));
         int pooling = 4;
         while (tokens > pooling) {
             CoastLineAgent coastAgent = new CoastLineAgent((int) (random() * map.length), (int) (random() * map[0].length), (int) (random() * (tokens / pooling + 1)), (int) (random() * tokens / 2));
@@ -239,20 +253,33 @@ class TribesWorld {
             coastAgent.act(map);
         }
 
-        tokens = 6000;
+        tokens = (int)(0.00006 * (absoluteSize.width * absoluteSize.height));
         while (tokens > 2) {
             MountainAgent mountainAgent = new MountainAgent((int) (random() * map.length), (int) (random() * map[0].length), (int) (random() * tokens), (int) (random() * tokens / 2));
             tokens -= mountainAgent.tokens;
             mountainAgent.act(map);
         }
 
-        tokens = 1000;
+        tokens = (int)(0.00001 * (absoluteSize.width * absoluteSize.height));
         while (tokens > 10) {
             MountainAgent mountainAgent = new MountainAgent((int) (random() * map.length), (int) (random() * map[0].length), (int) (random() * (tokens / 10 + 1)), (int) (random() * tokens / 2));
             mountainAgent.heightPush = 1;
             tokens -= mountainAgent.tokens;
             mountainAgent.act(map);
         }
+    }
+
+    Tile tileAt(float xPos, float yPos) {
+        int tileX = (int) (xPos / Tile.TILE_SIZE);
+        int tileY = (int) (yPos / Tile.TILE_SIZE);
+
+        if (tileX >= tiles.length) {
+            tileX = tiles.length - 1;
+        }
+        if (tileY >= tiles[0].length) {
+            tileY = tiles[0].length - 1;
+        }
+        return tiles[tileX][tileY];
     }
 
     private static abstract class Agent {

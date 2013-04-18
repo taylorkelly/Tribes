@@ -22,6 +22,8 @@ import pythagoras.f.Point;
 
 public class Tribes implements Game {
 
+    public static final int SCREEN_WIDTH = 1400;
+    public static final int SCREEN_HEIGHT = 1000;
     private TribesWorld world;
     private List<Updatee> updatees;
 
@@ -70,7 +72,7 @@ public class Tribes implements Game {
 
     private class TribesKeyListener implements Keyboard.Listener {
 
-        private static final float VIEWPORT_KEY_SHIFT = 5f;
+        private static final float VIEWPORT_KEY_SHIFT = 10f;
         private static final float ZOOM_AMOUNT = 1.05f;
         private static final long REPEAT_KEY_DELAY = 7;
         private Map<Integer, Timer> timerMap = new HashMap<Integer, Timer>();

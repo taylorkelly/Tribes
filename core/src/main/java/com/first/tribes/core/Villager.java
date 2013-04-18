@@ -22,6 +22,8 @@ public class Villager extends Being {
     int color = Color.rgb((int) (random() * 128), (int) (random() * 128), (int) (random() * 128));
     int age;
     boolean dead;
+    float hunger;
+    
 
     public Villager(float xPos, float yPos, Village village) {
         super(xPos, yPos, VILLAGER_SIZE, VILLAGER_SIZE);
@@ -63,6 +65,21 @@ public class Villager extends Being {
         if(village.isUnsafe(xPos, yPos)) {
             dead = true;
         }
+        
+        if(random() < 0.05) {
+            xVel = (random() - 0.5f)*2;
+            yVel = (random() - 0.5f)*2;
+        }
+        hunger += 0.5;
+        
+        float food = village.gatherFood(this, Math.max(hunger, 0.5f));
+        
+        hunger -= food;
+        
+        if(hunger > 20) {
+            dead = true;
+        }
+        
     }
 
     public String toString() {
