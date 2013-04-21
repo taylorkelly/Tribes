@@ -68,8 +68,7 @@ public class Tribes implements Game {
     public void registerUpdatee(Updatee aThis) {
         updatees.add(aThis);
     }
-    boolean shift = false;
-
+    
     private class TribesKeyListener implements Keyboard.Listener {
 
         private static final float VIEWPORT_KEY_SHIFT = 10f;
@@ -83,7 +82,7 @@ public class Tribes implements Game {
             timer.schedule(new KeyRepeater(event.key()), 0, REPEAT_KEY_DELAY);
             timerMap.put(event.key().ordinal(), timer);
             if (event.key() == Key.SHIFT) {
-                shift = true;
+                world.toolbar.shift = true;
             }
         }
 
@@ -96,7 +95,7 @@ public class Tribes implements Game {
             Timer timer = timerMap.remove(event.key().ordinal());
             timer.cancel();
             if (event.key() == Key.SHIFT) {
-                shift = false;
+                world.toolbar.shift = false;
             }
         }
 
@@ -137,24 +136,17 @@ public class Tribes implements Game {
 
         @Override
         public void onPointerStart(Pointer.Event event) {
-            if (!shift) {
-                world.pull(event.x(), event.y());
-            } else {
-                world.push(event.x(), event.y());
-            }
+            world.toolbar.press(event.x(), event.y());
         }
 
         @Override
         public void onPointerEnd(Pointer.Event event) {
+            world.toolbar.release(event.x(), event.y());
         }
 
         @Override
         public void onPointerDrag(Pointer.Event event) {
-            if (!shift) {
-                world.pull(event.x(), event.y());
-            } else {
-                world.push(event.x(), event.y());
-            }
+            world.toolbar.drag(event.x(), event.y());
         }
 
         @Override

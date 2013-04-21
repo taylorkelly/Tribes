@@ -67,8 +67,8 @@ public class Villager extends Being {
         }
         
         if(random() < 0.05) {
-            xVel = (random() - 0.5f)*2;
-            yVel = (random() - 0.5f)*2;
+            xVel = (random() - 0.5f);
+            yVel = (random() - 0.5f);
         }
         hunger += 0.5;
         
