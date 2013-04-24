@@ -9,6 +9,7 @@ import com.first.tribes.core.util.Updatee;
 import java.util.ArrayList;
 import java.util.List;
 import static playn.core.PlayN.*;
+import pythagoras.f.Rectangle;
 
 /**
  *
@@ -144,5 +145,25 @@ public class Village implements Updatee {
         tile.numFood -= foodGathered;
         foodGathered = foodGathered / (float)Math.pow(1 - villager.personality.intelligence(),5);
         return foodGathered;
+    }
+
+    List<Villager> villagersInArea(Rectangle rectangle) {
+        if(rectangle.width < 0) {
+            rectangle.x = rectangle.x + rectangle.width;
+            rectangle.width *= -1;
+        }
+        if(rectangle.height < 0) {
+            rectangle.y = rectangle.y + rectangle.height;
+            rectangle.height *= -1;
+        }
+        
+        List<Villager> area = new ArrayList<Villager>();
+        for (Villager villager : villagers) {
+            if(rectangle.contains(villager.xPos, villager.yPos)) {
+                area.add(villager);
+            }
+        }
+        
+        return area;
     }
 }
