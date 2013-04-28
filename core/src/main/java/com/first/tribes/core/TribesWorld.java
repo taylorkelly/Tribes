@@ -353,7 +353,7 @@ public class TribesWorld {
     }
 
     public List<Village> villages() {
-        return villages;
+        return new ArrayList<Village>(villages);
     }
 
     public Toolbar toolbar() {

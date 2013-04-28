@@ -327,6 +327,12 @@ public class Village implements Updatee {
     public Collection<? extends Villager> villagers() {
         return villagers;
     }
+    
+    public List<Village> enemyVillages() {
+        List<Village> enemies = world.villages();
+        enemies.remove(this);
+        return enemies;
+    }
 
     public int color() {
         return color;
