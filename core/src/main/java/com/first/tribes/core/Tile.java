@@ -24,6 +24,9 @@ public class Tile extends DrawnObject implements Updatee {
     private float height = 2;
     private static final float WATER_FOOD_INCREMENT = 0.0002f;
     private static final float FOOD_SPREAD_MULTIPLIER = 0.00004f;
+    private static final int normalWaterLevel=0;
+    private static final double waterLevelDelta=2.5;
+    private static double waterLevel=0;
     public float numFood = 0;
     private Tile[][] tileMap;
     private Tile[] neighbors;
@@ -101,7 +104,7 @@ public class Tile extends DrawnObject implements Updatee {
     }
 
     public int color() {
-        if (height >= 0) {
+        if (height >= waterLevel) {
             if (height <= 40) {
                 // flat plains up to mountains
                 return Color.rgb((int) (255 - height * 4 - this.numFood * 2 < 0 ? 0 : 255 - height * 4 - this.numFood * 2), (int) (200 - height * 5 + (this.numFood) > 200 ? 200 : 200 - height * 5 + (this.numFood)), (int) (190 - height * 8 - this.numFood * 2 < 0 ? 0 : 190 - height * 8 - this.numFood * 2));
@@ -115,10 +118,24 @@ public class Tile extends DrawnObject implements Updatee {
             }
         } else {
             // Water
-            return Color.rgb((int) (200 + height * 2), (int) (200 + height * 2), (int) (255 + height));
+        	float heightSub=(float) Math.max(height-waterLevel,-100);
+            return Color.rgb((int) (200 + heightSub * 2), (int) (200 + heightSub * 2), (int) (255 + heightSub));
         }
     }
 
+    public static void raiseWaterLevel(){
+    	waterLevel+=waterLevelDelta;
+    }
+    
+    public static void lowerWaterLevel(){
+    	waterLevel-=waterLevelDelta;
+    }
+    
+    public static void restoreWaterLevel(){
+    	waterLevel=normalWaterLevel;
+    }
+    
+    
     public float height() {
         return height;
     }
@@ -157,7 +174,7 @@ public class Tile extends DrawnObject implements Updatee {
     @Override
     public void update(float delta) {
         for (Tile neighbor : neighbors()) {
-            if (neighbor.height() < 0) {
+            if (neighbor.height() < waterLevel) {
                 this.numFood += WATER_FOOD_INCREMENT * delta / (this.numFood + 1);
             } else if (neighbor.numFood > 0) {
                 this.numFood += FOOD_SPREAD_MULTIPLIER * neighbor.numFood * delta / (this.numFood + 1);
@@ -166,7 +183,7 @@ public class Tile extends DrawnObject implements Updatee {
     }
 
     public boolean isSafe(float minFood) {
-        return height() > -4 && numFood >= minFood;
+        return height() > waterLevel-4 && numFood >= minFood;
     }
     
     public int getXIndex(){

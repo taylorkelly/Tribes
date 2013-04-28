@@ -5,6 +5,7 @@
 package com.first.tribes.core.ui.toolbar;
 
 import com.first.tribes.core.Tile;
+import com.first.tribes.core.Tribes;
 import com.first.tribes.core.TribesWorld;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -18,7 +19,6 @@ import pythagoras.f.Point;
  */
 public class PushPullTool extends Tool {
 
-    public static boolean SHIFT = false;
     public static final int HIT_RADIUS = 4;
     public static final float HEIGHT_CHANGE = 1.0f;
     private TribesWorld world;
@@ -39,7 +39,7 @@ public class PushPullTool extends Tool {
     @Override
     public void press(float x, float y) {
         float heightChange = HEIGHT_CHANGE;
-        if (SHIFT) {
+        if (Tribes.SHIFT) {
             heightChange = -heightChange;
         }
 

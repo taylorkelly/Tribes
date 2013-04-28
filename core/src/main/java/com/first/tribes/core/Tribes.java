@@ -24,8 +24,9 @@ import pythagoras.f.Point;
 
 public class Tribes implements Game {
 
-    public static final int SCREEN_WIDTH = 800;
-    public static final int SCREEN_HEIGHT = 600;
+    public static final int SCREEN_WIDTH = 700;
+    public static final int SCREEN_HEIGHT = 500;
+    public static boolean SHIFT = false;
     private TribesWorld world;
     private List<Updatee> updatees;
 
@@ -81,7 +82,7 @@ public class Tribes implements Game {
             timer.schedule(new KeyRepeater(event.key()), 0, REPEAT_KEY_DELAY);
             timerMap.put(event.key().ordinal(), timer);
             if (event.key() == Key.SHIFT) {
-                PushPullTool.SHIFT = true;
+                Tribes.SHIFT = true;
             }
         }
 
@@ -94,7 +95,7 @@ public class Tribes implements Game {
             Timer timer = timerMap.remove(event.key().ordinal());
             timer.cancel();
             if (event.key() == Key.SHIFT) {
-                PushPullTool.SHIFT = false;
+                Tribes.SHIFT = false;
             }
         }
 
