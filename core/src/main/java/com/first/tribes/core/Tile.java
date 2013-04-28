@@ -17,19 +17,19 @@ import pythagoras.f.Point;
  */
 public class Tile extends DrawnObject implements Updatee {
 
-    public static final float TILE_SIZE = 100f;
-    private int xIndex;
-    private int yIndex;
-//    int color = Color.rgb((int)(random()/2*128), (int)(random()/2*128), (int)(random()/2*128));
-    private float height = 2;
+    public static final float TILE_SIZE = 100f;    
     private static final float WATER_FOOD_INCREMENT = 0.0002f;
     private static final float FOOD_SPREAD_MULTIPLIER = 0.00004f;
+
+    private int xIndex;
+    private int yIndex;
+    private float height = 2;
     private static final int normalWaterLevel=0;
-    private static final double waterLevelDelta=2.5;
+    private static final double waterLevelDelta=0.06f;
     private static double waterLevel=0;
+
     public float numFood = 0;
     private Tile[][] tileMap;
-    private Tile[] neighbors;
 
     public Tile(int xIndex, int yIndex, Tile[][] tileMap) {
         this.xIndex = xIndex;
@@ -37,6 +37,7 @@ public class Tile extends DrawnObject implements Updatee {
         this.tileMap = tileMap;
     }
 
+    private Tile[] neighbors; // Cache for neighbors. No need to recalculate.
     public Tile[] neighbors() {
         if (neighbors == null) {
             int neighborCount = 0;
@@ -167,9 +168,6 @@ public class Tile extends DrawnObject implements Updatee {
         return new Rectangle(xIndex * TILE_SIZE, yIndex * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
 
-    public Point centerPoint() {
-        return bounds().center();
-    }
 
     @Override
     public void update(float delta) {

@@ -73,7 +73,7 @@ class GrabTool extends Tool {
                 if (displayedVillagers != null) {
                     for (int i = 0; i < displayedVillagers.size(); i++) {
                         if (i < 10) {
-                            displayedVillagers.get(i).drawStatsBoxAt(surface, 5, 10 + 85 * i, 300, 80);
+                            displayedVillagers.get(i).drawStatsBoxAt(surface, 5, 10 + (Villager.STATS_BOX_HEIGHT + 5) * i, 300, Villager.STATS_BOX_HEIGHT);
                         }
                     }
                 }
