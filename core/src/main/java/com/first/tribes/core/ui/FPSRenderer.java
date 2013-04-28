@@ -1,15 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package com.first.tribes.core;
+
+package com.first.tribes.core.ui;
 
 
 
 import playn.core.CanvasImage;
 import playn.core.Color;
 import playn.core.Font;
-import playn.core.ImmediateLayer;
 import playn.core.ImmediateLayer.Renderer;
 import playn.core.Surface;
 import playn.core.TextFormat;

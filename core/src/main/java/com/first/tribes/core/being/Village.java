@@ -1,0 +1,287 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.first.tribes.core.being;
+
+import com.first.tribes.core.Tile;
+import com.first.tribes.core.TribesWorld;
+import com.first.tribes.core.being.Villager;
+import com.first.tribes.core.being.Being.Personality;
+import com.first.tribes.core.util.Updatee;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import playn.core.CanvasImage;
+import playn.core.Color;
+import playn.core.Font;
+import static playn.core.PlayN.*;
+import playn.core.Surface;
+import playn.core.TextFormat;
+import playn.core.TextLayout;
+import pythagoras.f.Rectangle;
+
+/**
+ *
+ * @author taylor
+ */
+public class Village implements Updatee {
+
+    public static final float POSITION_DEVIATION = 10.0f;
+    public static final float REPRODUCTIVE_BASE_RATE = 0.045f;
+    
+    private List<Villager> villagers;
+    private TribesWorld world;
+    private int color;
+    private int foodPool;
+
+    public Village(float x, float y, int numVillagers, TribesWorld world, int color) {
+        this.world = world;
+        this.color = color;
+        villagers = new ArrayList<Villager>(numVillagers * 30);
+
+        for (int i = 0; i < numVillagers; i++) {
+            float villagerX = randomDist(x, POSITION_DEVIATION);
+            float villagerY = randomDist(y, POSITION_DEVIATION);
+            villagers.add(new Villager(villagerX, villagerY, this, randomVillagerColor()));
+        }
+    }
+
+    public void spawnVillager(float x, float y) {
+        villagers.add(new Villager(x, y, this, randomVillagerColor()));
+    }
+
+    public int randomVillagerColor() {
+        int red = (int) (((random() - 0.5f) * 30) + Color.red(color));
+        if (red > 255)
+            red = 255;
+        if (red < 0)
+            red = 0;
+
+        int green = (int) (((random() - 0.5f) * 30) + Color.green(color));
+        if (green > 255)
+            green = 255;
+        if (green < 0)
+            green = 0;
+
+        int blue = (int) (((random() - 0.5f) * 30) + Color.blue(color));
+        if (blue > 255)
+            blue = 255;
+        if (blue < 0)
+            blue = 0;
+
+        return Color.rgb(red, green, blue);
+    }
+
+    public float xPos() {
+        float xPos = 0;
+
+        for (Villager villager : villagers) {
+            xPos += villager.xPos;
+        }
+
+        return xPos / villagers.size();
+    }
+
+    public float yPos() {
+        float yPos = 0;
+
+        for (Villager villager : villagers) {
+            yPos += villager.yPos;
+        }
+
+        return yPos / villagers.size();
+    }
+
+    public static float randomDist(float mean, float stddev) {
+        float random = (random() * 2 - 1) + (random() * 2 - 1) + (random() * 2 - 1);
+        return random * stddev + mean;
+    }
+
+    float worldWidth() {
+        return world.width();
+    }
+
+    float worldHeight() {
+        return world.height();
+    }
+
+    public float reproductiveBaseRate() {
+        if (villagers.size() < 10) {
+            return REPRODUCTIVE_BASE_RATE * 10 / (float) (Math.sqrt(villagers.size()));
+        } else {
+            return REPRODUCTIVE_BASE_RATE;
+        }
+    }
+
+    @Override
+    public void update(float delta) {
+        for (int i = 0; i < villagers.size(); i++) {
+            Villager villager = villagers.get(i);
+            villager.update(delta);
+            if (villager.isDead()) {
+                villagers.remove(villager);
+                i--;
+                visualInfo = null;
+            }
+        }
+
+        int villageSize = villagers.size();
+        for (Villager villager : new ArrayList<Villager>(villagers.subList(0, villageSize))) {
+            if (villager.personality.reproductiveAppeal() * reproductiveBaseRate() > random()) {
+                reproduce(villager);
+                visualInfo = null;
+            }
+        }
+    }
+
+    public void reproduce(Villager matingVillager) {
+        float totalMusk = 0;
+        for (Villager villager : villagers) {
+            if (villager != matingVillager) {
+                totalMusk += villager.personality.reproductiveAppeal();
+            }
+        }
+
+        float chosenMusk = totalMusk * random();
+
+        Villager mate = null;
+
+        for (Villager villager : villagers) {
+            if (villager != matingVillager) {
+                chosenMusk -= villager.personality.reproductiveAppeal();
+            }
+            if (chosenMusk <= 0) {
+                mate = villager;
+                break;
+            }
+        }
+
+        if (mate != null) {
+            Personality childPersonality = matingVillager.personality.reproduceWith(mate.personality);
+            float villagerX = randomDist(xPos(), POSITION_DEVIATION);
+            float villagerY = randomDist(yPos(), POSITION_DEVIATION);
+
+            villagerX = matingVillager.xPos;
+            villagerY = matingVillager.yPos;
+
+            Villager child = new Villager(villagerX, villagerY, this, randomVillagerColor());
+            child.personality = childPersonality;
+            villagers.add(child);
+        }
+    }
+
+    boolean isUnsafe(float xPos, float yPos) {
+        return world.unsafe(xPos, yPos, 0);
+    }
+
+    float gatherFood(Villager villager, float requestedFood) {
+        Tile tile = world.tileAt(villager.xPos, villager.yPos);
+        float foodGathered = Math.min(tile.numFood, requestedFood * (float) Math.pow(1 - villager.personality.intelligence(), 3));
+        tile.numFood -= foodGathered;
+        foodGathered = foodGathered / (float) Math.pow(1 - villager.personality.intelligence(), 3);
+        return foodGathered;
+    }
+
+    List<Villager> villagersInArea(Rectangle rectangle) {
+        if (rectangle.width < 0) {
+            rectangle.x = rectangle.x + rectangle.width;
+            rectangle.width *= -1;
+        }
+        if (rectangle.height < 0) {
+            rectangle.y = rectangle.y + rectangle.height;
+            rectangle.height *= -1;
+        }
+
+        List<Villager> area = new ArrayList<Villager>();
+        for (Villager villager : villagers) {
+            if (rectangle.contains(villager.xPos, villager.yPos)) {
+                area.add(villager);
+            }
+        }
+
+        return area;
+    }
+    public static final float STATS_BOX_WIDTH = 200f;
+    public static final float STATS_BOX_HEIGHT = 200f;
+    CanvasImage visualInfo;
+
+    public void drawStatsBoxAt(Surface surface, float x, float y, float width, float height) {
+        if (visualInfo == null) {
+            visualInfo = graphics().createImage((int) width, (int) height);
+            float repAppeal = 0;
+            float longevity = 0;
+            float intelligence = 0;
+            float loyalty = 0;
+            float mobility = 0;
+            float hardiness = 0;
+            float aggression = 0;
+
+            for (Villager villager : villagers) {
+                repAppeal += villager.personality.reproductiveAppeal();
+                longevity += villager.personality.longevity();
+                intelligence += villager.personality.intelligence();
+                loyalty += villager.personality.loyalty();
+                mobility += villager.personality.mobility();
+                hardiness += villager.personality.hardiness();
+                aggression += villager.personality.aggression();
+            }
+            intelligence = ((int) ((intelligence / villagers.size()) * 1000)) / 1000f;
+            mobility = ((int) ((mobility / villagers.size()) * 1000)) / 1000f;
+            hardiness = ((int) ((hardiness / villagers.size()) * 1000)) / 1000f;
+            repAppeal = ((int) ((repAppeal / villagers.size()) * 1000)) / 1000f;
+            longevity = ((int) ((longevity / villagers.size()) * 1000)) / 1000f;
+            aggression = ((int) ((aggression / villagers.size()) * 1000)) / 1000f;
+            loyalty = ((int) ((loyalty / villagers.size()) * 1000)) / 1000f;
+
+            visualInfo.canvas().setFillGradient(graphics().createLinearGradient(width, 0, width, height, new int[]{Color.rgb(50, 50, 50), Color.rgb(0, 0, 0)}, new float[]{0, 1}));
+            visualInfo.canvas().fillRoundRect(0, 0, width, height, 10);
+
+            visualInfo.canvas().setFillColor(this.color);
+            visualInfo.canvas().fillRoundRect(4, 4, width - 8, height - 8, 7);
+
+            Font titleFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 18);
+            TextLayout nameLayout = graphics().layoutText(villagers.size() + " villagers", new TextFormat().withFont(titleFont).withWrapWidth(width));
+            visualInfo.canvas().setFillColor(Color.argb(200, 255, 255, 255));
+            visualInfo.canvas().fillText(nameLayout, 8, 4);
+
+            StringBuilder stats = new StringBuilder();
+            stats.append("Avg Rep. Appeal: " + repAppeal);
+            stats.append('\n');
+            stats.append("Avg Longevity: " + longevity);
+            stats.append('\n');
+            stats.append("Avg Intelligence: " + intelligence);
+            stats.append('\n');
+            stats.append("Avg Mobility: " + mobility);
+            stats.append('\n');
+            stats.append("Avg Hardiness: " + hardiness);
+            stats.append('\n');
+            stats.append("Avg Aggression: " + aggression);
+            stats.append('\n');
+            stats.append("Avg Loyalty: " + loyalty);
+            stats.append('\n');
+
+            Font textFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 15);
+            TextLayout intelligenceLayout = graphics().layoutText(stats.toString(), new TextFormat().withFont(textFont).withWrapWidth(width));
+            visualInfo.canvas().setFillColor(Color.argb(200, 255, 255, 255));
+            visualInfo.canvas().fillText(intelligenceLayout, 8, 10 + nameLayout.height());
+
+//        TextLayout mobilityLayotu = graphics().layoutText("Avg Mobility: " + intelligence, new TextFormat().withFont(textFont).withWrapWidth(width));
+//        visualInfo.canvas().setFillColor(Color.argb(200, 255, 255, 255));
+//        visualInfo.canvas().fillText(intelligenceLayout, 8, 10 + nameLayout.height());
+        }
+        surface.drawImage(visualInfo, x, y);
+    }
+
+    public Tile tileAt(float xPos, float yPos) {
+        return world.tileAt(xPos, yPos);
+    }
+
+    public Collection<? extends Villager> villagers() {
+        return villagers;
+    }
+
+    public int color() {
+        return color;
+    }
+}

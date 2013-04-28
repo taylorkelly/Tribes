@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.first.tribes.core;
+package com.first.tribes.core.being;
 
+import com.first.tribes.core.Tile;
 import playn.core.CanvasImage;
 import playn.core.Color;
 import playn.core.Font;
@@ -22,22 +23,25 @@ import playn.core.TextLayout;
 public class Villager extends Being {
 
     public static final int MAX_AGE = 50000;
+    
     private static final float VILLAGER_SIZE = 10.0f;
-    private Village village;
-    int color = Color.rgb((int) (random() * 128), (int) (random() * 128), (int) (random() * 128));
-    int age;
-    private boolean dead;
-    float hunger;
-    String name;
-    int number;
-    static int villagerCount = 0;
+    private static int villagerCount = 0;
 
-    public Villager(float xPos, float yPos, Village village) {
+    private Village village;
+    private int color;
+    private int age;
+    private boolean dead;
+    private float hunger;
+    private String name;
+    private int number;
+
+    public Villager(float xPos, float yPos, Village village, int color) {
         super(xPos, yPos, VILLAGER_SIZE, VILLAGER_SIZE);
         this.village = village;
-        this.xVel = random() - 0.5f;
-        this.yVel = random() - 0.5f;
+        this.xVel = (random() - 0.5f) * personality.mobility() * 4;
+        this.yVel = (random() - 0.5f) * personality.mobility() * 4;
         name = genName();
+        this.color = color;
         number = ++villagerCount;
     }
     final static String firstSounds[] = {"'Ai", "Ali'", "Al", "'Au", "'Eh", "Ha'", "Ha", "Hi'", "Ho'", "'Io", "Ka'", "Ka", "Kai", "Ke'", "Ke", "Ki", "Ko", "Ku", "Ku'", "La'", "La", "Lei", "Li", "Lo", "Lu", "Ma", "Me", "Mi", "Mo", "Na'", "Nai'", "No", "Ona", "Pa", "Pi'", "Po'", "Pu", "U'", "Ulu", "Wa"};
@@ -53,31 +57,54 @@ public class Villager extends Being {
 
         return name;
     }
+    private CanvasImage villagerImage;
 
     public void paintToRect(Rectangle rect, Surface surface) {
-        surface.setFillColor(color);
-        surface.fillRect(rect.x, rect.y, rect.width, rect.height);
+        if (villagerImage == null) {
+            villagerImage = graphics().createImage(width, height);
+            villagerImage.canvas().setFillColor(color);
+            villagerImage.canvas().fillCircle(width / 2, height / 2, width / 2);
+        }
+        surface.drawImage(villagerImage, rect.x, rect.y, rect.width, rect.height);
     }
 
     void update(float delta) {
-        age += delta;
+        if (dead)
+            return;
 
+        age += delta;
         if (age >= this.personality.longevity() * MAX_AGE) {
             setDead(true);
+            return;
         }
 
-        if (!dead) {
-            xPos += xVel * delta;
-            yPos += yVel * delta;
-            if (xPos < 0 || xPos > village.worldWidth()) {
-                xVel *= -1;
-                xPos += xVel * delta;
+        Tile myTile = village.tileAt(this.xPos, this.yPos);
+        float mostFood = myTile.numFood;
+        if (myTile.numFood < foodRequired()) {
+            Tile bestTile = myTile;
+            for (Tile tile : myTile.neighbors()) {
+                if (tile.isSafe(0)) {
+                    float foundFood = tile.numFood + random();
+                    if (foundFood > mostFood) {
+                        mostFood = foundFood;
+                        bestTile = tile;
+                    }
+                }
             }
-            if (yPos < 0 || yPos > village.worldHeight()) {
-                yVel *= -1;
-                yPos += yVel * delta;
-            }
+
+            xVel = bestTile.centerPoint().x - this.xPos;
+            yVel = bestTile.centerPoint().y - this.yPos;
+            float speed = (float) Math.sqrt(xVel * xVel + yVel * yVel);
+            float normalizer = speed / personality.mobility();
+            xVel = xVel / normalizer;
+            yVel = yVel / normalizer;
         }
+
+
+        xPos += xVel * delta;
+        yPos += yVel * delta;
+
+
         if (village.isUnsafe(xPos, yPos)) {
             xVel *= -1;
             xPos += xVel * delta;
@@ -86,21 +113,22 @@ public class Villager extends Being {
         }
         if (village.isUnsafe(xPos, yPos)) {
             setDead(true);
+            return;
         }
 
-        if (random() < 0.05) {
-            xVel = (random() - 0.5f);
-            yVel = (random() - 0.5f);
-        }
-        hunger += 0.5;
 
-        float food = village.gatherFood(this, Math.max(hunger, 0.5f));
-
+        hunger += foodRequired();
+        float food = village.gatherFood(this, Math.max(Math.min(hunger, 2 * foodRequired()), foodRequired()));
         hunger -= food;
-
         if (hunger > 20) {
             setDead(true);
         }
+    }
+
+    public float foodRequired() {
+//        return ((1.0f - personality.mobility()) / 2 + (1.0f - personality.intelligence()) / 2) / 2;
+        return ((1.0f - personality.intelligence()) / 2);
+
     }
 
     private void setDead(boolean dead) {
@@ -119,7 +147,7 @@ public class Villager extends Being {
     }
     CanvasImage visualInfo;
 
-    void drawInfoAt(Surface surface, int x, int y, int width, int height) {
+    public void drawStatsBoxAt(Surface surface, int x, int y, int width, int height) {
         if (visualInfo == null) {
             visualInfo = graphics().createImage((int) width, (int) height);
             visualInfo.canvas().setFillGradient(graphics().createLinearGradient(width, 0, width, height, new int[]{Color.rgb(50, 50, 50), Color.rgb(0, 0, 0)}, new float[]{0, 1}));

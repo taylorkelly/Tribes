@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.first.tribes.core;
+package com.first.tribes.core.being;
 
+import com.first.tribes.core.DrawnObject;
 import pythagoras.f.Rectangle;
 import static playn.core.PlayN.*;
 
@@ -30,6 +31,15 @@ public abstract class Being extends DrawnObject {
         return new Rectangle(xPos, yPos, width, height);
     }
 
+    
+    public float xPos() {
+        return xPos;
+    }
+    
+    public float yPos() {
+        return yPos;
+    }
+    
     public class Personality {
 
         public static final float MUTATION_RATE = 0.05f;
@@ -54,7 +64,7 @@ public abstract class Being extends DrawnObject {
             mobility = random();
             reproductiveAppeal = random();
             loyalty = random();
-            
+
             normalize();
         }
 
@@ -110,7 +120,7 @@ public abstract class Being extends DrawnObject {
 
             return newPersonality;
         }
-        
+
         public String toString() {
             return "{ RepApp:" + reproductiveAppeal() + ", Long:" + longevity() + "}";
         }
@@ -125,6 +135,18 @@ public abstract class Being extends DrawnObject {
 
         float loyalty() {
             return loyalty / total;
+        }
+
+        float mobility() {
+            return mobility / total;
+        }
+
+        float hardiness() {
+            return hardiness / total;
+        }
+
+        float aggression() {
+            return aggression / total;
         }
     }
 }

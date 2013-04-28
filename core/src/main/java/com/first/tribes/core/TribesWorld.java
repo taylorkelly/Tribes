@@ -4,6 +4,11 @@
  */
 package com.first.tribes.core;
 
+import com.first.tribes.core.being.Village;
+import com.first.tribes.core.being.Villager;
+import com.first.tribes.core.ui.MiniMap;
+import com.first.tribes.core.ui.toolbar.Toolbar;
+import com.first.tribes.core.pcg.*;
 import static playn.core.PlayN.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,19 +31,18 @@ import pythagoras.f.Transform;
  *
  * @author taylor
  */
-class TribesWorld {
+public class TribesWorld {
 
-    private GroupLayer.Clipped groupLayer;
-    private GroupLayer extraLayer;
-    Dimension absoluteSize;
-    Rectangle viewPort;
-    private List<Villager> villagers = new ArrayList<Villager>();
-    Village village;
-    Tile[][] tiles;
-    MiniMap miniMap;
-    Toolbar toolbar;
     private static final float MAX_MAGNIFICATION = 1.0f;
     private static final float MIN_MAGNIFICATION = 0.1f;
+    private GroupLayer.Clipped groupLayer;
+    private GroupLayer extraLayer;
+    private Dimension absoluteSize;
+    private Rectangle viewPort;
+    private List<Village> villages = new ArrayList<Village>();
+    private Tile[][] tiles;
+    private MiniMap miniMap;
+    private Toolbar toolbar;
 
     private final float EXTRA_VIEWPORT_PADDING() {
         return 60f / scale();
@@ -52,15 +56,14 @@ class TribesWorld {
 
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
-                tiles[i][j] = new Tile(i, j);
-                tiles[i][j].tileMap = tiles;
+                tiles[i][j] = new Tile(i, j, tiles);
             }
         }
 
         generateMap(tiles, absoluteSize);
 
         // Have the tiles go through several update cycles
-        for (int time = 0; time < (int) (Math.sqrt((absoluteSize.width + absoluteSize.height) / 2) * 10); time++) {
+        for (int time = 0; time < 1000; time++) {
             for (int i = 0; i < tiles.length; i++) {
                 for (int j = 0; j < tiles[i].length; j++) {
                     tiles[i][j].update(100);
@@ -74,13 +77,19 @@ class TribesWorld {
         do {
             xPos = random() * absoluteSize.width;
             yPos = random() * absoluteSize.height;
-            isSafe = !this.unsafe(xPos, yPos);
+            isSafe = !this.unsafe(xPos, yPos, 10.0f);
         } while (!isSafe);
-        village = new Village(xPos, yPos, 10, this);
-        villagers = village.villagers;
+        villages.add(new Village(xPos, yPos, 10, this, Color.rgb(200, 0, 0)));
+        isSafe = false;
+        do {
+            xPos = random() * absoluteSize.width;
+            yPos = random() * absoluteSize.height;
+            isSafe = !this.unsafe(xPos, yPos, 10.0f);
+        } while (!isSafe);
+        villages.add(new Village(xPos, yPos, 10, this, Color.rgb(0, 0, 200)));
 
-        viewPort.x = village.xPos() - viewPort.width / 2;
-        viewPort.y = village.yPos() - viewPort.height / 2;
+        viewPort.x = villages.get(0).xPos() - viewPort.width / 2;
+        viewPort.y = villages.get(0).yPos() - viewPort.height / 2;
 
         groupLayer = graphics().createGroupLayer(Tribes.SCREEN_WIDTH, Tribes.SCREEN_HEIGHT);
         extraLayer = graphics().createGroupLayer();
@@ -89,6 +98,7 @@ class TribesWorld {
         toolbar = new Toolbar(this);
         miniMap = new MiniMap(this);
 
+        // Layer for base (tiles & villagers)
         groupLayer.add(graphics().createImmediateLayer(Tribes.SCREEN_WIDTH, Tribes.SCREEN_HEIGHT, new ImmediateLayer.Renderer() {
             @Override
             public void render(Surface surface) {
@@ -97,17 +107,17 @@ class TribesWorld {
                         tiles[i][j].paint(surface, viewPort, scale());
                     }
                 }
-            }
-        }));
-        groupLayer.add(graphics().createImmediateLayer(Tribes.SCREEN_WIDTH, Tribes.SCREEN_HEIGHT, new ImmediateLayer.Renderer() {
-            @Override
-            public void render(Surface surface) {
-                for (Villager villager : villagers) {
+                for (Villager villager : villagers()) {
                     villager.paint(surface, viewPort, scale());
                 }
             }
         }));
+
+
+        // Layer for various extras (drag appearance, villager stats)
         groupLayer.add(extraLayer);
+
+        // Layer for Minimap
         groupLayer.addAt(graphics().createImmediateLayer((int) miniMap.width(), (int) miniMap.height(), new ImmediateLayer.Renderer() {
             @Override
             public void render(Surface surface) {
@@ -115,27 +125,40 @@ class TribesWorld {
             }
         }), Tribes.SCREEN_WIDTH - miniMap.width() - 10, 10);
 
+        // Layer for Village stats
+        groupLayer.addAt(graphics().createImmediateLayer(new ImmediateLayer.Renderer() {
+            @Override
+            public void render(Surface surface) {
+                for (int i = 0; i < villages.size(); i++) {
+                    villages.get(i).drawStatsBoxAt(surface, 0, (Village.STATS_BOX_HEIGHT + 5) * i, miniMap.width(), Village.STATS_BOX_HEIGHT);
+                }
+            }
+        }), Tribes.SCREEN_WIDTH - (miniMap.width() + 10), 10 + 10 + miniMap.height());
+
+
+        // Layer for Toolbar
         groupLayer.addAt(graphics().createImmediateLayer((int) toolbar.width(), (int) toolbar.height(), new ImmediateLayer.Renderer() {
             @Override
             public void render(Surface surface) {
                 toolbar.render(surface);
             }
         }), toolbar.x(), toolbar.y());
-
-//        groupLayer.add(graphics().createImmediateLayer(new ImmediateLayer.Renderer() {
-//            public void render(Surface surface) {
-//                surface.setFillColor(Color.BLACK.getRGB());
-//                surface.fillRect(viewPort.x, viewPort.y, viewPort.width, viewPort.height);
-//            }
-//        }));
     }
 
-    int addExtraLayer(Layer additionalLayer) {
+    public List<Villager> villagers() {
+        List<Villager> villagers = new ArrayList<Villager>();
+        for (Village village : villages) {
+            villagers.addAll(village.villagers());
+        }
+        return villagers;
+    }
+
+    public int addExtraLayer(Layer additionalLayer) {
         extraLayer.add(additionalLayer);
         return extraLayer.size() - 1;
     }
 
-    void removeExtraLayer(int layerIndex) {
+    public void removeExtraLayer(int layerIndex) {
         extraLayer.remove(extraLayer.get(layerIndex));
     }
 
@@ -151,16 +174,10 @@ class TribesWorld {
         return absoluteSize.height;
     }
 
-    void update(float delta) {
-        for (int i = 0; i < villagers.size(); i++) {
-            Villager villager = villagers.get(i);
-            villager.update(delta);
-            if (villager.isDead()) {
-                villagers.remove(villager);
-                i--;
-            }
+    public void update(float delta) {
+        for (Village village : villages) {
+            village.update(delta);
         }
-        village.update(delta);
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
                 tiles[i][j].update(delta);
@@ -168,16 +185,16 @@ class TribesWorld {
         }
     }
 
-    float scale() {
+    public float scale() {
         return Tribes.SCREEN_WIDTH / viewPort.width;
     }
 
-    void moveViewPort(float deltaX, float deltaY) {
+    public void moveViewPort(float deltaX, float deltaY) {
         viewPort.translate(deltaX / scale(), deltaY / scale());
         verifyViewPortPosition();
     }
 
-    void zoomDelta(float zoomAmount) {
+    public void zoomDelta(float zoomAmount) {
         float newWidth = viewPort.width * zoomAmount;
         float newHeight = viewPort.height * zoomAmount;
 
@@ -203,7 +220,7 @@ class TribesWorld {
         verifyViewPortPosition();
     }
 
-    void verifyViewPortPosition() {
+    private void verifyViewPortPosition() {
 
         if (viewPort.width <= absoluteSize.width) {
             if (viewPort.x < -EXTRA_VIEWPORT_PADDING()) {
@@ -231,58 +248,21 @@ class TribesWorld {
         }
     }
 
-    void pull(float x, float y) {
-        float realX = (x / scale()) + viewPort.x;
-        float realY = (y / scale()) + viewPort.y;
-
-        int tileX = (int) (realX / Tile.TILE_SIZE);
-        int tileY = (int) (realY / Tile.TILE_SIZE);
-
-        if (tileX < 0)
-            tileX = 0;
-        if (tileY < 0)
-            tileY = 0;
-        if (tileX >= tiles.length)
-            tileX = tiles.length - 1;
-        if (tileY >= tiles[0].length)
-            tileY = tiles[0].length - 1;
-
-        tiles[tileX][tileY].setHeight(tiles[tileX][tileY].height() + 10);
-    }
-
-    Point worldPointFromScreenPoint(Point point) {
+    public Point worldPointFromScreenPoint(Point point) {
         float realX = (point.x / scale()) + viewPort.x;
         float realY = (point.y / scale()) + viewPort.y;
 
         return new Point(realX, realY);
     }
 
-    Point screenPointFromWorldPoint(Point point) {
+    public Point screenPointFromWorldPoint(Point point) {
         float realX = (point.x - viewPort.x) * scale();
         float realY = (point.y - viewPort.y) * scale();
 
         return new Point(realX, realY);
     }
 
-    void push(float x, float y) {
-        float realX = (x / scale()) + viewPort.x;
-        float realY = (y / scale()) + viewPort.y;
-
-        int tileX = (int) (realX / Tile.TILE_SIZE);
-        int tileY = (int) (realY / Tile.TILE_SIZE);
-
-        if (tileX < 0)
-            tileX = 0;
-        if (tileY < 0)
-            tileY = 0;
-        if (tileX >= tiles.length)
-            tileX = tiles.length - 1;
-        if (tileY >= tiles[0].length)
-            tileY = tiles[0].length - 1;
-        tiles[tileX][tileY].setHeight(tiles[tileX][tileY].height() - 10);
-    }
-
-    boolean unsafe(float xPos, float yPos) {
+    public boolean unsafe(float xPos, float yPos, float minFood) {
         int tileX = (int) (xPos / Tile.TILE_SIZE);
         int tileY = (int) (yPos / Tile.TILE_SIZE);
         if (tileX >= tiles.length) {
@@ -299,7 +279,7 @@ class TribesWorld {
             tileY = 0;
         }
 
-        return tiles[tileX][tileY].height() < -4;
+        return !tiles[tileX][tileY].isSafe(minFood);
     }
 
     private static void generateMap(Tile[][] map, Dimension absoluteSize) {
@@ -307,27 +287,27 @@ class TribesWorld {
         int pooling = 4;
         while (tokens > pooling) {
             CoastLineAgent coastAgent = new CoastLineAgent((int) (random() * map.length), (int) (random() * map[0].length), (int) (random() * (tokens / pooling + 1)), (int) (random() * tokens / 2));
-            tokens -= coastAgent.tokens;
+            tokens -= coastAgent.tokens();
             coastAgent.act(map);
         }
 
         tokens = (int) (0.00006 * (absoluteSize.width * absoluteSize.height));
         while (tokens > 2) {
             MountainAgent mountainAgent = new MountainAgent((int) (random() * map.length), (int) (random() * map[0].length), (int) (random() * tokens), (int) (random() * tokens / 2));
-            tokens -= mountainAgent.tokens;
+            tokens -= mountainAgent.tokens();
             mountainAgent.act(map);
         }
 
         tokens = (int) (0.00001 * (absoluteSize.width * absoluteSize.height));
         while (tokens > 10) {
             MountainAgent mountainAgent = new MountainAgent((int) (random() * map.length), (int) (random() * map[0].length), (int) (random() * (tokens / 10 + 1)), (int) (random() * tokens / 2));
-            mountainAgent.heightPush = 1;
-            tokens -= mountainAgent.tokens;
+            mountainAgent.setHeightPush(1);
+            tokens -= mountainAgent.tokens();
             mountainAgent.act(map);
         }
     }
 
-    Tile tileAt(float xPos, float yPos) {
+    public Tile tileAt(float xPos, float yPos) {
         int tileX = (int) (xPos / Tile.TILE_SIZE);
         int tileY = (int) (yPos / Tile.TILE_SIZE);
 
@@ -337,149 +317,50 @@ class TribesWorld {
         if (tileY >= tiles[0].length) {
             tileY = tiles[0].length - 1;
         }
+        if (tileX < 0)
+            tileX = 0;
+        if (tileY < 0)
+            tileY = 0;
         return tiles[tileX][tileY];
     }
 
-    private static abstract class Agent {
-
-        protected int tokens;
-        protected int tokenLimit;
-        protected Coordinate coord;
-
-        public Agent(int x, int y, int tokens, int tokenLimit) {
-            this.coord = new Coordinate(x, y);
-            this.tokens = tokens;
-            this.tokenLimit = tokenLimit;
+    public List<Villager> villagersInArea(Rectangle rectangle) {
+        if (rectangle.width < 0) {
+            rectangle.x = rectangle.x + rectangle.width;
+            rectangle.width *= -1;
+        }
+        if (rectangle.height < 0) {
+            rectangle.y = rectangle.y + rectangle.height;
+            rectangle.height *= -1;
         }
 
-        public abstract void act(Tile[][] map);
-
-        protected static class Coordinate {
-
-            public int x;
-            public int y;
-
-            public Coordinate(int x, int y) {
-                this.x = x;
-                this.y = y;
+        List<Villager> area = new ArrayList<Villager>();
+        for (Villager villager : villagers()) {
+            if (rectangle.contains(villager.xPos(), villager.yPos())) {
+                area.add(villager);
             }
         }
+
+        return area;
     }
 
-    private static class MountainAgent extends Agent {
-
-        protected float direction;
-        protected float initialDirection;
-        protected float heightPush;
-
-        public MountainAgent(int x, int y, int tokens, int tokenLimit) {
-            super(x, y, tokens, tokenLimit);
-            initialDirection = random() * 2 - 1;
-            heightPush = 25;
-        }
-
-        public void act(Tile[][] map) {
-            direction = initialDirection;
-            while (tokens > 0) {
-                map[coord.x][coord.y].setHeight(map[coord.x][coord.y].height() + heightPush);
-                coord.x += Math.acos(direction) * 0.5 + (random() - 0.5);
-                coord.y += Math.asin(direction) * 0.5 + (random() - 0.5);
-                if (coord.x > map.length - 1)
-                    tokens = 0;
-                if (coord.x == 0) {
-                    tokens = 0;
-                }
-                if (coord.x < 0)
-                    tokens = 0;
-                if (coord.y > map[0].length - 1)
-                    tokens = 0;
-                if (coord.y < 0)
-                    tokens = 0;
-                if (coord.y == 0) {
-                    tokens = 0;
-                }
-
-                if (tokens % 10 == 0) {
-                    direction = initialDirection + ((random() - 0.5f) / 2);
-                    if (direction > 1.0) {
-                        direction = 2.0f - direction;
-                    }
-                    if (direction < -1.0) {
-                        direction = -2.0f - direction;
-                    }
-                }
-
-                if (random() < 0.10) {
-                    MountainAgent childAgent = new MountainAgent(coord.x, coord.y, tokens / 2, tokenLimit);
-                    this.tokens -= childAgent.tokens;
-                    childAgent.act(map);
-
-                    MountainAgent childAgent2 = new MountainAgent(coord.x, coord.y, tokens, tokenLimit);
-                    this.tokens -= childAgent2.tokens;
-                    childAgent2.act(map);
-                }
-
-                tokens--;
-            }
-        }
+    public List<Village> villages() {
+        return villages;
     }
 
-    private static class CoastLineAgent extends Agent {
+    public Toolbar toolbar() {
+        return toolbar;
+    }
 
-        public CoastLineAgent(int x, int y, int tokens, int tokenLimit) {
-            super(x, y, tokens, tokenLimit);
-        }
+    public Dimension absoluteSize() {
+        return absoluteSize;
+    }
 
-        public void act(Tile[][] map) {
-            if (tokens > tokenLimit) {
-                Coordinate child1Pos = randomBorderPoint(map.length - 1, map[0].length - 1, map);
-                CoastLineAgent childAgent1 = new CoastLineAgent(child1Pos.x, child1Pos.y, this.tokens / 2, tokenLimit);
-                Coordinate child2Pos = randomBorderPoint(map.length - 1, map[0].length - 1, map);
-                CoastLineAgent childAgent2 = new CoastLineAgent(child2Pos.x, child2Pos.y, this.tokens / 2, tokenLimit);
+    public Tile[][] tiles() {
+        return tiles;
+    }
 
-                childAgent1.act(map);
-                childAgent2.act(map);
-            } else {
-                while (tokens > 0) {
-                    coord = randomBorderPoint(map.length - 1, map[0].length - 1, map);
-                    map[coord.x][coord.y].setHeight(map[coord.x][coord.y].height() - 10);
-                    tokens--;
-                }
-            }
-        }
-
-        private Coordinate randomBorderPoint(int maxX, int maxY, Tile[][] map) {
-            List<Coordinate> points = new ArrayList<Coordinate>(4);
-            if (coord.x > 0 && map[coord.x][coord.y].height() >= -15) {
-                points.add(new Coordinate(coord.x - 1, coord.y));
-            }
-            if (coord.y > 0 && map[coord.x][coord.y].height() >= -15) {
-                points.add(new Coordinate(coord.x, coord.y - 1));
-            }
-            if (coord.x < maxX && map[coord.x][coord.y].height() >= -15) {
-                points.add(new Coordinate(coord.x + 1, coord.y));
-            }
-            if (coord.y < maxY && map[coord.x][coord.y].height() >= -15) {
-                points.add(new Coordinate(coord.x, coord.y + 1));
-            }
-
-            if (!points.isEmpty()) {
-                return points.get((int) (random() * points.size()));
-            } else {
-                coord.x += (int) (random() * 3) - 1;
-                if (coord.x > maxX)
-                    coord.x = maxX;
-                if (coord.x < 0)
-                    coord.x = 0;
-                coord.y += (int) (random() * 3) - 1;
-                if (coord.y > maxY)
-                    coord.y = maxY;
-                if (coord.y < 0)
-                    coord.y = 0;
-                return randomBorderPoint(maxX, maxY, map);
-            }
-
-
-        }
+    public Rectangle viewPort() {
+        return viewPort;
     }
 }

@@ -1,5 +1,7 @@
 package com.first.tribes.core;
 
+import com.first.tribes.core.ui.FPSRenderer;
+import com.first.tribes.core.ui.toolbar.PushPullTool;
 import com.first.tribes.core.util.Timer;
 import com.first.tribes.core.util.Timer.TimerTask;
 import com.first.tribes.core.util.Updatee;
@@ -32,9 +34,6 @@ public class Tribes implements Game {
         world = new TribesWorld();
         updatees = new ArrayList<Updatee>();
 
-//        Image bgImage = assets().getImage("images/bg.png");
-//        ImageLayer bgLayer = graphics().createImageLayer(bgImage);
-//        graphics().rootLayer().add(bgLayer);
         graphics().rootLayer().add(world.getLayer());
         graphics().rootLayer().add(graphics().createImmediateLayer(new FPSRenderer()));
 
@@ -71,9 +70,9 @@ public class Tribes implements Game {
     
     private class TribesKeyListener implements Keyboard.Listener {
 
-        private static final float VIEWPORT_KEY_SHIFT = 10f;
+        private static final float VIEWPORT_KEY_SHIFT = 20f;
         private static final float ZOOM_AMOUNT = 1.05f;
-        private static final long REPEAT_KEY_DELAY = 7;
+        private static final long REPEAT_KEY_DELAY = 5;
         private Map<Integer, Timer> timerMap = new HashMap<Integer, Timer>();
 
         @Override
@@ -82,7 +81,7 @@ public class Tribes implements Game {
             timer.schedule(new KeyRepeater(event.key()), 0, REPEAT_KEY_DELAY);
             timerMap.put(event.key().ordinal(), timer);
             if (event.key() == Key.SHIFT) {
-                world.toolbar.shift = true;
+                PushPullTool.SHIFT = true;
             }
         }
 
@@ -95,7 +94,7 @@ public class Tribes implements Game {
             Timer timer = timerMap.remove(event.key().ordinal());
             timer.cancel();
             if (event.key() == Key.SHIFT) {
-                world.toolbar.shift = false;
+                PushPullTool.SHIFT = false;
             }
         }
 
@@ -136,17 +135,17 @@ public class Tribes implements Game {
 
         @Override
         public void onPointerStart(Pointer.Event event) {
-            world.toolbar.press(event.x(), event.y());
+            world.toolbar().press(event.x(), event.y());
         }
 
         @Override
         public void onPointerEnd(Pointer.Event event) {
-            world.toolbar.release(event.x(), event.y());
+            world.toolbar().release(event.x(), event.y());
         }
 
         @Override
         public void onPointerDrag(Pointer.Event event) {
-            world.toolbar.drag(event.x(), event.y());
+            world.toolbar().drag(event.x(), event.y());
         }
 
         @Override
