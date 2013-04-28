@@ -68,6 +68,34 @@ public abstract class Being extends DrawnObject {
             normalize();
         }
 
+        public void setAggression(float a){
+        	aggression=a;
+        }
+        public void setStrength(float a){
+        	strength=a;
+        }
+        public void setCourage(float a){
+        	courage=a;
+        }
+        public void setIntelligence(float a){
+        	intelligence=a;
+        }
+        public void setLongevity(float a){
+        	longevity=a;
+        }
+        public void setHardiness(float a){
+        	hardiness=a;
+        }
+        public void setMobility(float a){
+        	mobility=a;
+        }
+        public void setReproductiveAppeal(float a){
+        	reproductiveAppeal=a;
+        }
+        public void setLoyalty(float a){
+        	loyalty=a;
+        }
+        
         private void normalize() {
             total = aggression + strength + courage + intelligence + hardiness + longevity + mobility + reproductiveAppeal + loyalty;
         }
