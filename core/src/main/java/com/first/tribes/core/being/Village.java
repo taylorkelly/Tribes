@@ -28,7 +28,7 @@ import pythagoras.f.Rectangle;
 public class Village implements Updatee {
 
     public static final float POSITION_DEVIATION = 10.0f;
-    public static final float REPRODUCTIVE_BASE_RATE = 0.045f;
+    public static final float REPRODUCTIVE_BASE_RATE = 0.03f;
     
     private List<Villager> villagers;
     private float[][] densityMap;
