@@ -16,10 +16,9 @@ import pythagoras.f.Point;
     class SpawnTool extends Tool {
 
         public static final int SPAWN_TYPE = 0;
-        private TribesWorld world;
         
         public SpawnTool(TribesWorld world) {
-            this.world = world;
+            super(world);
         }
 
         public void render(Surface surface, float x, float y, float width, float height) {

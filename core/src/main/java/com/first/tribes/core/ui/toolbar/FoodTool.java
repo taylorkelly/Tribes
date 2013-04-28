@@ -20,10 +20,9 @@ class FoodTool extends Tool {
 
     public static final int HIT_RADIUS = 7;
     public static final float FOOD_AMOUNT = 4.0f;
-    private TribesWorld world;
     
     public FoodTool(TribesWorld world) {
-        this.world = world;
+        super(world);
     }
 
     public void render(Surface surface, float x, float y, float width, float height) {

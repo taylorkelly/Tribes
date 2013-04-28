@@ -32,10 +32,9 @@ class GrabTool extends Tool {
     private Point dragCurrent;
     private List<Villager> selectedVillagers;
     private List<Villager> displayedVillagers;
-    private final TribesWorld world;
 
     public GrabTool(TribesWorld world) {
-        this.world = world;
+        super(world);
         
         dragLayer = graphics().createImmediateLayer(new ImmediateLayer.Renderer() {
             @Override

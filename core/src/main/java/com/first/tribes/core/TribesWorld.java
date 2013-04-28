@@ -40,6 +40,7 @@ public class TribesWorld {
     private Dimension absoluteSize;
     private Rectangle viewPort;
     private List<Village> villages = new ArrayList<Village>();
+    private List<DrawnObject> extraDrawnObjects = new ArrayList<DrawnObject>();
     private Tile[][] tiles;
     private MiniMap miniMap;
     private Toolbar toolbar;
@@ -107,6 +108,9 @@ public class TribesWorld {
                         tiles[i][j].paint(surface, viewPort, scale());
                     }
                 }
+                for (DrawnObject extraObject : extraDrawnObjects) {
+                    extraObject.paint(surface, viewPort, scale());
+                }
                 for (Villager villager : villagers()) {
                     villager.paint(surface, viewPort, scale());
                 }
@@ -162,6 +166,14 @@ public class TribesWorld {
         extraLayer.remove(extraLayer.get(layerIndex));
     }
 
+    public void addExtraDrawnObject(DrawnObject object) {
+        extraDrawnObjects.add(object);
+    }
+
+    public void removeExtraDrawnObject(DrawnObject object) {
+        extraDrawnObjects.remove(object);
+    }
+
     public GroupLayer getLayer() {
         return groupLayer;
     }
@@ -170,16 +182,16 @@ public class TribesWorld {
         return absoluteSize.width;
     }
 
-    public int tileWidth(){
-    	return tiles.length;
+    public int tileWidth() {
+        return tiles.length;
     }
-    
+
     public float height() {
         return absoluteSize.height;
     }
-    
-    public int tileHeight(){
-    	return tiles[0].length;
+
+    public int tileHeight() {
+        return tiles[0].length;
     }
 
     public void update(float delta) {
@@ -190,6 +202,9 @@ public class TribesWorld {
             for (int j = 0; j < tiles[i].length; j++) {
                 tiles[i][j].update(delta);
             }
+        }
+        for (DrawnObject extraObject : extraDrawnObjects) {
+            extraObject.update(delta);
         }
     }
 

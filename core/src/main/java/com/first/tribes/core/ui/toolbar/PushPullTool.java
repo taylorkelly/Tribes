@@ -21,10 +21,9 @@ public class PushPullTool extends Tool {
 
     public static final int HIT_RADIUS = 4;
     public static final float HEIGHT_CHANGE = 1.0f;
-    private TribesWorld world;
 
     public PushPullTool(TribesWorld world) {
-        this.world = world;
+        super(world);
     }
 
     public void render(Surface surface, float x, float y, float width, float height) {
