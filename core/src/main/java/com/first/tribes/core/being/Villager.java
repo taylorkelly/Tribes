@@ -93,7 +93,7 @@ public class Villager extends Being {
         surface.drawImage(villagerImage, rect.x, rect.y, rect.width, rect.height);
     }
 
-    void update(float delta) {
+    public void update(float delta) {
         if (deathReason != null)
             return;
 

@@ -4,6 +4,7 @@
  */
 package com.first.tribes.core;
 
+import com.first.tribes.core.util.Updatee;
 import playn.core.Surface;
 import pythagoras.f.Rectangle;
 
@@ -11,7 +12,7 @@ import pythagoras.f.Rectangle;
  *
  * @author taylor
  */
-public abstract class DrawnObject {
+public abstract class DrawnObject implements Updatee {
     
     protected final Rectangle adjustedRectForViewPort(Rectangle viewPort, float scale) {
         Rectangle objectRect = bounds();
