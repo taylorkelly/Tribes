@@ -170,8 +170,16 @@ public class TribesWorld {
         return absoluteSize.width;
     }
 
+    public int tileWidth(){
+    	return tiles.length;
+    }
+    
     public float height() {
         return absoluteSize.height;
+    }
+    
+    public int tileHeight(){
+    	return tiles[0].length;
     }
 
     public void update(float delta) {

@@ -168,4 +168,12 @@ public class Tile extends DrawnObject implements Updatee {
     public boolean isSafe(float minFood) {
         return height() > -4 && numFood >= minFood;
     }
+    
+    public int getXIndex(){
+    	return xIndex;
+    }
+    
+    public int getYIndex(){
+    	return yIndex;
+    }
 }
