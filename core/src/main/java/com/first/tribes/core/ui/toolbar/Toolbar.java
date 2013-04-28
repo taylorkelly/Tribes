@@ -24,6 +24,7 @@ public class Toolbar {
         tools.add(new PushPullTool(world));
         tools.add(new FoodTool(world));
         tools.add(new SpawnTool(world));
+        tools.add(new FloodTool());
         tools.get(0).selected = true;
         activeTool = 0;
     }
