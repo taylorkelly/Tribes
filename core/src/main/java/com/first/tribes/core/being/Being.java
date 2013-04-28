@@ -132,6 +132,10 @@ public abstract class Being extends DrawnObject {
         float intelligence() {
             return intelligence / total;
         }
+        
+        float strength(){
+        	return strength /total;
+        }
 
         float loyalty() {
             return loyalty / total;

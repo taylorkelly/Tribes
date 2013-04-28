@@ -25,7 +25,7 @@ public class Tile extends DrawnObject implements Updatee {
     private int yIndex;
     private float height = 2;
     private static final int normalWaterLevel=0;
-    private static final double waterLevelDelta=0.06f;
+    private static final double waterLevelDelta=.1;
     private static double waterLevel=0;
 
     public float numFood = 0;
@@ -105,11 +105,15 @@ public class Tile extends DrawnObject implements Updatee {
     }
 
     public int color() {
+    	
         if (height >= waterLevel) {
             if (height <= 40) {
                 // flat plains up to mountains
+            	if(height<normalWaterLevel){
+            		return Color.rgb((int)(237+height),(int) (216+height),(int)(151+height));
+            	}else{
                 return Color.rgb((int) (255 - height * 4 - this.numFood * 2 < 0 ? 0 : 255 - height * 4 - this.numFood * 2), (int) (200 - height * 5 + (this.numFood) > 200 ? 200 : 200 - height * 5 + (this.numFood)), (int) (190 - height * 8 - this.numFood * 2 < 0 ? 0 : 190 - height * 8 - this.numFood * 2));
-            } else {
+            }} else {
                 // snow capped mountains
                 if (height <= 65) {
                     return Color.rgb((int) (230 + (height - 40)), (int) (200 + (height * 2 - 80)), (int) (200 + (height * 2 - 80)));
@@ -120,9 +124,12 @@ public class Tile extends DrawnObject implements Updatee {
         } else {
             // Water
         	float heightSub=(float) Math.max(height-waterLevel,-100);
+        	
+        		
+        	
             return Color.rgb((int) (200 + heightSub * 2), (int) (200 + heightSub * 2), (int) (255 + heightSub));
-        }
-    }
+        }}
+    
 
     public static void raiseWaterLevel(){
     	waterLevel+=waterLevelDelta;
@@ -182,5 +189,13 @@ public class Tile extends DrawnObject implements Updatee {
 
     public boolean isSafe(float minFood) {
         return height() > waterLevel-4 && numFood >= minFood;
+    }
+    
+    public int getXIndex(){
+    	return xIndex;
+    }
+    
+    public int getYIndex(){
+    	return yIndex;
     }
 }

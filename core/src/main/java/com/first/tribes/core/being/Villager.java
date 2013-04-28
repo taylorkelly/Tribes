@@ -99,18 +99,9 @@ public class Villager extends Being {
         }
 
         Tile myTile = village.tileAt(this.xPos, this.yPos);
-        float mostFood = myTile.numFood;
-        if (myTile.numFood < foodRequired()) {
-            Tile bestTile = myTile;
-            for (Tile tile : myTile.neighbors()) {
-                if (tile.isSafe(0)) {
-                    float foundFood = tile.numFood + random();
-                    if (foundFood > mostFood) {
-                        mostFood = foundFood;
-                        bestTile = tile;
-                    }
-                }
-            }
+
+        if (newGoal(myTile)) {
+            Tile bestTile = pickTile(myTile);
 
             xVel = bestTile.bounds().center().x - this.xPos;
             yVel = bestTile.bounds().center().y - this.yPos;
@@ -118,12 +109,10 @@ public class Villager extends Being {
             float normalizer = speed / personality.mobility();
             xVel = xVel / normalizer;
             yVel = yVel / normalizer;
+
+            xPos += xVel * delta;
+            yPos += yVel * delta;
         }
-
-
-        xPos += xVel * delta;
-        yPos += yVel * delta;
-
 
         if (village.isUnsafe(xPos, yPos)) {
             xVel *= -1;
@@ -146,9 +135,47 @@ public class Villager extends Being {
         }
     }
 
+    public Tile pickTile(Tile myTile) {
+        Tile bestTile = myTile;
+        float mostFood = myTile.numFood;
+
+        for (Tile tile : myTile.neighbors()) {
+            if (tile.isSafe(0)) {
+                float foundFood = tile.numFood + random();
+                if (foundFood > mostFood) {
+                    mostFood = foundFood;
+                    bestTile = tile;
+                }
+            }
+        }
+        return bestTile;
+    }
+
+    public boolean newGoal(Tile myTile) {
+
+        if (foodRequired() > myTile.numFood) {
+            return true;
+        }
+        return false;
+
+    }
+
     public float foodRequired() {
 //        return ((1.0f - personality.mobility()) / 2 + (1.0f - personality.intelligence()) / 2) / 2;
-        return ((1.0f - personality.intelligence()) / 2);
+        return ((1.0f - personality.intelligence() + personality.hardiness()) / 3);
+    }
+
+    public void attack(Villager v) {
+        float a = ((float) Math.random() * personality.strength());
+        float b = ((float) Math.random() * v.personality.hardiness());
+        if (a > b) {
+            v.setDead(DeathReason.KILLED_BY_VILLAGER);
+        }
+    }
+
+    public void convert() {
+
+        float a = (float) Math.random() * personality.loyalty();
 
     }
 

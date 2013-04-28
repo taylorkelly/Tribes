@@ -31,6 +31,7 @@ public class Village implements Updatee {
     public static final float REPRODUCTIVE_BASE_RATE = 0.045f;
     
     private List<Villager> villagers;
+    private float[][] densityMap;
     private TribesWorld world;
     private int color;
     private int foodPool;
@@ -40,6 +41,15 @@ public class Village implements Updatee {
         this.color = color;
         villagers = new ArrayList<Villager>(numVillagers * 30);
 
+        densityMap = new float[world.tileWidth()][world.tileHeight()];
+        for(int i=0; i<densityMap.length; i++){
+        	for(int j=0; j<densityMap[i].length; j++){
+            	densityMap[i][j]=0f;
+            }
+        }
+        
+        
+        
         for (int i = 0; i < numVillagers; i++) {
             float villagerX = randomDist(x, POSITION_DEVIATION);
             float villagerY = randomDist(y, POSITION_DEVIATION);
@@ -116,6 +126,35 @@ public class Village implements Updatee {
 
     @Override
     public void update(float delta) {
+    	
+    	float SPREAD_CONST=0.1f;
+    	
+    	for(int i=0; i< densityMap.length; i++){
+    		for(int j=0; j<densityMap[i].length; j++){
+    			float temp = densityMap[i][j]*=SPREAD_CONST;
+    			
+    			densityMap[i][j]*=1f-SPREAD_CONST;
+    			if(densityMap[i][j]<0){
+    				densityMap[i][j]=0f;
+    			}
+    			int rad = 1;
+    			for(int k=Math.max(i-rad,0); k<=Math.min(i+rad,densityMap.length-1); k++){
+    				for(int l=Math.max(j-rad+(k-i),0); l<=Math.min(j+rad-(k-i),densityMap[k].length-1); l++){
+        				densityMap[k][l]+=temp/((float)rad);
+        			}	
+    			}
+    		}
+    	}
+    	
+    	
+    	for(int i=0; i< villagers.size(); i++){
+    		
+    		Villager villager = villagers.get(i);
+            densityMap[tileAt(villager.xPos, villager.yPos).getXIndex()][tileAt(villager.xPos, villager.yPos).getYIndex()]+=1f;
+    		
+    	}
+    	
+    	
         for (int i = 0; i < villagers.size(); i++) {
             Villager villager = villagers.get(i);
             villager.update(delta);
@@ -133,6 +172,14 @@ public class Village implements Updatee {
                 visualInfo = null;
             }
         }
+    }
+    
+    public float getDensityAt(int x, int y){
+    	return densityMap[x][y];
+    }
+    
+    public float getDensityAt(float x, float y){
+    	return densityMap[tileAt(x,y).getXIndex()][tileAt(x,y).getYIndex()];
     }
 
     public void reproduce(Villager matingVillager) {
