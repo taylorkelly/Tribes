@@ -87,41 +87,41 @@ public class Tribes implements Game {
         @Override
         public void onKeyDown(Event event) {
 
-			if (!timerMap.containsKey(event.key().ordinal())) {
-				Timer timer = new Timer(Tribes.this);
-				timer.schedule(new KeyRepeater(event.key()), 0,
-						REPEAT_KEY_DELAY);
-				timerMap.put(event.key().ordinal(), timer);
-			}
+            if (!timerMap.containsKey(event.key().ordinal())) {
+                Timer timer = new Timer(Tribes.this);
+                timer.schedule(new KeyRepeater(event.key()), 0,
+                        REPEAT_KEY_DELAY);
+                timerMap.put(event.key().ordinal(), timer);
+            }
 
-            switch(event.key()){
-            case SHIFT:
-                Tribes.SHIFT = true;
-            break;
-            case L:
-            	SpawnAvatarTool.setCurrentTrait(5);
-            	break;
-            case A:
-            	SpawnAvatarTool.setCurrentTrait(0);
-            	break;
-            case S:
-            	SpawnAvatarTool.setCurrentTrait(1);
-            	break;
-            case C:
-            	SpawnAvatarTool.setCurrentTrait(2);
-            	break;
-            case I:
-            	SpawnAvatarTool.setCurrentTrait(3);
-            	break;
-            case H:
-            	SpawnAvatarTool.setCurrentTrait(4);
-            	break;
-            case R:
-            	SpawnAvatarTool.setCurrentTrait(7);
-            	break;
-            case M:
-            	SpawnAvatarTool.setCurrentTrait(6);
-            	break;
+            switch (event.key()) {
+                case SHIFT:
+                    Tribes.SHIFT = true;
+                    break;
+                case L:
+                    SpawnAvatarTool.setCurrentTrait(5);
+                    break;
+                case A:
+                    SpawnAvatarTool.setCurrentTrait(0);
+                    break;
+                case S:
+                    SpawnAvatarTool.setCurrentTrait(1);
+                    break;
+                case C:
+                    SpawnAvatarTool.setCurrentTrait(2);
+                    break;
+                case I:
+                    SpawnAvatarTool.setCurrentTrait(3);
+                    break;
+                case H:
+                    SpawnAvatarTool.setCurrentTrait(4);
+                    break;
+                case R:
+                    SpawnAvatarTool.setCurrentTrait(7);
+                    break;
+                case M:
+                    SpawnAvatarTool.setCurrentTrait(6);
+                    break;
             }
         }
 
@@ -160,10 +160,11 @@ public class Tribes implements Game {
                     case RIGHT:
                         world.moveViewPort(VIEWPORT_KEY_SHIFT, 0);
                         break;
-                    case W:
+                    case PLUS:
+                    case EQUALS:
                         world.zoomDelta(ZOOM_AMOUNT);
                         break;
-                    case S:
+                    case MINUS:
                         world.zoomDelta(1 / ZOOM_AMOUNT);
                         break;
                 }
