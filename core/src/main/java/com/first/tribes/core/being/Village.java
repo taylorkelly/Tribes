@@ -57,9 +57,7 @@ public class Village implements Updatee {
                 densityMap[i][j] = 0f;
             }
         }
-
-
-
+        
         for (int i = 0; i < numVillagers; i++) {
             float villagerX = randomDist(x, POSITION_DEVIATION);
             float villagerY = randomDist(y, POSITION_DEVIATION);
@@ -69,6 +67,10 @@ public class Village implements Updatee {
 
     public void spawnVillager(float x, float y) {
         villagers.add(new Villager(x, y, this, randomVillagerColor()));
+    }
+    
+    public void spawnAvatar(float x, float y, int trait){
+    	villagers.add(new Avatar(x, y, this, randomVillagerColor(),trait));
     }
 
     public int randomVillagerColor() {
@@ -166,7 +168,6 @@ public class Village implements Updatee {
 
         }
 
-
         for (int i = 0; i < villagers.size(); i++) {
             Villager villager = villagers.get(i);
             villager.update(delta);
@@ -194,11 +195,13 @@ public class Village implements Updatee {
 
     public float getDensityAt(int x, int y) {
         return densityMap[x][y];
+
     }
 
     public float getDensityAt(float x, float y) {
         return getDensityAt(tileAt(x, y));
     }
+
 
     public float getDensityAt(Tile t) {
         return densityMap[t.getXIndex()][t.getYIndex()];

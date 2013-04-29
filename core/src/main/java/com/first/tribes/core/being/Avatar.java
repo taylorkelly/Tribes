@@ -4,16 +4,18 @@ import static playn.core.PlayN.random;
 
 public class Avatar extends Villager {
 	private static final float AVATAR_SIZE = 20.0f;
+	private static final float AVATAR_TRAIT = 2f;
+	private static final float AVATAR_LONGEVITY= 1f;
 	
-	/* aggression
-       strength
-       courage
-       intelligence
-       hardiness 
-       longevity
-       mobility
+	/* aggression 0
+       strength 1
+       courage 2
+       intelligence 3
+       hardiness 4
+       loyalty 5
+       mobility 6
        reproductiveAppeal
-       loyalty*/
+       */
 	
 	public Avatar(float xPos, float yPos, Village village, int color, int trait) {
 		super(xPos, yPos, village, color);
@@ -22,31 +24,31 @@ public class Avatar extends Villager {
 		
 		switch (trait) {
 		case 0:
-			this.personality.setAggression(1);
+			this.personality.setAggression(AVATAR_TRAIT);
 			break;
 		case 1:
-			this.personality.setStrength(1);
+			this.personality.setStrength(AVATAR_TRAIT);
 			break;
 		case 2:
-			this.personality.setCourage(1);
+			this.personality.setCourage(AVATAR_TRAIT);
 			break;
 		case 3:
-			this.personality.setIntelligence(1);
+			this.personality.setIntelligence(AVATAR_TRAIT);
 			break;
 		case 4:
-			this.personality.setHardiness(1);
+			this.personality.setHardiness(AVATAR_TRAIT);
 			break;
 		case 5:
-			this.personality.setLongevity(1);
+			this.personality.setLoyalty(AVATAR_TRAIT);
+			
 			break;
-		case 6:
-			this.personality.setLoyalty(1);
-			break;
-		case 7: this.personality.setMobility(1);
+		case 6: 
+			this.personality.setMobility(AVATAR_TRAIT);
 		break;
-		default: this.personality.setReproductiveAppeal(1);
+		default: this.personality.setReproductiveAppeal(AVATAR_TRAIT);
+		break;
 	}
-		
+		this.personality.setLongevity(AVATAR_LONGEVITY);
 		}
 
 }
