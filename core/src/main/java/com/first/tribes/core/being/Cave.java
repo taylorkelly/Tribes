@@ -37,6 +37,7 @@ public class Cave implements Updatee {
         do {
             x = random() * world.getAbsoluteSize().width;
             y = random() * world.getAbsoluteSize().height;
+
         } while (isUnsafe(x, y));
         Monster monster = new Monster(x, y, this, monsterColor);
         monster.personality.setHardiness(MONSTER_MULTIPLIER * monster.personality.hardiness());
@@ -80,7 +81,16 @@ public class Cave implements Updatee {
 
     @Override
     public void update(float delta) {
-        while (monsterList.size() < maxMonsters) {
+    	  for (int i = 0; i < monsterList.size(); i++) {
+              Being being = monsterList.get(i);
+              being.update(delta);
+              if (being.isDead()) {
+                 monsterList.remove(being);
+                  i--;
+              }
+          }
+    	
+    	while (monsterList.size() < maxMonsters) {
             monsterList.add(newMonster());
         }
 

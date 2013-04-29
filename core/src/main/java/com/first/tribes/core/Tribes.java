@@ -122,7 +122,7 @@ public class Tribes implements Game {
                     Tribes.SHIFT = true;
                     break;
                 case L:
-                    SpawnAvatarTool.setCurrentTrait(5);
+                    SpawnAvatarTool.setCurrentTrait(4);
                     break;
                 case A:
                     SpawnAvatarTool.setCurrentTrait(0);
@@ -133,16 +133,16 @@ public class Tribes implements Game {
                 case C:
                     break;
                 case I:
-                    SpawnAvatarTool.setCurrentTrait(3);
+                    SpawnAvatarTool.setCurrentTrait(2);
                     break;
                 case H:
-                    SpawnAvatarTool.setCurrentTrait(4);
+                    SpawnAvatarTool.setCurrentTrait(3);
                     break;
                 case R:
-                    SpawnAvatarTool.setCurrentTrait(7);
+                    SpawnAvatarTool.setCurrentTrait(6);
                     break;
                 case M:
-                    SpawnAvatarTool.setCurrentTrait(6);
+                    SpawnAvatarTool.setCurrentTrait(5);
                     break;
 
                 case K0:

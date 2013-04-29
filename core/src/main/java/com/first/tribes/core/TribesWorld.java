@@ -136,7 +136,11 @@ public class TribesWorld implements PointerFocusable {
                 for (Villager villager : villagers()) {
                     villager.paint(surface, viewPort, scale());
                 }
+                for (Being being:monsters()){
+                	being.paint(surface, viewPort, scale());
+                }
             }
+
         }));
 
 
@@ -183,6 +187,9 @@ public class TribesWorld implements PointerFocusable {
         return villagers;
     }
 
+    public List<Being> monsters(){
+    	return cave.monsters();
+    }
     public int addExtraLayer(Layer additionalLayer) {
         extraLayer.add(additionalLayer);
         return extraLayer.size() - 1;
@@ -233,6 +240,7 @@ public class TribesWorld implements PointerFocusable {
                 tiles[i][j].update(delta);
             }
         }
+        cave.update(delta);
         for (DrawnObject extraObject : extraDrawnObjects) {
             extraObject.update(delta);
         }
