@@ -45,7 +45,6 @@ public class TribesWorld {
     private List<DrawnObject> extraDrawnObjects = new ArrayList<DrawnObject>();
     private Tile[][] tiles;
     private Tribes game;
-    
     public float waterLevel = 0;
     public static final float NORMAL_WATER_LEVEL = 0;
 
@@ -132,7 +131,7 @@ public class TribesWorld {
             public void render(Surface surface) {
                 surface.drawImage(miniMap.image(), 0, 0);
             }
-        }), Tribes.SCREEN_WIDTH - miniMap.width() - 10, 10);
+        }), miniMap.x(), miniMap.y());
 
         // Layer for Village stats
         groupLayer.addAt(graphics().createImmediateLayer(new ImmediateLayer.Renderer() {
@@ -142,7 +141,7 @@ public class TribesWorld {
                     villages.get(i).drawStatsBoxAt(surface, 0, (Village.STATS_BOX_HEIGHT + 5) * i, miniMap.width(), Village.STATS_BOX_HEIGHT);
                 }
             }
-        }), Tribes.SCREEN_WIDTH - (miniMap.width() + 10), 10 + 10 + miniMap.height());
+        }), miniMap.x(), miniMap.y() + miniMap.height() + 10);
 
 
         // Layer for Toolbar
@@ -186,7 +185,7 @@ public class TribesWorld {
     public Tribes game() {
         return game;
     }
-    
+
     public float width() {
         return absoluteSize.width;
     }
@@ -394,5 +393,29 @@ public class TribesWorld {
 
     public Rectangle viewPort() {
         return viewPort;
+    }
+
+    void press(float x, float y) {
+        if (miniMap.pointInMiniMap(x, y)) {
+            miniMap.press(x, y);
+        } else {
+            toolbar.press(x, y);
+        }
+    }
+
+    void release(float x, float y) {
+        if (miniMap.pointInMiniMap(x, y)) {
+            miniMap.release(x, y);
+        } else {
+            toolbar.press(x, y);
+        }
+    }
+
+    void drag(float x, float y) {
+        if (miniMap.pointInMiniMap(x, y)) {
+            miniMap.drag(x, y);
+        } else {
+            toolbar.drag(x, y);
+        }
     }
 }

@@ -24,8 +24,8 @@ import pythagoras.f.Point;
 
 public class Tribes implements Game {
 
-    public static final int SCREEN_WIDTH = 800;
-    public static final int SCREEN_HEIGHT = 600;
+    public static final int SCREEN_WIDTH = 1400;
+    public static final int SCREEN_HEIGHT = 1000;
     public static boolean SHIFT = false;
     private TribesWorld world;
     private List<Updatee> updatees;
@@ -136,17 +136,17 @@ public class Tribes implements Game {
 
         @Override
         public void onPointerStart(Pointer.Event event) {
-            world.toolbar().press(event.x(), event.y());
+            world.press(event.x(), event.y());
         }
 
         @Override
         public void onPointerEnd(Pointer.Event event) {
-            world.toolbar().release(event.x(), event.y());
+            world.release(event.x(), event.y());
         }
 
         @Override
         public void onPointerDrag(Pointer.Event event) {
-            world.toolbar().drag(event.x(), event.y());
+            world.drag(event.x(), event.y());
         }
 
         @Override
