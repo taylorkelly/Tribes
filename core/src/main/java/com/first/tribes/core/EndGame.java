@@ -34,7 +34,7 @@ public class EndGame implements Updatee {
 
     @Override
     public void update(float delta) {
-        EndGameDialog dialog = null;
+       EndGameDialog dialog = null;
         if (game.world.villages().get(0).villagers().size() == 0) {
             dialog = new LoseDialog();
         } else if (game.world.villages().get(1).villagers().size() == 0) {
