@@ -27,7 +27,7 @@ public class Tile extends DrawnObject implements Updatee {
     public float numFood = 0;
     private TribesWorld world;
     static boolean debug = true;
-    static float proportion = 1f;
+    public static float proportion = 1f;
 
     public Tile(int xIndex, int yIndex, TribesWorld world) {
         this.xIndex = xIndex;

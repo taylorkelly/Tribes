@@ -164,7 +164,7 @@ public class Village implements Updatee {
     @Override
     public void update(float delta) {
 
-        float SPREAD_CONST = 0.01f;
+        float SPREAD_CONST = 0.011f;
         float DECR_CONST = 0.90f;
 
         for (int i = 0; i < villagers.size(); i++) {

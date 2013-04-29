@@ -4,6 +4,7 @@
  */
 package com.first.tribes.core.ui;
 
+import com.first.tribes.core.Tile;
 import com.first.tribes.core.Tribes;
 import com.first.tribes.core.Tribes.PointerFocusable;
 import com.first.tribes.core.TribesWorld;
@@ -58,7 +59,7 @@ public class MiniMap implements PointerFocusable {
 
         for (Village village : world.villages()) {
             int brightenedVillageColor = Color.rgb((int) (Color.red(village.color()) * 1.25), (int) (Color.green(village.color()) * 1.25), (int) (Color.blue(village.color()) * 1.25));
-            canvas.setFillColor(Color.withAlpha(brightenedVillageColor, 15));
+            canvas.setFillColor(Color.withAlpha(brightenedVillageColor, (int)(Tile.proportion * 15)));
             for (Villager villager : village.villagers()) {
                 canvas.fillCircle(villager.xPos() / pointDensity() + 5, villager.yPos() / pointDensity() + 5, 10);
             }
