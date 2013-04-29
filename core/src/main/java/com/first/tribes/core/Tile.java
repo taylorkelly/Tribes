@@ -17,14 +17,13 @@ import pythagoras.f.Point;
  */
 public class Tile extends DrawnObject implements Updatee {
 
-    public static final float TILE_SIZE = 100f;    
+    public static final float SNOW_PEAK_HEIGHT = 40;
+    public static final float TILE_SIZE = 100f;
     private static final float WATER_FOOD_INCREMENT = 0.0002f;
     private static final float FOOD_SPREAD_MULTIPLIER = 0.00004f;
-
     private int xIndex;
     private int yIndex;
     private float height = 2;
-    
     public float numFood = 0;
     private TribesWorld world;
 
@@ -33,8 +32,8 @@ public class Tile extends DrawnObject implements Updatee {
         this.yIndex = yIndex;
         this.world = world;
     }
-
     private Tile[] neighbors; // Cache for neighbors. No need to recalculate.
+
     public Tile[] neighbors() {
         if (neighbors == null) {
             int neighborCount = 0;
@@ -102,15 +101,16 @@ public class Tile extends DrawnObject implements Updatee {
     }
 
     public int color() {
-    	
+
         if (height >= world.waterLevel) {
-            if (height <= 40) {
+            if (height <= SNOW_PEAK_HEIGHT) {
                 // flat plains up to mountains
-            	if(height < TribesWorld.NORMAL_WATER_LEVEL){
-            		return Color.rgb((int)(237+height),(int) (216+height),(int)(151+height));
-            	}else{
-                return Color.rgb((int) (255 - height * 4 - this.numFood * 2 < 0 ? 0 : 255 - height * 4 - this.numFood * 2), (int) (200 - height * 5 + (this.numFood) > 200 ? 200 : 200 - height * 5 + (this.numFood)), (int) (190 - height * 8 - this.numFood * 2 < 0 ? 0 : 190 - height * 8 - this.numFood * 2));
-            }} else {
+                if (height < TribesWorld.NORMAL_WATER_LEVEL) {
+                    return Color.rgb((int) (237 + height), (int) (216 + height), (int) (151 + height));
+                } else {
+                    return Color.rgb((int) (255 - height * 4 - this.numFood * 2 < 0 ? 0 : 255 - height * 4 - this.numFood * 2), (int) (200 - height * 5 + (this.numFood) > 200 ? 200 : 200 - height * 5 + (this.numFood)), (int) (190 - height * 8 - this.numFood * 2 < 0 ? 0 : 190 - height * 8 - this.numFood * 2));
+                }
+            } else {
                 // snow capped mountains
                 if (height <= 65) {
                     return Color.rgb((int) (230 + (height - 40)), (int) (200 + (height * 2 - 80)), (int) (200 + (height * 2 - 80)));
@@ -120,14 +120,12 @@ public class Tile extends DrawnObject implements Updatee {
             }
         } else {
             // Water
-        	float heightSub=(float) Math.max(height-world.waterLevel,-100);
-        	
-            return Color.rgb((int) (200 + heightSub * 2), (int) (200 + heightSub * 2), (int) (255 + heightSub));
-        }}
-    
+            float heightSub = (float) Math.max(height - world.waterLevel, -100);
 
-    
-    
+            return Color.rgb((int) (200 + heightSub * 2), (int) (200 + heightSub * 2), (int) (255 + heightSub));
+        }
+    }
+
     public float height() {
         return height;
     }
@@ -159,7 +157,6 @@ public class Tile extends DrawnObject implements Updatee {
         return new Rectangle(xIndex * TILE_SIZE, yIndex * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
 
-
     @Override
     public void update(float delta) {
         for (Tile neighbor : neighbors()) {
@@ -169,17 +166,22 @@ public class Tile extends DrawnObject implements Updatee {
                 this.numFood += FOOD_SPREAD_MULTIPLIER * neighbor.numFood * delta / (this.numFood + 1);
             }
         }
+
+        // Snow caps on mountains don't have any food
+        if (this.height > SNOW_PEAK_HEIGHT) {
+            this.numFood = 0;
+        }
     }
 
     public boolean isSafe(float minFood) {
-        return height() > world.waterLevel-4 && numFood >= minFood;
+        return height() > world.waterLevel - 4 && numFood >= minFood;
     }
-    
-    public int getXIndex(){
-    	return xIndex;
+
+    public int getXIndex() {
+        return xIndex;
     }
-    
-    public int getYIndex(){
-    	return yIndex;
+
+    public int getYIndex() {
+        return yIndex;
     }
 }
