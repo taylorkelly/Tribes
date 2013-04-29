@@ -13,7 +13,7 @@ import com.first.tribes.core.util.Updatee;
 
 public class Cave implements Updatee {
 
-	private static final int STARTING_MONSTERS=10;
+	private static final int STARTING_MONSTERS=7;
 	private static final int MONSTER_MULTIPLIER=10;//how much stronger a monster is than an average human
 	
 	private ArrayList<Being> monsterList;
@@ -39,10 +39,10 @@ public class Cave implements Updatee {
             x = random() * world.getAbsoluteSize().width;
             y = random() * world.getAbsoluteSize().height;
         } while (isUnsafe(x,y));
-		Monster monster = new Monster(x,y,this,monsterColor);
+        Monster monster = new Monster(x,y,this,monsterColor);
 		monster.personality.setHardiness(MONSTER_MULTIPLIER*monster.personality.hardiness());
 		monster.personality.setStrength(MONSTER_MULTIPLIER*monster.personality.strength());
-	 return monster;
+        return monster;
 	}
 	
     public List<Being> monstersInArea(Rectangle rectangle){
@@ -89,6 +89,13 @@ public class Cave implements Updatee {
 
 	public ArrayList<Being> monsters() {
 		return monsterList;
+	}
+	
+	public void spawnMonster(float x, float y) {
+		Monster monster = new Monster(x,y,this,monsterColor);
+		monster.personality.setHardiness(MONSTER_MULTIPLIER*monster.personality.hardiness());
+		monster.personality.setStrength(MONSTER_MULTIPLIER*monster.personality.strength());
+		monsterList.add(monster);
 	}
 
 }
