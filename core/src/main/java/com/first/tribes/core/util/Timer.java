@@ -45,11 +45,11 @@ public class Timer implements Updatee {
         if (running) {
             if (System.currentTimeMillis() >= endTime) {
                 task.run();
-            }
-            if (repeatedDelay != -1) {
-                endTime = System.currentTimeMillis() + repeatedDelay;
-            } else {
-                this.cancel();
+                if (repeatedDelay != -1) {
+                    endTime = System.currentTimeMillis() + repeatedDelay;
+                } else {
+                    this.cancel();
+                }
             }
         }
     }

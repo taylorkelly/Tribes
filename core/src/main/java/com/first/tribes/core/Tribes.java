@@ -32,7 +32,7 @@ public class Tribes implements Game {
 
     @Override
     public void init() {
-        world = new TribesWorld();
+        world = new TribesWorld(this);
         updatees = new ArrayList<Updatee>();
 
         graphics().rootLayer().add(world.getLayer());

@@ -24,17 +24,14 @@ public class Tile extends DrawnObject implements Updatee {
     private int xIndex;
     private int yIndex;
     private float height = 2;
-    private static final int normalWaterLevel=0;
-    private static final double waterLevelDelta=.1;
-    private static double waterLevel=0;
-
+    
     public float numFood = 0;
-    private Tile[][] tileMap;
+    private TribesWorld world;
 
-    public Tile(int xIndex, int yIndex, Tile[][] tileMap) {
+    public Tile(int xIndex, int yIndex, TribesWorld world) {
         this.xIndex = xIndex;
         this.yIndex = yIndex;
-        this.tileMap = tileMap;
+        this.world = world;
     }
 
     private Tile[] neighbors; // Cache for neighbors. No need to recalculate.
@@ -44,29 +41,29 @@ public class Tile extends DrawnObject implements Updatee {
             if (xIndex - 1 >= 0) {
                 neighborCount++;
             }
-            if (xIndex + 1 < tileMap.length) {
+            if (xIndex + 1 < world.tiles().length) {
                 neighborCount++;
             }
             if (yIndex - 1 >= 0) {
                 neighborCount++;
             }
-            if (yIndex + 1 < tileMap[0].length) {
+            if (yIndex + 1 < world.tiles()[0].length) {
                 neighborCount++;
             }
             neighbors = new Tile[neighborCount];
             neighborCount = 0;
 
             if (xIndex - 1 >= 0) {
-                neighbors[neighborCount++] = tileMap[xIndex - 1][yIndex];
+                neighbors[neighborCount++] = world.tiles()[xIndex - 1][yIndex];
             }
-            if (xIndex + 1 < tileMap.length) {
-                neighbors[neighborCount++] = tileMap[xIndex + 1][yIndex];
+            if (xIndex + 1 < world.tiles().length) {
+                neighbors[neighborCount++] = world.tiles()[xIndex + 1][yIndex];
             }
             if (yIndex - 1 >= 0) {
-                neighbors[neighborCount++] = tileMap[xIndex][yIndex - 1];
+                neighbors[neighborCount++] = world.tiles()[xIndex][yIndex - 1];
             }
-            if (yIndex + 1 < tileMap[0].length) {
-                neighbors[neighborCount++] = tileMap[xIndex][yIndex + 1];
+            if (yIndex + 1 < world.tiles()[0].length) {
+                neighbors[neighborCount++] = world.tiles()[xIndex][yIndex + 1];
             }
         }
         return neighbors;
@@ -106,10 +103,10 @@ public class Tile extends DrawnObject implements Updatee {
 
     public int color() {
     	
-        if (height >= waterLevel) {
+        if (height >= world.waterLevel) {
             if (height <= 40) {
                 // flat plains up to mountains
-            	if(height<normalWaterLevel){
+            	if(height < TribesWorld.NORMAL_WATER_LEVEL){
             		return Color.rgb((int)(237+height),(int) (216+height),(int)(151+height));
             	}else{
                 return Color.rgb((int) (255 - height * 4 - this.numFood * 2 < 0 ? 0 : 255 - height * 4 - this.numFood * 2), (int) (200 - height * 5 + (this.numFood) > 200 ? 200 : 200 - height * 5 + (this.numFood)), (int) (190 - height * 8 - this.numFood * 2 < 0 ? 0 : 190 - height * 8 - this.numFood * 2));
@@ -123,25 +120,12 @@ public class Tile extends DrawnObject implements Updatee {
             }
         } else {
             // Water
-        	float heightSub=(float) Math.max(height-waterLevel,-100);
-        	
-        		
+        	float heightSub=(float) Math.max(height-world.waterLevel,-100);
         	
             return Color.rgb((int) (200 + heightSub * 2), (int) (200 + heightSub * 2), (int) (255 + heightSub));
         }}
     
 
-    public static void raiseWaterLevel(){
-    	waterLevel+=waterLevelDelta;
-    }
-    
-    public static void lowerWaterLevel(){
-    	waterLevel-=waterLevelDelta;
-    }
-    
-    public static void restoreWaterLevel(){
-    	waterLevel=normalWaterLevel;
-    }
     
     
     public float height() {
@@ -179,7 +163,7 @@ public class Tile extends DrawnObject implements Updatee {
     @Override
     public void update(float delta) {
         for (Tile neighbor : neighbors()) {
-            if (neighbor.height() < waterLevel) {
+            if (neighbor.height() < world.waterLevel) {
                 this.numFood += WATER_FOOD_INCREMENT * delta / (this.numFood + 1);
             } else if (neighbor.numFood > 0) {
                 this.numFood += FOOD_SPREAD_MULTIPLIER * neighbor.numFood * delta / (this.numFood + 1);
@@ -188,7 +172,7 @@ public class Tile extends DrawnObject implements Updatee {
     }
 
     public boolean isSafe(float minFood) {
-        return height() > waterLevel-4 && numFood >= minFood;
+        return height() > world.waterLevel-4 && numFood >= minFood;
     }
     
     public int getXIndex(){

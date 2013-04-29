@@ -35,6 +35,8 @@ public class TribesWorld {
 
     private static final float MAX_MAGNIFICATION = 1.0f;
     private static final float MIN_MAGNIFICATION = 0.1f;
+    private MiniMap miniMap;
+    private Toolbar toolbar;
     private GroupLayer.Clipped groupLayer;
     private GroupLayer extraLayer;
     private Dimension absoluteSize;
@@ -42,14 +44,17 @@ public class TribesWorld {
     private List<Village> villages = new ArrayList<Village>();
     private List<DrawnObject> extraDrawnObjects = new ArrayList<DrawnObject>();
     private Tile[][] tiles;
-    private MiniMap miniMap;
-    private Toolbar toolbar;
+    private Tribes game;
+    
+    public float waterLevel = 0;
+    public static final float NORMAL_WATER_LEVEL = 0;
 
     private final float EXTRA_VIEWPORT_PADDING() {
         return 60f / scale();
     }
 
-    public TribesWorld() {
+    public TribesWorld(Tribes game) {
+        this.game = game;
         absoluteSize = new Dimension(20000, 10000);
         viewPort = new Rectangle(0, 0, Tribes.SCREEN_WIDTH, Tribes.SCREEN_HEIGHT);
 
@@ -57,7 +62,7 @@ public class TribesWorld {
 
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
-                tiles[i][j] = new Tile(i, j, tiles);
+                tiles[i][j] = new Tile(i, j, this);
             }
         }
 
@@ -178,6 +183,10 @@ public class TribesWorld {
         return groupLayer;
     }
 
+    public Tribes game() {
+        return game;
+    }
+    
     public float width() {
         return absoluteSize.width;
     }
