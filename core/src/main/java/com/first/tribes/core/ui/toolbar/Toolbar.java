@@ -22,6 +22,8 @@ public class Toolbar implements PointerFocusable {
     private TribesWorld world;
     private List<Tool> tools;
     private int activeTool;
+    private Font textFont;
+    private Font costFont;
 
     public Toolbar(TribesWorld world) {
         this.world = world;
@@ -35,6 +37,11 @@ public class Toolbar implements PointerFocusable {
         tools.add(new IrrigationTool(world));
         tools.get(0).selected = true;
         activeTool = 0;
+        
+       textFont = graphics().createFont("Sans serif", Font.Style.BOLD, 15);
+       costFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 15);
+       
+        
     }
 
     public float width() {
@@ -57,9 +64,7 @@ public class Toolbar implements PointerFocusable {
         surface.setFillColor(Color.rgb(0, 0, 0));
         surface.fillRect(0, 0, width(), height());
 
-        Font textFont = graphics().createFont("Sans serif", Font.Style.BOLD, 15);
         TextLayout nameLayout = graphics().layoutText(tools.get(activeTool).name(), new TextFormat().withFont(textFont));
-        Font costFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 15);
         TextLayout costLayout = graphics().layoutText( tools.get(activeTool).costDescription(), new TextFormat().withFont(costFont));
         CanvasImage nameBox = graphics().createImage(nameLayout.width() + costLayout.width() + 5, (int) 20f);
 //        nameBox.canvas().setFillColor(Color.argb(200, 255, 255, 255));
