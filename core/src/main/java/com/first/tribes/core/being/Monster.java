@@ -158,7 +158,7 @@ public class Monster extends Being{
     	
     	List<Village> v = cave.enemyVillages();
     	
-    	float radius = personality.aggression()*MAX_ATTACK_RADIUS;
+    	float radius = MAX_ATTACK_RADIUS;
     	
     	for(int i=0; i<v.size(); i++){
     		e.addAll(v.get(i).villagersInArea( new Rectangle(xPos-radius,yPos-radius,2*radius,2*radius) ));
