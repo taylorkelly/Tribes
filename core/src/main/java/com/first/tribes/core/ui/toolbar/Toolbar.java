@@ -8,6 +8,7 @@ import java.util.List;
 import playn.core.CanvasImage;
 import playn.core.Color;
 import playn.core.Font;
+import playn.core.Key;
 import playn.core.Surface;
 import playn.core.TextFormat;
 import playn.core.TextLayout;
@@ -37,11 +38,11 @@ public class Toolbar implements PointerFocusable {
         tools.add(new IrrigationTool(world));
         tools.get(0).selected = true;
         activeTool = 0;
-        
-       textFont = graphics().createFont("Sans serif", Font.Style.BOLD, 15);
-       costFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 15);
-       
-        
+
+        textFont = graphics().createFont("Sans serif", Font.Style.BOLD, 15);
+        costFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 15);
+
+
     }
 
     public float width() {
@@ -65,13 +66,13 @@ public class Toolbar implements PointerFocusable {
         surface.fillRect(0, 0, width(), height());
 
         TextLayout nameLayout = graphics().layoutText(tools.get(activeTool).name(), new TextFormat().withFont(textFont));
-        TextLayout costLayout = graphics().layoutText( tools.get(activeTool).costDescription(), new TextFormat().withFont(costFont));
+        TextLayout costLayout = graphics().layoutText(tools.get(activeTool).costDescription(), new TextFormat().withFont(costFont));
         CanvasImage nameBox = graphics().createImage(nameLayout.width() + costLayout.width() + 5, (int) 20f);
 //        nameBox.canvas().setFillColor(Color.argb(200, 255, 255, 255));
         nameBox.canvas().setFillColor(Color.argb(200, 255, 255, 255));
         nameBox.canvas().fillText(nameLayout, 0, 0);
         nameBox.canvas().setFillColor(Color.argb(200, 200, 200, 200));
-        nameBox.canvas().fillText(costLayout, nameLayout.width()+5, 0);
+        nameBox.canvas().fillText(costLayout, nameLayout.width() + 5, 0);
 
         surface.drawImage(nameBox, (width() - nameBox.width()) / 2, height() - 22f);
 
@@ -121,6 +122,48 @@ public class Toolbar implements PointerFocusable {
                 activeTool = index;
                 tools.get(activeTool).selected = true;
             }
+        }
+    }
+
+    public void keyPress(Key key) {
+        int index = -1;
+        switch (key) {
+            case K1:
+                index = 0;
+                break;
+            case K2:
+                index = 1;
+                break;
+            case K3:
+                index = 2;
+                break;
+            case K4:
+                index = 3;
+                break;
+            case K5:
+                index = 4;
+                break;
+            case K6:
+                index = 5;
+                break;
+            case K7:
+                index = 6;
+                break;
+            case K8:
+                index = 7;
+                break;
+            case K9:
+                index = 8;
+                break;
+            case K0:
+                index = 9;
+                break;
+        }
+
+        if (index != -1 && index < tools.size()) {
+            tools.get(activeTool).selected = false;
+            activeTool = index;
+            tools.get(activeTool).selected = true;
         }
     }
 }

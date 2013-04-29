@@ -122,6 +122,20 @@ public class Tribes implements Game {
                 case M:
                     SpawnAvatarTool.setCurrentTrait(6);
                     break;
+                    
+                case K0:
+                case K1:
+                case K2:
+                case K3:
+                case K4:
+                case K5:
+                case K6:
+                case K7: 
+                case K8:
+                case K9:
+                    world.toolbar().keyPress(event.key());
+                    break;
+                                     
             }
         }
 
