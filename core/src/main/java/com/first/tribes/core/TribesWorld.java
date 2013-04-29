@@ -15,6 +15,7 @@ import com.first.tribes.core.ui.toolbar.Toolbar;
 import com.first.tribes.core.pcg.*;
 import static playn.core.PlayN.*;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import playn.core.Color;
 import playn.core.Connection;
@@ -136,11 +137,10 @@ public class TribesWorld implements PointerFocusable {
                 for (Villager villager : villagers()) {
                     villager.paint(surface, viewPort, scale());
                 }
-                for (Being being:monsters()){
-                	being.paint(surface, viewPort, scale());
+                for (Being being : monsters()) {
+                    being.paint(surface, viewPort, scale());
                 }
             }
-
         }));
 
 
@@ -187,9 +187,10 @@ public class TribesWorld implements PointerFocusable {
         return villagers;
     }
 
-    public List<Being> monsters(){
-    	return cave.monsters();
+    public List<Being> monsters() {
+        return cave.monsters();
     }
+
     public int addExtraLayer(Layer additionalLayer) {
         extraLayer.add(additionalLayer);
         return extraLayer.size() - 1;
@@ -241,8 +242,12 @@ public class TribesWorld implements PointerFocusable {
             }
         }
         cave.update(delta);
-        for (DrawnObject extraObject : extraDrawnObjects) {
-            extraObject.update(delta);
+
+        try {
+            for (DrawnObject extraObject : extraDrawnObjects) {
+                extraObject.update(delta);
+            }
+        } catch (ConcurrentModificationException e) {
         }
     }
 
