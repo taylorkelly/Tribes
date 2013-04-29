@@ -17,7 +17,7 @@
         <gwt.module>com.first.tribes.Tribes</gwt.module>
         <gwt.name>Tribes</gwt.name>
         <!-- Desired Google App Engine SDK version -->
-        <gae.version>1.6.1</gae.version>
+        <gae.version>1.7.7.1</gae.version>
     </properties>
 
     <dependencies>

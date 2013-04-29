@@ -19,6 +19,8 @@ import playn.core.GroupLayer;
 import playn.core.ImmediateLayer;
 import playn.core.Layer;
 import playn.core.Mouse.LayerListener;
+import playn.core.Platform;
+import playn.core.PlayN;
 import playn.core.Pointer.Listener;
 import playn.core.Surface;
 import playn.core.Touch;
@@ -55,7 +57,12 @@ public class TribesWorld implements PointerFocusable {
 
     public TribesWorld(Tribes game) {
         this.game = game;
-        absoluteSize = new Dimension(20000, 10000);
+
+        if (platformType() == Platform.Type.HTML) {
+            absoluteSize = new Dimension(10000, 5000);
+        } else {
+            absoluteSize = new Dimension(20000, 10000);
+        }
         viewPort = new Rectangle(0, 0, Tribes.SCREEN_WIDTH, Tribes.SCREEN_HEIGHT);
 
         tiles = new Tile[(int) (absoluteSize.width / Tile.TILE_SIZE)][(int) (absoluteSize.height / Tile.TILE_SIZE)];
@@ -396,7 +403,6 @@ public class TribesWorld implements PointerFocusable {
         return viewPort;
     }
 
-    
     public PointerFocusable press(float x, float y) {
         if (miniMap.pointInMiniMap(x, y)) {
             return miniMap.press(x, y);
