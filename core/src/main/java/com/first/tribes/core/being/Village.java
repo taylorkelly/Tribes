@@ -124,6 +124,8 @@ public class Village implements Updatee {
     public float reproductiveBaseRate() {
         if (villagers.size() < 10) {
             return REPRODUCTIVE_BASE_RATE * 10 / (float) (Math.sqrt(villagers.size()));
+        } else if(villagers.size() > 1000){
+            return REPRODUCTIVE_BASE_RATE / (float) Math.pow(villagers.size() - 1000, 0.2);
         } else {
             return REPRODUCTIVE_BASE_RATE;
         }

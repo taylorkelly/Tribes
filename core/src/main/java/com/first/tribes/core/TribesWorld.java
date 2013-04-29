@@ -69,7 +69,7 @@ public class TribesWorld {
         generateMap(tiles, absoluteSize);
 
         // Have the tiles go through several update cycles
-        for (int time = 0; time < 1000; time++) {
+        for (int time = 0; time < 800; time++) {
             for (int i = 0; i < tiles.length; i++) {
                 for (int j = 0; j < tiles[i].length; j++) {
                     tiles[i][j].update(100);
