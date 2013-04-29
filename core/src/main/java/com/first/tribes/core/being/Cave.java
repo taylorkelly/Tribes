@@ -50,6 +50,8 @@ public class Cave implements Updatee {
         Monster monster = new Monster(x, y, this, monsterColor);
         monster.personality.setHardiness(MONSTER_MULTIPLIER * monster.personality.hardiness());
         monster.personality.setStrength(MONSTER_MULTIPLIER * monster.personality.strength());
+        monster.personality.setMobility(MONSTER_MULTIPLIER * monster.personality.mobility());
+        
         return monster;
     }
 

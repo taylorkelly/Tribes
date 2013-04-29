@@ -12,8 +12,8 @@ import playn.core.Surface;
 
 public class FloodTool extends Tool {
 
-    public static final int MANNA_COST_PER_DELTA = 50;
-    private static final float WATER_LEVEL_DELTA = 1f;
+	 public static final int MANNA_COST_PER_DELTA = 50;
+	    private static final float WATER_LEVEL_DELTA = 1f;
     private static final long TIMER_DELAY = 200;
 
     public FloodTool(TribesWorld world) {
@@ -41,13 +41,23 @@ public class FloodTool extends Tool {
         return MANNA_COST_PER_DELTA() + " manna/update";
     }
 
+    
+    
+    public void flood(boolean up){
+    	if(up){
+    		world.waterLevel += WATER_LEVEL_DELTA;
+    	}else{
+    		world.waterLevel -= WATER_LEVEL_DELTA; 
+    	}
+    }
+    
     @Override
     public PointerFocusable press(float x, float y) {
         if (world.villages().get(0).manna() >= MANNA_COST_PER_DELTA()) {
             if (Tribes.SHIFT) {
-                world.waterLevel -= WATER_LEVEL_DELTA;
+                flood(false);
             } else {
-                world.waterLevel += WATER_LEVEL_DELTA;
+               flood(true);
             }
             world.villages().get(0).costManna(MANNA_COST_PER_DELTA());
         }

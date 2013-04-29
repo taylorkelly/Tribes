@@ -144,7 +144,6 @@ public class Tribes implements Game {
                 case M:
                     SpawnAvatarTool.setCurrentTrait(5);
                     break;
-                    
                 case K0:
                 case K1:
                 case K2:
