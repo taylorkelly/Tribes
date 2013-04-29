@@ -8,6 +8,7 @@ import com.first.tribes.core.Tribes.PointerFocusable;
 import com.first.tribes.core.being.Being;
 import com.first.tribes.core.being.Being.Personality;
 import com.first.tribes.core.being.Cave;
+import com.first.tribes.core.being.Monster;
 import com.first.tribes.core.being.Village;
 import com.first.tribes.core.being.Villager;
 import com.first.tribes.core.ui.MiniMap;
@@ -187,8 +188,9 @@ public class TribesWorld implements PointerFocusable {
         return villagers;
     }
 
-    public List<Being> monsters() {
-        return cave.monsters();
+
+    public List<Monster> monsters(){
+    	return cave.monsters();
     }
 
     public int addExtraLayer(Layer additionalLayer) {

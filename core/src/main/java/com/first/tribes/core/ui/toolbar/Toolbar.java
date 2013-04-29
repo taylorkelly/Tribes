@@ -22,10 +22,14 @@ public class Toolbar implements PointerFocusable {
 
     private TribesWorld world;
     private List<Tool> tools;
-    private int activeTool;
+   
+
+	private int activeTool;
     private Font textFont;
     private Font costFont;
 
+    
+    //enemygod has the order of these hardcoded in
     public Toolbar(TribesWorld world) {
         this.world = world;
         tools = new ArrayList<Tool>(10);
@@ -167,4 +171,8 @@ public class Toolbar implements PointerFocusable {
             tools.get(activeTool).selected = true;
         }
     }
+    
+    public List<Tool> getTools() {
+		return tools;
+	}
 }

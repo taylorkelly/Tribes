@@ -290,7 +290,7 @@ public class Village implements Updatee {
         }
     }
 
-    boolean isUnsafe(float xPos, float yPos) {
+    public boolean isUnsafe(float xPos, float yPos) {
         return world.unsafe(xPos, yPos, 0);
     }
 
