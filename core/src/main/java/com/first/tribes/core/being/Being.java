@@ -5,6 +5,8 @@
 package com.first.tribes.core.being;
 
 import com.first.tribes.core.DrawnObject;
+
+import playn.core.CanvasImage;
 import pythagoras.f.Rectangle;
 import static playn.core.PlayN.*;
 
@@ -14,11 +16,41 @@ import static playn.core.PlayN.*;
  */
 public abstract class Being extends DrawnObject {
 
+	
+	enum DeathReason {
+
+        AGE, STARVING, DROWNING, KILLED_BY_VILLAGER, KILLED_BY_MONSTER;
+
+        String description() {
+            switch (this) {
+                case AGE:
+                    return "lived a full life.";
+                case STARVING:
+                    return "forgot to eat.";
+                case DROWNING:
+                    return "drank too much water.";
+                case KILLED_BY_VILLAGER:
+                    return "was killed by a villager.";
+                case KILLED_BY_MONSTER:
+                    return "was killed by a monster.";
+                default:
+                    return "is Dead.";
+            }
+        }
+    }
+
+	
     protected Personality personality;
     protected float xPos, yPos;
     protected float xVel, yVel;
     protected float width, height;
 
+    
+    protected DeathReason deathReason;
+    
+    protected CanvasImage visualInfo;
+    
+    
     public Being(float xPos, float yPos, float width, float height) {
         this.xPos = xPos;
         this.yPos = yPos;
@@ -179,6 +211,17 @@ public abstract class Being extends DrawnObject {
 
         float aggression() {
             return aggression / total;
+        }
+    }
+    
+    public boolean isDead() {
+        return deathReason != null;
+    }
+    
+    protected void setDead(DeathReason deathReason) {
+        if (this.deathReason != deathReason) {
+            this.deathReason = deathReason;
+            visualInfo = null; // Invalidate visualInfo
         }
     }
 }

@@ -41,33 +41,11 @@ public class Villager extends Being {
     private Village village;
     private int color;
     private int age;
-    private DeathReason deathReason;
     private float hunger;
     private String name;
     private int number;
 
-    enum DeathReason {
-
-        AGE, STARVING, DROWNING, KILLED_BY_VILLAGER, KILLED_BY_MONSTER;
-
-        private String description() {
-            switch (this) {
-                case AGE:
-                    return "lived a full life.";
-                case STARVING:
-                    return "forgot to eat.";
-                case DROWNING:
-                    return "drank too much water.";
-                case KILLED_BY_VILLAGER:
-                    return "was killed by a villager.";
-                case KILLED_BY_MONSTER:
-                    return "was killed by a monster.";
-                default:
-                    return "is Dead.";
-            }
-        }
-    }
-
+    
     public Villager(float xPos, float yPos, Village village, int color) {
         super(xPos, yPos, VILLAGER_SIZE, VILLAGER_SIZE);
         this.village = village;
@@ -232,14 +210,14 @@ public class Villager extends Being {
 
     }
 
-    public void attack(Villager v) {
+    public void attack(Being v) {
         
     	if(v!=null){
     		float a = ((float) Math.random() * personality.strength());
     		float b = ((float) Math.random() * v.personality.hardiness());
         	if (a > b) {
         		v.setDead(DeathReason.KILLED_BY_VILLAGER);
-        		hunger -= v.foodRequired();
+        		hunger -= v.personality.hardiness();
         	}
     	}
     }
@@ -250,16 +228,7 @@ public class Villager extends Being {
 
     }
 
-    private void setDead(DeathReason deathReason) {
-        if (this.deathReason != deathReason) {
-            this.deathReason = deathReason;
-            visualInfo = null; // Invalidate visualInfo
-        }
-    }
-
-    public boolean isDead() {
-        return deathReason != null;
-    }
+    
 
     public String toString() {
         return personality.toString();
@@ -268,7 +237,6 @@ public class Villager extends Being {
     
     
     
-    private CanvasImage visualInfo;
     public static final float STATS_BOX_HEIGHT = 96f;
 
     public void drawStatsBoxAt(Surface surface, float x, float y, float width, float height) {
