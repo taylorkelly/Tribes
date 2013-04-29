@@ -2,6 +2,7 @@ package com.first.tribes.core;
 
 import com.first.tribes.core.ui.FPSRenderer;
 import com.first.tribes.core.ui.toolbar.PushPullTool;
+import com.first.tribes.core.ui.toolbar.SpawnAvatarTool;
 import com.first.tribes.core.util.Timer;
 import com.first.tribes.core.util.Timer.TimerTask;
 import com.first.tribes.core.util.Updatee;
@@ -12,9 +13,6 @@ import java.util.List;
 import java.util.Map;
 import static playn.core.PlayN.*;
 
-import playn.core.Game;
-import playn.core.Image;
-import playn.core.ImageLayer;
 import playn.core.*;
 import playn.core.Keyboard.Event;
 import playn.core.Keyboard.TypedEvent;
@@ -88,14 +86,42 @@ public class Tribes implements Game {
 
         @Override
         public void onKeyDown(Event event) {
-            if (!timerMap.containsKey(event.key().ordinal())) {
-                Timer timer = new Timer(Tribes.this);
-                timer.schedule(new KeyRepeater(event.key()), 0, REPEAT_KEY_DELAY);
-                timerMap.put(event.key().ordinal(), timer);
-            }
 
-            if (event.key() == Key.SHIFT) {
+			if (!timerMap.containsKey(event.key().ordinal())) {
+				Timer timer = new Timer(Tribes.this);
+				timer.schedule(new KeyRepeater(event.key()), 0,
+						REPEAT_KEY_DELAY);
+				timerMap.put(event.key().ordinal(), timer);
+			}
+
+            switch(event.key()){
+            case SHIFT:
                 Tribes.SHIFT = true;
+            break;
+            case L:
+            	SpawnAvatarTool.setCurrentTrait(5);
+            	break;
+            case A:
+            	SpawnAvatarTool.setCurrentTrait(0);
+            	break;
+            case S:
+            	SpawnAvatarTool.setCurrentTrait(1);
+            	break;
+            case C:
+            	SpawnAvatarTool.setCurrentTrait(2);
+            	break;
+            case I:
+            	SpawnAvatarTool.setCurrentTrait(3);
+            	break;
+            case H:
+            	SpawnAvatarTool.setCurrentTrait(4);
+            	break;
+            case R:
+            	SpawnAvatarTool.setCurrentTrait(7);
+            	break;
+            case M:
+            	SpawnAvatarTool.setCurrentTrait(6);
+            	break;
             }
         }
 
