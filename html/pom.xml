@@ -81,6 +81,11 @@
             <scope>test</scope>
         </dependency>
         <!-- End Google App Engine dependencies -->
+        <dependency>
+            <groupId>com.allen-sauer.gwt.log</groupId>
+            <artifactId>gwt-log</artifactId>
+            <version>3.1.6</version>
+        </dependency>
     </dependencies>
 
     <build>

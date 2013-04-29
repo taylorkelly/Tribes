@@ -78,9 +78,12 @@ public class Tribes implements Game {
 
         @Override
         public void onKeyDown(Event event) {
-            Timer timer = new Timer(Tribes.this);
-            timer.schedule(new KeyRepeater(event.key()), 0, REPEAT_KEY_DELAY);
-            timerMap.put(event.key().ordinal(), timer);
+            if (!timerMap.containsKey(event.key().ordinal())) {
+                Timer timer = new Timer(Tribes.this);
+                timer.schedule(new KeyRepeater(event.key()), 0, REPEAT_KEY_DELAY);
+                timerMap.put(event.key().ordinal(), timer);
+            }
+
             if (event.key() == Key.SHIFT) {
                 Tribes.SHIFT = true;
             }

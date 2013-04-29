@@ -8,4 +8,5 @@
   <public path="resources" />
 
   <entry-point class='com.first.tribes.html.TribesHtml'/>
+  <inherits name="playn.logging.Enhanced" />
 </module>

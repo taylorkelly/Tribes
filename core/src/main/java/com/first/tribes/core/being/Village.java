@@ -174,7 +174,6 @@ public class Village implements Updatee {
             if (villager.isDead()) {
                 villagers.remove(villager);
                 i--;
-                visualInfo = null;
             }
         }
 
@@ -182,8 +181,13 @@ public class Village implements Updatee {
         for (Villager villager : new ArrayList<Villager>(villagers.subList(0, villageSize))) {
             if (villager.personality.reproductiveAppeal() * reproductiveBaseRate() > random()) {
                 reproduce(villager);
-                visualInfo = null;
             }
+        }
+        
+        
+        if(System.currentTimeMillis() > lastVisualInfoUpdate + VISUAL_INFO_UPDATE_TIME) {
+            lastVisualInfoUpdate = System.currentTimeMillis();
+            visualInfo = null;
         }
     }
     
@@ -275,6 +279,8 @@ public class Village implements Updatee {
 
     public static final float STATS_BOX_HEIGHT = 200f;
     CanvasImage visualInfo;
+    private long lastVisualInfoUpdate;
+    private static final long VISUAL_INFO_UPDATE_TIME = 1000;
 
     public void drawStatsBoxAt(Surface surface, float x, float y, float width, float height) {
         if (visualInfo == null) {
