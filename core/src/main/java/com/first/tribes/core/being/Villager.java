@@ -185,7 +185,7 @@ public class Villager extends Being {
 //    	if(Math.random()<0.01)
 //    		System.out.println(foundFood+" "+foundEnemy+" "+foundFriend+" "+heightValue);
     	
-    	return foundFood+foundEnemy-heightValue;
+    	return foundFood+foundEnemy+foundFriend-heightValue;
     }
     
     public Villager findTarget(){
