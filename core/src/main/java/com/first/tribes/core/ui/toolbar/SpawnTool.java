@@ -4,6 +4,7 @@
  */
 package com.first.tribes.core.ui.toolbar;
 
+import com.first.tribes.core.Tribes.PointerFocusable;
 import com.first.tribes.core.TribesWorld;
 import playn.core.Color;
 import playn.core.Surface;
@@ -31,7 +32,8 @@ import pythagoras.f.Point;
         }
 
         @Override
-        public void press(float x, float y) {
+        public PointerFocusable press(float x, float y) {
+            return this;
         }
 
         @Override

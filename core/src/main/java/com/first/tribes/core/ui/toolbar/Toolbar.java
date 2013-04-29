@@ -1,18 +1,19 @@
 package com.first.tribes.core.ui.toolbar;
 
 import com.first.tribes.core.Tribes;
+import com.first.tribes.core.Tribes.PointerFocusable;
 import com.first.tribes.core.TribesWorld;
 import java.util.ArrayList;
 import java.util.List;
 import playn.core.Color;
 import playn.core.Surface;
 
-
 /**
  *
  * @author taylor
  */
-public class Toolbar {
+public class Toolbar implements PointerFocusable {
+
     private TribesWorld world;
     private List<Tool> tools;
     private int activeTool;
@@ -59,14 +60,15 @@ public class Toolbar {
         }
     }
 
-    public void press(float x, float y) {
+    public PointerFocusable press(float x, float y) {
         if (pointInToolbar(x, y)) {
             int index = (int) ((x - x()) / 50);
             tools.get(activeTool).selected = false;
             activeTool = index;
             tools.get(activeTool).selected = true;
+            return this;
         } else {
-            tools.get(activeTool).press(x, y);
+            return tools.get(activeTool).press(x, y);
         }
     }
 
@@ -75,12 +77,20 @@ public class Toolbar {
     }
 
     public void release(float x, float y) {
-        if (!pointInToolbar(x, y))
-            tools.get(activeTool).release(x, y);
+        if (pointInToolbar(x, y)) {
+            int index = (int) ((x - x()) / 50);
+            tools.get(activeTool).selected = false;
+            activeTool = index;
+            tools.get(activeTool).selected = true;
+        }
     }
 
     public void drag(float x, float y) {
-        if (!pointInToolbar(x, y))
-            tools.get(activeTool).drag(x, y);
+        if (pointInToolbar(x, y)) {
+            int index = (int) ((x - x()) / 50);
+            tools.get(activeTool).selected = false;
+            activeTool = index;
+            tools.get(activeTool).selected = true;
+        }
     }
 }

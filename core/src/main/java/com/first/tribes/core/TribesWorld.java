@@ -4,6 +4,7 @@
  */
 package com.first.tribes.core;
 
+import com.first.tribes.core.Tribes.PointerFocusable;
 import com.first.tribes.core.being.Village;
 import com.first.tribes.core.being.Villager;
 import com.first.tribes.core.ui.MiniMap;
@@ -31,7 +32,7 @@ import pythagoras.f.Transform;
  *
  * @author taylor
  */
-public class TribesWorld {
+public class TribesWorld implements PointerFocusable {
 
     private static final float MAX_MAGNIFICATION = 1.0f;
     private static final float MIN_MAGNIFICATION = 0.1f;
@@ -251,7 +252,7 @@ public class TribesWorld {
         verifyViewPortPosition();
     }
 
-    private void verifyViewPortPosition() {
+    public void verifyViewPortPosition() {
 
         if (viewPort.width <= absoluteSize.width) {
             if (viewPort.x < -EXTRA_VIEWPORT_PADDING()) {
@@ -395,15 +396,16 @@ public class TribesWorld {
         return viewPort;
     }
 
-    void press(float x, float y) {
+    
+    public PointerFocusable press(float x, float y) {
         if (miniMap.pointInMiniMap(x, y)) {
-            miniMap.press(x, y);
+            return miniMap.press(x, y);
         } else {
-            toolbar.press(x, y);
+            return toolbar.press(x, y);
         }
     }
 
-    void release(float x, float y) {
+    public void release(float x, float y) {
         if (miniMap.pointInMiniMap(x, y)) {
             miniMap.release(x, y);
         } else {
@@ -411,7 +413,7 @@ public class TribesWorld {
         }
     }
 
-    void drag(float x, float y) {
+    public void drag(float x, float y) {
         if (miniMap.pointInMiniMap(x, y)) {
             miniMap.drag(x, y);
         } else {

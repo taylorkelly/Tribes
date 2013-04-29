@@ -68,7 +68,7 @@ public class Tribes implements Game {
     public void registerUpdatee(Updatee aThis) {
         updatees.add(aThis);
     }
-    
+
     private class TribesKeyListener implements Keyboard.Listener {
 
         private static final float VIEWPORT_KEY_SHIFT = 20f;
@@ -132,26 +132,38 @@ public class Tribes implements Game {
         }
     }
 
-    private class TribesPointerListener implements Pointer.Listener {
+    class TribesPointerListener implements Pointer.Listener {
+
+        PointerFocusable focused = null;
 
         @Override
         public void onPointerStart(Pointer.Event event) {
-            world.press(event.x(), event.y());
+            focused = world.press(event.x(), event.y());
         }
 
         @Override
         public void onPointerEnd(Pointer.Event event) {
-            world.release(event.x(), event.y());
+            focused.release(event.x(), event.y());
+            focused = null;
         }
 
         @Override
         public void onPointerDrag(Pointer.Event event) {
-            world.drag(event.x(), event.y());
+            focused.drag(event.x(), event.y());
         }
 
         @Override
         public void onPointerCancel(Pointer.Event event) {
         }
+    }
+
+    public interface PointerFocusable {
+
+        PointerFocusable press(float x, float y);
+
+        void release(float x, float y);
+
+        void drag(float x, float y);
     }
 
     private class TribesMouseListener implements Mouse.Listener {

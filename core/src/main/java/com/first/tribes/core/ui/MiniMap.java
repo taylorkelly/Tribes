@@ -5,6 +5,7 @@
 package com.first.tribes.core.ui;
 
 import com.first.tribes.core.Tribes;
+import com.first.tribes.core.Tribes.PointerFocusable;
 import com.first.tribes.core.TribesWorld;
 import com.first.tribes.core.being.Village;
 import com.first.tribes.core.being.Villager;
@@ -18,7 +19,7 @@ import static playn.core.PlayN.*;
  *
  * @author taylor
  */
-public class MiniMap {
+public class MiniMap implements PointerFocusable {
 
     private CanvasImage image;
     private TribesWorld world;
@@ -100,12 +101,15 @@ public class MiniMap {
         return x > x() && x < x() + width() && y > y() && y < y() + height();
     }
 
-    public void press(float x, float y) {
+    public PointerFocusable press(float x, float y) {
         float worldX = (x - x()) * pointDensity();
         float worldY = (y - y()) * pointDensity();
         
         world.viewPort().x = worldX - world.viewPort().width/2;
         world.viewPort().y = worldY - world.viewPort().height/2;
+        world.verifyViewPortPosition();
+        
+        return this;
     }
 
     public void release(float x, float y) {

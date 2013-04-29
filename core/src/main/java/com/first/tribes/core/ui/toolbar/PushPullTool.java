@@ -6,6 +6,7 @@ package com.first.tribes.core.ui.toolbar;
 
 import com.first.tribes.core.Tile;
 import com.first.tribes.core.Tribes;
+import com.first.tribes.core.Tribes.PointerFocusable;
 import com.first.tribes.core.TribesWorld;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,7 +37,7 @@ public class PushPullTool extends Tool {
     }
 
     @Override
-    public void press(float x, float y) {
+    public PointerFocusable press(float x, float y) {
         float heightChange = HEIGHT_CHANGE;
         if (Tribes.SHIFT) {
             heightChange = -heightChange;
@@ -54,6 +55,7 @@ public class PushPullTool extends Tool {
             }
             tiles.addAll(newTiles);
         }
+        return this;
     }
 
     @Override

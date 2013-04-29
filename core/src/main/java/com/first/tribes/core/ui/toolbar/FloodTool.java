@@ -2,6 +2,7 @@ package com.first.tribes.core.ui.toolbar;
 
 import com.first.tribes.core.Tile;
 import com.first.tribes.core.Tribes;
+import com.first.tribes.core.Tribes.PointerFocusable;
 import com.first.tribes.core.TribesWorld;
 import com.first.tribes.core.util.Timer;
 import com.first.tribes.core.util.Timer.TimerTask;
@@ -32,13 +33,15 @@ public class FloodTool extends Tool {
     }
 
     @Override
-    public void press(float x, float y) {
+    public PointerFocusable press(float x, float y) {
         if (Tribes.SHIFT) {
             world.waterLevel -= WATER_LEVEL_DELTA;
 
         } else {
             world.waterLevel += WATER_LEVEL_DELTA;
         }
+        
+        return this;
     }
 
     @Override

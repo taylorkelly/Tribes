@@ -6,6 +6,7 @@ package com.first.tribes.core.ui.toolbar;
 
 import com.first.tribes.core.DrawnObject;
 import com.first.tribes.core.Tile;
+import com.first.tribes.core.Tribes.PointerFocusable;
 import com.first.tribes.core.TribesWorld;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -37,10 +38,12 @@ public class IrrigationTool extends Tool {
     }
 
     @Override
-    public void press(float x, float y) {
+    public PointerFocusable press(float x, float y) {
         Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
 
         world.addExtraDrawnObject(new IrrigationPipe(worldPoint.x, worldPoint.y));
+        
+        return this;
     }
 
     @Override

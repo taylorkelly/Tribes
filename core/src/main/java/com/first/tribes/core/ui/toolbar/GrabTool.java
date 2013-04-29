@@ -4,6 +4,7 @@
  */
 package com.first.tribes.core.ui.toolbar;
 
+import com.first.tribes.core.Tribes.PointerFocusable;
 import com.first.tribes.core.TribesWorld;
 import com.first.tribes.core.being.Villager;
 import java.util.List;
@@ -91,9 +92,11 @@ class GrabTool extends Tool {
     }
 
     @Override
-    public void press(float x, float y) {
+    public PointerFocusable press(float x, float y) {
         dragStart = world.worldPointFromScreenPoint(new Point(x, y));
         dragCurrent = dragStart;
+        
+        return this;
     }
 
     @Override
