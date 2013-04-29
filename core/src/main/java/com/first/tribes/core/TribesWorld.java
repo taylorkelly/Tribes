@@ -5,6 +5,8 @@
 package com.first.tribes.core;
 
 import com.first.tribes.core.Tribes.PointerFocusable;
+import com.first.tribes.core.being.Being;
+import com.first.tribes.core.being.Cave;
 import com.first.tribes.core.being.Village;
 import com.first.tribes.core.being.Villager;
 import com.first.tribes.core.ui.MiniMap;
@@ -42,8 +44,13 @@ public class TribesWorld implements PointerFocusable {
     private Toolbar toolbar;
     private GroupLayer.Clipped groupLayer;
     private GroupLayer extraLayer;
+    private Cave cave;
     private Dimension absoluteSize;
-    private Rectangle viewPort;
+   
+
+
+
+	private Rectangle viewPort;
     private List<Village> villages = new ArrayList<Village>();
     private List<DrawnObject> extraDrawnObjects = new ArrayList<DrawnObject>();
     private Tile[][] tiles;
@@ -101,6 +108,7 @@ public class TribesWorld implements PointerFocusable {
         } while (!isSafe);
         villages.add(new Village(xPos, yPos, 10, this, Color.rgb(0, 0, 200)));
 
+        cave= new Cave(this, Color.rgb(25, 50, 25));
         viewPort.x = villages.get(0).xPos() - viewPort.width / 2;
         viewPort.y = villages.get(0).yPos() - viewPort.height / 2;
 
@@ -363,6 +371,10 @@ public class TribesWorld implements PointerFocusable {
         return tiles[tileX][tileY];
     }
 
+    public Dimension getAbsoluteSize() {
+		return absoluteSize;
+	}
+    
     public List<Villager> villagersInArea(Rectangle rectangle) {
         if (rectangle.width < 0) {
             rectangle.x = rectangle.x + rectangle.width;
@@ -426,4 +438,10 @@ public class TribesWorld implements PointerFocusable {
             toolbar.drag(x, y);
         }
     }
+
+	public ArrayList<Cave> caves() {
+		ArrayList<Cave> caves = new ArrayList<Cave>(1);
+		caves.add(cave);
+		return caves;
+	}
 }

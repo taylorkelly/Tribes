@@ -383,6 +383,9 @@ public class Village implements Updatee {
         return manna;
     }
 
+    public ArrayList<Cave> enemyCaves(){
+    	return world.caves();
+    }
     public void costManna(int mannaCost) {
         manna -= mannaCost;
     }
