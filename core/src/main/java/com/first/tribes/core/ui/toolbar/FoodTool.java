@@ -32,7 +32,7 @@ class FoodTool extends Tool {
     }
 
     public String name() {
-        return "Push/Pull Tool";
+        return "Food Tool";
     }
 
     @Override

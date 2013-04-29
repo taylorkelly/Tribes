@@ -5,8 +5,13 @@ import com.first.tribes.core.Tribes.PointerFocusable;
 import com.first.tribes.core.TribesWorld;
 import java.util.ArrayList;
 import java.util.List;
+import playn.core.CanvasImage;
 import playn.core.Color;
+import playn.core.Font;
 import playn.core.Surface;
+import playn.core.TextFormat;
+import playn.core.TextLayout;
+import static playn.core.PlayN.*;
 
 /**
  *
@@ -36,7 +41,7 @@ public class Toolbar implements PointerFocusable {
     }
 
     public float height() {
-        return Tool.height() + 10f;
+        return Tool.height() + 10f + 20f;
     }
 
     public float x() {
@@ -44,18 +49,26 @@ public class Toolbar implements PointerFocusable {
     }
 
     public float y() {
-        return (Tribes.SCREEN_HEIGHT - 20) - height();
+        return (Tribes.SCREEN_HEIGHT) - height();
     }
 
     public void render(Surface surface) {
         surface.setFillColor(Color.rgb(0, 0, 0));
         surface.fillRect(0, 0, width(), height());
 
+        Font textFont = graphics().createFont("Sans serif", Font.Style.BOLD, 15);
+        TextLayout nameLayout = graphics().layoutText(tools.get(activeTool).name(), new TextFormat().withFont(textFont));
+        CanvasImage nameBox = graphics().createImage((int) nameLayout.width(), (int) 20f);
+//        nameBox.canvas().setFillColor(Color.argb(200, 255, 255, 255));
+        nameBox.canvas().setFillColor(Color.argb(200, 255, 255, 255));
+        nameBox.canvas().fillText(nameLayout, 0, 0);
+        surface.drawImage(nameBox, (width() - nameBox.width()) / 2, height() - 22f);
+
         for (int i = 0; i < tools.size(); i++) {
             Tool tool = tools.get(i);
 
             if (tool != null) {
-                tool.render(surface, i * 50f + 5f, (this.height() - tool.height()) / 2, tool.width(), tool.height());
+                tool.render(surface, i * 50f + 5f, ((this.height() - 20f) - tool.height()) / 2, tool.width(), tool.height());
             }
         }
     }
@@ -63,9 +76,11 @@ public class Toolbar implements PointerFocusable {
     public PointerFocusable press(float x, float y) {
         if (pointInToolbar(x, y)) {
             int index = (int) ((x - x()) / 50);
-            tools.get(activeTool).selected = false;
-            activeTool = index;
-            tools.get(activeTool).selected = true;
+            if (index >= 0 && index < tools.size()) {
+                tools.get(activeTool).selected = false;
+                activeTool = index;
+                tools.get(activeTool).selected = true;
+            }
             return this;
         } else {
             return tools.get(activeTool).press(x, y);
@@ -79,18 +94,22 @@ public class Toolbar implements PointerFocusable {
     public void release(float x, float y) {
         if (pointInToolbar(x, y)) {
             int index = (int) ((x - x()) / 50);
-            tools.get(activeTool).selected = false;
-            activeTool = index;
-            tools.get(activeTool).selected = true;
+            if (index >= 0 && index < tools.size()) {
+                tools.get(activeTool).selected = false;
+                activeTool = index;
+                tools.get(activeTool).selected = true;
+            }
         }
     }
 
     public void drag(float x, float y) {
         if (pointInToolbar(x, y)) {
             int index = (int) ((x - x()) / 50);
-            tools.get(activeTool).selected = false;
-            activeTool = index;
-            tools.get(activeTool).selected = true;
+            if (index >= 0 && index < tools.size()) {
+                tools.get(activeTool).selected = false;
+                activeTool = index;
+                tools.get(activeTool).selected = true;
+            }
         }
     }
 }
