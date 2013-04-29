@@ -183,16 +183,21 @@ public class Villager extends Being {
     	return foundFood+foundEnemy+foundFriend-heightValue;
     }
     
-    public Villager findTarget(){
+    public Being findTarget(){
     	
-    	List<Villager> e = new ArrayList<Villager>();
+    	List<Being> e = new ArrayList<Being>();
     	
     	List<Village> v = village.enemyVillages();
+    	
+    	List<Cave> c = village.enemyCaves();
     	
     	float radius = personality.aggression()*MAX_ATTACK_RADIUS;
     	
     	for(int i=0; i<v.size(); i++){
     		e.addAll(v.get(i).villagersInArea( new Rectangle(xPos-radius,yPos-radius,2*radius,2*radius) ));
+    	}
+    	for(int i=0; i<c.size(); i++){
+    		e.addAll(c.get(i).monstersInArea( new Rectangle(xPos-radius,yPos-radius,2*radius,2*radius) ));
     	}
     	float minDist = radius*radius;
     	int minLoc = -1;

@@ -152,9 +152,9 @@ public class Monster extends Being{
     	return foundEnemy+heightValue;
     }
     
-    public Villager findTarget(){
+    public Being findTarget(){
     	
-    	List<Villager> e = new ArrayList<Villager>();
+    	List<Being> e = new ArrayList<Being>();
     	
     	List<Village> v = cave.enemyVillages();
     	
