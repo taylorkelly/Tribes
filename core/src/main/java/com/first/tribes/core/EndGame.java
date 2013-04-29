@@ -13,6 +13,7 @@ import playn.core.Color;
 import playn.core.Font;
 import playn.core.ImmediateLayer.Renderer;
 import playn.core.Keyboard;
+import playn.core.Mouse;
 import static playn.core.PlayN.*;
 import playn.core.Pointer;
 import playn.core.Surface;
@@ -40,20 +41,29 @@ public class EndGame implements Updatee {
             dialog = new WinDialog();
         }
         if (dialog != null) {
-            graphics().rootLayer().addAt(graphics().createImmediateLayer((int) dialog.width(), (int) dialog.height(), dialog), (Tribes.SCREEN_WIDTH - dialog.width()) / 2, (Tribes.SCREEN_HEIGHT - dialog.height()) / 2);
+            graphics().rootLayer().addAt(graphics().createImmediateLayer((int) dialog.width(), (int) dialog.height(), dialog), dialog.x(), dialog.y());
             pointer().setListener(dialog);
             keyboard().setListener(dialog);
+            mouse().setListener(dialog);
             game.unregisterUpdatee(this);
 
         }
     }
 
-    abstract class EndGameDialog implements Renderer, Pointer.Listener, Keyboard.Listener {
+    abstract class EndGameDialog implements Renderer, Pointer.Listener, Keyboard.Listener, Mouse.Listener {
 
         protected CanvasImage image;
 
         public float width() {
             return 500;
+        }
+
+        public final float x() {
+            return (Tribes.SCREEN_WIDTH - width()) / 2;
+        }
+
+        public final float y() {
+            return (Tribes.SCREEN_HEIGHT - height()) / 2;
         }
 
         public float height() {
@@ -96,6 +106,22 @@ public class EndGame implements Updatee {
         public void onKeyUp(Keyboard.Event event) {
         }
 
+        @Override
+        public void onMouseDown(Mouse.ButtonEvent event) {
+        }
+
+        @Override
+        public void onMouseUp(Mouse.ButtonEvent event) {
+        }
+
+        @Override
+        public void onMouseMove(Mouse.MotionEvent event) {
+        }
+
+        @Override
+        public void onMouseWheelScroll(Mouse.WheelEvent event) {
+        }
+
         public abstract CanvasImage createImage();
     }
 
@@ -121,6 +147,18 @@ public class EndGame implements Updatee {
                 object.draw(canvas, (canvas.width() - object.width()) / 2, y);
                 y += object.height();
             }
+        }
+
+        private LayoutObject objectAt(float x, float y, float overallWidth) {
+            float currY = 0;
+            for (LayoutObject object : objects) {
+                float currX = (overallWidth - object.width()) / 2;
+                if (y > currY && y < currY + object.height() && x > currX && x < currX + object.width()) {
+                    return object;
+                }
+                currY += object.height();
+            }
+            return null;
         }
     }
 
@@ -166,6 +204,10 @@ public class EndGame implements Updatee {
             canvas.setFillColor(textColor);
             canvas.fillText(labelLayout, x, y);
         }
+
+        public String toString() {
+            return labelLayout.toString();
+        }
     }
 
     class Spacing extends LayoutObject {
@@ -190,6 +232,10 @@ public class EndGame implements Updatee {
 
         @Override
         public void draw(Canvas canvas, float x, float y) {
+        }
+
+        public String toString() {
+            return width + "";
         }
     }
 
@@ -228,7 +274,7 @@ public class EndGame implements Updatee {
 
         public void draw(Canvas canvas, float x, float y) {
             canvas.setFillColor(textColor);
-            canvas.fillText(layout, x + (width() - layout.width())/2, y + BUTTON_PADDING);
+            canvas.fillText(layout, x + (width() - layout.width()) / 2, y + BUTTON_PADDING);
             canvas.setStrokeColor(frameColor);
             canvas.setStrokeWidth(3);
             drawRect(canvas, x, y, width(), height());
@@ -240,13 +286,17 @@ public class EndGame implements Updatee {
             canvas.drawLine(x + width, y, x + width, y + height);
             canvas.drawLine(x, y + height, x + width, y + height);
         }
+
+        public String toString() {
+            return text;
+        }
     }
 
     class LoseDialog extends EndGameDialog {
 
+        StackLayout layout;
+
         public CanvasImage createImage() {
-
-
             Font titleFont = graphics().createFont("Sans serif", Font.Style.BOLD, 36);
             TextLayout nameLayout = graphics().layoutText("You lose.", new TextFormat().withFont(titleFont));
 
@@ -254,7 +304,7 @@ public class EndGame implements Updatee {
             String text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In adipiscing dui at dolor eleifend in convallis metus dictum. Donec at metus elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.";
             TextLayout detailText = graphics().layoutText(text, new TextFormat().withFont(detailFont).withWrapWidth(width() - LayoutObject.FRAME_PADDING * 2 - LayoutObject.TEXT_PADDING * 2));
 
-            StackLayout layout = new StackLayout();
+            layout = new StackLayout();
             layout.objects.add(new Spacing(LayoutObject.FRAME_PADDING, LayoutObject.FRAME_PADDING));
             layout.objects.add(new Spacing(LayoutObject.PADDING_TOP, LayoutObject.PADDING_TOP));
             layout.objects.add(new Label(nameLayout, Color.rgb(255, 255, 255)));
@@ -275,9 +325,18 @@ public class EndGame implements Updatee {
 
             return canvas;
         }
+
+        @Override
+        public void onMouseMove(Mouse.MotionEvent event) {
+            float x = event.x() - x();
+            float y = event.y() - y();
+            LayoutObject mousedObject = layout.objectAt(x, y, image.width());
+        }
     }
 
     class WinDialog extends EndGameDialog {
+
+        StackLayout layout;
 
         public CanvasImage createImage() {
             Font titleFont = graphics().createFont("Sans serif", Font.Style.BOLD, 36);
@@ -287,7 +346,7 @@ public class EndGame implements Updatee {
             String text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In adipiscing dui at dolor eleifend in convallis metus dictum. Donec at metus elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.";
             TextLayout detailText = graphics().layoutText(text, new TextFormat().withFont(detailFont).withWrapWidth(width() - LayoutObject.FRAME_PADDING * 2 - LayoutObject.TEXT_PADDING * 2));
 
-            StackLayout layout = new StackLayout();
+            layout = new StackLayout();
             layout.objects.add(new Spacing(LayoutObject.FRAME_PADDING, LayoutObject.FRAME_PADDING));
             layout.objects.add(new Spacing(LayoutObject.PADDING_TOP, LayoutObject.PADDING_TOP));
             layout.objects.add(new Label(nameLayout, Color.rgb(0, 0, 0)));
@@ -302,7 +361,6 @@ public class EndGame implements Updatee {
             layout.objects.add(new Spacing(LayoutObject.BETWEEN_BUTTON_SPACING, LayoutObject.BETWEEN_BUTTON_SPACING));
             layout.objects.add(new Spacing(LayoutObject.PADDING_BOTTOM, LayoutObject.PADDING_BOTTOM));
             layout.objects.add(new Spacing(LayoutObject.FRAME_PADDING, LayoutObject.FRAME_PADDING));
-
 
             CanvasImage canvas = graphics().createImage(width(), layout.height());
             canvas.canvas().setFillColor(Color.rgb(0, 0, 0));
