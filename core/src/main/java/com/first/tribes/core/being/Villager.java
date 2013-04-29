@@ -265,7 +265,11 @@ public class Villager extends Being {
     public String toString() {
         return personality.toString();
     }
-    CanvasImage visualInfo;
+    
+    
+    
+    
+    private CanvasImage visualInfo;
     public static final float STATS_BOX_HEIGHT = 96f;
 
     public void drawStatsBoxAt(Surface surface, float x, float y, float width, float height) {
