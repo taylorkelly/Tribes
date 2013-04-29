@@ -47,19 +47,16 @@ public class SpawnAvatarTool extends Tool {
             case 1://S
                 letter = "S";
                 break;
-            case 2://C
-                letter = "C";
-                break;
-            case 3://I
+            case 2://I
                 letter = "I";
                 break;
-            case 4://H
+            case 3://H
                 letter = "H";
                 break;
-            case 5://L
+            case 4://L
                 letter = "L";
                 break;
-            case 6://M
+            case 5://M
                 letter = "M";
                 break;
             default://R
@@ -99,14 +96,12 @@ public class SpawnAvatarTool extends Tool {
             case 1:
                 return "Strength";
             case 2:
-                return "Courage";
-            case 3:
                 return "Intelligence";
-            case 4:
+            case 3:
                 return "Hardiness";
-            case 5:
+            case 4:
                 return "Loyalty";
-            case 6:
+            case 5:
                 return "Mobility";
             default:
                 return "Reproductive Appeal";

@@ -5,6 +5,8 @@
 package com.first.tribes.core.being;
 
 import com.first.tribes.core.DrawnObject;
+
+import playn.core.CanvasImage;
 import pythagoras.f.Rectangle;
 import static playn.core.PlayN.*;
 
@@ -14,11 +16,41 @@ import static playn.core.PlayN.*;
  */
 public abstract class Being extends DrawnObject {
 
+	
+	enum DeathReason {
+
+        AGE, STARVING, DROWNING, KILLED_BY_VILLAGER, KILLED_BY_MONSTER;
+
+        String description() {
+            switch (this) {
+                case AGE:
+                    return "lived a full life.";
+                case STARVING:
+                    return "forgot to eat.";
+                case DROWNING:
+                    return "drank too much water.";
+                case KILLED_BY_VILLAGER:
+                    return "was killed by a villager.";
+                case KILLED_BY_MONSTER:
+                    return "was killed by a monster.";
+                default:
+                    return "is Dead.";
+            }
+        }
+    }
+
+	
     protected Personality personality;
     protected float xPos, yPos;
     protected float xVel, yVel;
     protected float width, height;
 
+    
+    protected DeathReason deathReason;
+    
+    protected CanvasImage visualInfo;
+    
+    
     public Being(float xPos, float yPos, float width, float height) {
         this.xPos = xPos;
         this.yPos = yPos;
@@ -45,7 +77,6 @@ public abstract class Being extends DrawnObject {
         public static final float MUTATION_RATE = 0.05f;
         private float aggression; //determines threshold distance for attacking
         private float strength; //determines how much damage an attack does
-        private float courage;
         private float intelligence;//Intelligence and courage are two traits that affect goal choice
         private float hardiness;//how much health they have
         private float longevity;//how long they live
@@ -57,7 +88,6 @@ public abstract class Being extends DrawnObject {
         public Personality() {
             aggression = random();
             strength = random();
-            courage = random();
             intelligence = random();
             hardiness = random();
             longevity = random();
@@ -74,9 +104,7 @@ public abstract class Being extends DrawnObject {
         public void setStrength(float a){
         	strength=a;
         }
-        public void setCourage(float a){
-        	courage=a;
-        }
+       
         public void setIntelligence(float a){
         	intelligence=a;
         }
@@ -97,7 +125,7 @@ public abstract class Being extends DrawnObject {
         }
         
         private void normalize() {
-            total = aggression + strength + courage + intelligence + hardiness + longevity + mobility + reproductiveAppeal + loyalty;
+            total = aggression + strength  + intelligence + hardiness + longevity + mobility + reproductiveAppeal + loyalty;
         }
 
         public float reproductiveAppeal() {
@@ -115,10 +143,6 @@ public abstract class Being extends DrawnObject {
             newPersonality.strength = (random() < 0.5 ? this.strength : personality.strength);
             if (random() < MUTATION_RATE)
                 newPersonality.strength = random();
-
-            newPersonality.courage = (random() < 0.5 ? this.courage : personality.courage);
-            if (random() < MUTATION_RATE)
-                newPersonality.courage = random();
 
             newPersonality.intelligence = (random() < 0.5 ? this.intelligence : personality.intelligence);
             if (random() < MUTATION_RATE)
@@ -179,6 +203,19 @@ public abstract class Being extends DrawnObject {
 
         float aggression() {
             return aggression / total;
+        }
+    }
+    
+    public boolean isDead() {
+        return deathReason != null;
+    }
+    
+    public abstract void attack(Being b);
+    
+    protected void setDead(DeathReason deathReason) {
+        if (this.deathReason != deathReason) {
+            this.deathReason = deathReason;
+            visualInfo = null; // Invalidate visualInfo
         }
     }
 }

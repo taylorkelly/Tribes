@@ -6,14 +6,14 @@ public class Avatar extends Villager {
 	private static final float AVATAR_SIZE = 20.0f;
 	private static final float AVATAR_TRAIT = 5f;
 	private static final float AVATAR_LONGEVITY= 1f;
+	private static final float AVATAR_STAT_MIN=AVATAR_TRAIT/4;
 	
 	/* aggression 0
        strength 1
-       courage 2
-       intelligence 3
-       hardiness 4
-       loyalty 5
-       mobility 6
+       intelligence 2
+       hardiness 3
+       loyalty 4
+       mobility 5
        reproductiveAppeal
        */
 	
@@ -21,7 +21,7 @@ public class Avatar extends Villager {
 		super(xPos, yPos, village, color);
 		this.width=AVATAR_SIZE;
 		this.height=AVATAR_SIZE;
-		
+		setMinTraits(AVATAR_STAT_MIN);
 		switch (trait) {
 		case 0:
 			this.personality.setAggression(AVATAR_TRAIT);
@@ -30,19 +30,16 @@ public class Avatar extends Villager {
 			this.personality.setStrength(AVATAR_TRAIT);
 			break;
 		case 2:
-			this.personality.setCourage(AVATAR_TRAIT);
-			break;
-		case 3:
 			this.personality.setIntelligence(AVATAR_TRAIT);
 			break;
-		case 4:
+		case 3:
 			this.personality.setHardiness(AVATAR_TRAIT);
 			break;
-		case 5:
+		case 4:
 			this.personality.setLoyalty(AVATAR_TRAIT);
 			
 			break;
-		case 6: 
+		case 5: 
 			this.personality.setMobility(AVATAR_TRAIT);
 		break;
 		default: this.personality.setReproductiveAppeal(AVATAR_TRAIT);
@@ -50,5 +47,16 @@ public class Avatar extends Villager {
 	}
 		this.personality.setLongevity(AVATAR_LONGEVITY);
 		}
+
+	private void setMinTraits(float avatarStatMin) {
+		personality.setAggression(avatarStatMin);
+		personality.setHardiness(avatarStatMin);
+		personality.setIntelligence(avatarStatMin);
+		personality.setLongevity(avatarStatMin);
+		personality.setLoyalty(avatarStatMin);
+		personality.setMobility(avatarStatMin);
+		personality.setReproductiveAppeal(avatarStatMin);
+		personality.setStrength(avatarStatMin);
+	}
 
 }
