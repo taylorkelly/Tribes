@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.first.tribes.core.Tile;
+import com.first.tribes.core.being.Being.DeathReason;
+
 import playn.core.CanvasImage;
 import playn.core.Color;
 import playn.core.Font;
@@ -28,6 +30,8 @@ public class Villager extends Being {
     public static final int MAX_AGE = 50000;
     private static final float VILLAGER_SIZE = 10.0f;
     private static final float MAX_ATTACK_RADIUS = 1000f;
+    private static final float SOLDIER_APPEAL = .1f;
+    private static final float SPOILS_CONSTANT = 10;
     
     
     //Movement calculation constants
@@ -131,6 +135,19 @@ public class Villager extends Being {
         }
     }
 
+    public void attack(Being v) {
+        
+    	if(v!=null){
+    		float a = ((float) Math.random() * personality.strength());
+    		float b = ((float) Math.random() * v.personality.hardiness());
+        	if (a > b) {
+        		v.setDead(DeathReason.KILLED_BY_VILLAGER);
+        		hunger-= v.personality.hardiness()*SPOILS_CONSTANT;
+        		personality.setReproductiveAppeal(personality.reproductiveAppeal()+SOLDIER_APPEAL);
+        	}
+    	}
+    }
+    
     public Tile pickTile(Tile myTile) {
         Tile bestTile = myTile;
         float bestScore = myTile.numFood;
@@ -206,21 +223,10 @@ public class Villager extends Being {
 
     public float foodRequired() {
 //        return ((1.0f - personality.mobility()) / 2 + (1.0f - personality.intelligence()) / 2) / 2;
-        return ((1f - personality.intelligence())/2 + personality.hardiness()) / 2;
+        return ((1f - personality.intelligence())/2 - personality.hardiness()/2) / 2;
 
     }
 
-    public void attack(Being v) {
-        
-    	if(v!=null){
-    		float a = ((float) Math.random() * personality.strength());
-    		float b = ((float) Math.random() * v.personality.hardiness());
-        	if (a > b) {
-        		v.setDead(DeathReason.KILLED_BY_VILLAGER);
-        		hunger -= v.personality.hardiness();
-        	}
-    	}
-    }
 
     public void convert() {
 

@@ -210,6 +210,8 @@ public abstract class Being extends DrawnObject {
         return deathReason != null;
     }
     
+    public abstract void attack(Being b);
+    
     protected void setDead(DeathReason deathReason) {
         if (this.deathReason != deathReason) {
             this.deathReason = deathReason;
