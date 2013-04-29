@@ -81,7 +81,16 @@ public class Cave implements Updatee {
 
     @Override
     public void update(float delta) {
-        while (monsterList.size() < maxMonsters) {
+    	  for (int i = 0; i < monsterList.size(); i++) {
+              Being being = monsterList.get(i);
+              being.update(delta);
+              if (being.isDead()) {
+                 monsterList.remove(being);
+                  i--;
+              }
+          }
+    	
+    	while (monsterList.size() < maxMonsters) {
             monsterList.add(newMonster());
         }
 

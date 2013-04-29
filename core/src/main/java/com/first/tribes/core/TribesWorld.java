@@ -234,9 +234,7 @@ public class TribesWorld implements PointerFocusable {
                 tiles[i][j].update(delta);
             }
         }
-        for(Being being:monsters()){
-        	being.update(delta);
-        }
+        cave.update(delta);
         for (DrawnObject extraObject : extraDrawnObjects) {
             extraObject.update(delta);
         }
