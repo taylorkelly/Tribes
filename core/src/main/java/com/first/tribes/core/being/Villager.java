@@ -33,9 +33,8 @@ public class Villager extends Being {
     //Movement calculation constants
     private static final float FOOD_PRIORITY = 0.5f;
     private static final float ENEMY_PRIORITY = 15f;
-    private static final float FRIEND_PRIORITY = 1.5f;
+    private static final float FRIEND_PRIORITY = 0.1f;
     private static final float HEIGHT_PRIORITY = 5f;
-    
     
     
     private static int villagerCount = 0;
@@ -183,10 +182,10 @@ public class Villager extends Being {
     	
     	float heightValue = tile.height()*personality.hardiness()*HEIGHT_PRIORITY+random();
     	
-    	if(Math.random()<0.01)
-    		System.out.println(foundFood+" "+foundEnemy+" "+foundFriend+" "+heightValue);
+//    	if(Math.random()<0.01)
+//    		System.out.println(foundFood+" "+foundEnemy+" "+foundFriend+" "+heightValue);
     	
-    	return foundFood+foundEnemy+foundFriend-heightValue;
+    	return foundFood+foundEnemy-heightValue;
     }
     
     public Villager findTarget(){
