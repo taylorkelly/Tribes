@@ -4,6 +4,9 @@
  */
 package com.first.tribes.core.being;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.first.tribes.core.Tile;
 import playn.core.CanvasImage;
 import playn.core.Color;
@@ -24,6 +27,8 @@ public class Villager extends Being {
 
     public static final int MAX_AGE = 50000;
     private static final float VILLAGER_SIZE = 10.0f;
+    private static final float MAX_ATTACK_RADIUS = 1000f;
+    
     private static int villagerCount = 0;
     private Village village;
     private int color;
@@ -103,6 +108,8 @@ public class Villager extends Being {
         if (newGoal(myTile)) {
             Tile bestTile = pickTile(myTile);
 
+            //attack(findTarget());
+            
             xVel = bestTile.bounds().center().x - this.xPos;
             yVel = bestTile.bounds().center().y - this.yPos;
             float speed = (float) Math.sqrt(xVel * xVel + yVel * yVel);
@@ -137,18 +144,58 @@ public class Villager extends Being {
 
     public Tile pickTile(Tile myTile) {
         Tile bestTile = myTile;
-        float mostFood = myTile.numFood;
-
+        float bestScore = myTile.numFood;
+        
+        float foundScore;
         for (Tile tile : myTile.neighbors()) {
             if (tile.isSafe(0)) {
-                float foundFood = tile.numFood + random();
-                if (foundFood > mostFood) {
-                    mostFood = foundFood;
+            	foundScore = calculateScore(tile);
+                if (foundScore > bestScore) {
+                    bestScore = foundScore;
                     bestTile = tile;
                 }
             }
         }
         return bestTile;
+    }
+    
+    public float calculateScore(Tile tile){
+    	float foundFood = (tile.numFood + random());
+    	float foundEnemy = 0;
+    	List<Village> enemies = village.enemyVillages();
+    	for(int i=0; i<enemies.size(); i++){
+    		foundEnemy += enemies.get(i).getDensityAt(tile)*personality.aggression()/((float)enemies.size()) ;
+    	}
+    	float foundFriend = village.getDensityAt(tile)*personality.loyalty();
+    	
+    	return foundFood;//+foundEnemy+foundFriend;
+    }
+    
+    public Villager findTarget(){
+    	
+    	List<Villager> e = new ArrayList<Villager>();
+    	
+    	List<Village> v = village.enemyVillages();
+    	
+    	float radius = personality.aggression()*MAX_ATTACK_RADIUS;
+    	
+    	for(int i=0; i<v.size(); i++){
+    		e.addAll(v.get(i).villagersInArea( new Rectangle(xPos-radius,yPos-radius,2*radius,2*radius) ));
+    	}
+    	
+    	float minDist = radius;
+    	int minLoc = -1;
+    	for(int i=0; i<e.size(); i++){
+    		if(e.get(i).xPos()*e.get(i).xPos()+e.get(i).yPos()*e.get(i).yPos()<minDist*minDist){
+    			minLoc=i;
+    		}
+    	}
+    	
+    	
+    	if(minLoc==-1){
+    		return null;
+    	}
+    	return e.get(minLoc);
     }
 
     public boolean newGoal(Tile myTile) {
@@ -156,21 +203,29 @@ public class Villager extends Being {
         if (foodRequired() > myTile.numFood) {
             return true;
         }
+        /*if (personality.aggression() > (float)Math.random()){
+        	return true;
+        }*/
+        
+        
         return false;
-
     }
 
     public float foodRequired() {
 //        return ((1.0f - personality.mobility()) / 2 + (1.0f - personality.intelligence()) / 2) / 2;
-        return ((1.0f - personality.intelligence())/2 + personality.hardiness()) / 2;
+        return ((1f - personality.intelligence()/2 + personality.hardiness()) / 2);
+
     }
 
     public void attack(Villager v) {
-        float a = ((float) Math.random() * personality.strength());
-        float b = ((float) Math.random() * v.personality.hardiness());
-        if (a > b) {
-            v.setDead(DeathReason.KILLED_BY_VILLAGER);
-        }
+        
+    	if(v!=null){
+    		float a = ((float) Math.random() * personality.strength());
+    		float b = ((float) Math.random() * v.personality.hardiness());
+        	if (a > b) {
+        		v.setDead(DeathReason.KILLED_BY_VILLAGER);
+        	}
+    	}
     }
 
     public void convert() {

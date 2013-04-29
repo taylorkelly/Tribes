@@ -30,6 +30,11 @@ public class Village implements Updatee {
     public static final float POSITION_DEVIATION = 10.0f;
     public static final float REPRODUCTIVE_BASE_RATE = 0.03f;
     
+    public static final float FOOD_PRODUCTION_THRESHOLD = 0.25f;
+    public static final float FOOD_PRODUCTION_RATE = .7f;
+    
+    
+    
     private List<Villager> villagers;
     private float[][] densityMap;
     private TribesWorld world;
@@ -179,7 +184,11 @@ public class Village implements Updatee {
     }
     
     public float getDensityAt(float x, float y){
-    	return densityMap[tileAt(x,y).getXIndex()][tileAt(x,y).getYIndex()];
+    	return getDensityAt(tileAt(x,y));
+    }
+    
+    public float getDensityAt(Tile t){
+    	return densityMap[t.getXIndex()][t.getYIndex()];
     }
 
     public void reproduce(Villager matingVillager) {
@@ -225,6 +234,12 @@ public class Village implements Updatee {
     float gatherFood(Villager villager, float requestedFood) {
         Tile tile = world.tileAt(villager.xPos, villager.yPos);
         float foodGathered = Math.min(tile.numFood, requestedFood * (float) Math.pow(1 - villager.personality.intelligence(), 3));
+        
+        if(villager.personality.intelligence()>FOOD_PRODUCTION_THRESHOLD){
+        	float foodProduced = villager.personality.intelligence()*FOOD_PRODUCTION_RATE;
+        	tile.numFood += foodProduced;
+        }
+        
         tile.numFood -= foodGathered;
         foodGathered = foodGathered / (float) Math.pow(1 - villager.personality.intelligence(), 3);
         return foodGathered;
