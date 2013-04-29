@@ -4,6 +4,7 @@
  */
 package com.first.tribes.core.being;
 
+import com.first.tribes.core.IrrigationPipe;
 import com.first.tribes.core.Tile;
 import com.first.tribes.core.TribesWorld;
 import com.first.tribes.core.being.Villager;
@@ -27,11 +28,14 @@ import pythagoras.f.Rectangle;
  */
 public class Village implements Updatee {
 
+
+    public static final float MIN_INTELLIGENCE_TO_BUILD_IRRIGATION_PIPE = 2f;
+    public static final float INTELLIGENCE_BASELINE = 0.15f;
     public static final float POSITION_DEVIATION = 10.0f;
     public static final float REPRODUCTIVE_BASE_RATE = 0.02f;
     public static final float REPRODUCTIVE_MODIFIER = 0.6f;
-    public static final float FOOD_PRODUCTION_THRESHOLD = 0.35f;
-    public static final float FOOD_PRODUCTION_RATE = .3f;
+    public static final float FOOD_PRODUCTION_THRESHOLD = 0.22f;
+    public static final float FOOD_PRODUCTION_RATE = .8f;
     public static final int MIN_POPULATION = 10;
     public static final int MAX_POPULATION = 1000;
     public static final float POPULATION_DAMPEN_EXP = 0.07f;
@@ -173,10 +177,10 @@ public class Village implements Updatee {
             densityMap[tileAt(villager.xPos, villager.yPos).getXIndex()][tileAt(villager.xPos, villager.yPos).getYIndex()] = 1f;
 
         }
-        
+
         for (int i = 0; i < densityMap.length; i++) {
             for (int j = 0; j < densityMap[i].length; j++) {
-                
+
                 densityMap[i][j] *= (DECR_CONST);
                 if (densityMap[i][j] < 0) {
                     densityMap[i][j] = 0f;
@@ -188,13 +192,15 @@ public class Village implements Updatee {
                 int rad = 1;
                 for (int k = Math.max(i - rad, 0); k <= Math.min(i + rad, densityMap.length - 1); k++) {
                     for (int l = Math.max(j - rad, 0); l <= Math.min(j + rad, densityMap[k].length - 1); l++) {
-                        densityMap[i][j] += densityMap[k][l]*SPREAD_CONST;
+                        densityMap[i][j] += densityMap[k][l] * SPREAD_CONST;
                     }
                 }
             }
         }
 
 
+
+        float[][] intelligenceDensity = new float[world.tileWidth()][world.tileHeight()];
 
         for (int i = 0; i < villagers.size(); i++) {
             Villager villager = villagers.get(i);
@@ -203,6 +209,21 @@ public class Village implements Updatee {
                 villagers.remove(villager);
                 manna += MANNA_PER_DEATH;
                 i--;
+            } else {
+                Tile tile = villager.myTile();
+                intelligenceDensity[tile.getXIndex()][tile.getYIndex()] += (villager.personality.intelligence() - INTELLIGENCE_BASELINE);
+            }
+        }
+
+        for (int i = 0; i < intelligenceDensity.length; i++) {
+            for (int j = 0; j < intelligenceDensity[0].length; j++) {
+                if (intelligenceDensity[i][j] > MIN_INTELLIGENCE_TO_BUILD_IRRIGATION_PIPE) {
+                    if(world.tileAt(i, j).accessories().size() == 0) {
+                        System.out.println("Building Pipe");
+                        IrrigationPipe pipe = new IrrigationPipe(world.tileAt(i, j).bounds().centerX(), world.tileAt(i, j).bounds().centerY(), world);
+                        pipe.addToWorld();
+                    }
+                }
             }
         }
 
@@ -213,7 +234,6 @@ public class Village implements Updatee {
                 manna += MANNA_PER_BIRTH;
             }
         }
-
 
         if (System.currentTimeMillis() > lastVisualInfoUpdate + VISUAL_INFO_UPDATE_TIME) {
             lastVisualInfoUpdate = System.currentTimeMillis();
@@ -279,7 +299,7 @@ public class Village implements Updatee {
         float foodGathered = Math.min(tile.numFood, requestedFood * (float) Math.pow(1 - villager.personality.intelligence(), 3));
 
         if (villager.personality.intelligence() > FOOD_PRODUCTION_THRESHOLD) {
-            float foodProduced = villager.personality.intelligence() * FOOD_PRODUCTION_RATE;
+            float foodProduced = (villager.personality.intelligence() - FOOD_PRODUCTION_THRESHOLD) * FOOD_PRODUCTION_RATE;
             tile.numFood += foodProduced;
         }
 

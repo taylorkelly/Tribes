@@ -5,6 +5,8 @@
 package com.first.tribes.core;
 
 import com.first.tribes.core.util.Updatee;
+import java.util.ArrayList;
+import java.util.List;
 import playn.core.Color;
 import playn.core.Surface;
 import pythagoras.f.Rectangle;
@@ -28,11 +30,13 @@ public class Tile extends DrawnObject implements Updatee {
     private TribesWorld world;
     static boolean debug = true;
     public static float proportion = 1f;
+    private List<Accessory> accessories;
 
     public Tile(int xIndex, int yIndex, TribesWorld world) {
         this.xIndex = xIndex;
         this.yIndex = yIndex;
         this.world = world;
+        this.accessories = new ArrayList<Accessory>();
     }
     private Tile[] neighbors; // Cache for neighbors. No need to recalculate.
 
@@ -211,5 +215,13 @@ public class Tile extends DrawnObject implements Updatee {
     	if(proportion>1){
     		proportion=1;
     	}
+    }
+
+    public List<Accessory> accessories() {
+        return accessories;
+    }
+    
+    interface Accessory {
+        
     }
 }

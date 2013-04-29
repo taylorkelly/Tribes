@@ -97,7 +97,7 @@ public class Villager extends Being {
             return;
         }
 
-        Tile myTile = village.tileAt(this.xPos, this.yPos);
+        Tile myTile = myTile();
 
         if (personality.aggression() > (float) Math.random()) {
             attack(findTarget());
@@ -298,5 +298,9 @@ public class Villager extends Being {
 
         }
         surface.drawImage(visualInfo, x, y);
+    }
+
+    Tile myTile() {
+        return village.tileAt(this.xPos, this.yPos);
     }
 }
