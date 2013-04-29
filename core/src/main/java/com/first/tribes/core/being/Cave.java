@@ -40,6 +40,7 @@ public class Cave implements Updatee {
             y = random() * world.getAbsoluteSize().height;
         } while (isUnsafe(x,y));
         Monster monster = new Monster(x,y,this,monsterColor);
+        System.out.print("added monster");
 		monster.personality.setHardiness(MONSTER_MULTIPLIER*monster.personality.hardiness());
 		monster.personality.setStrength(MONSTER_MULTIPLIER*monster.personality.strength());
         return monster;
