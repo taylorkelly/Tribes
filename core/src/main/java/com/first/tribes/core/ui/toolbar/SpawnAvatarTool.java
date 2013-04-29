@@ -14,6 +14,7 @@ import playn.core.TextLayout;
 import pythagoras.f.Point;
 
 public class SpawnAvatarTool extends Tool {
+	public static final int MANNA_COST_PER_DROP = 1000;
 
     /*aggression
      *strength
@@ -114,9 +115,11 @@ public class SpawnAvatarTool extends Tool {
 
     @Override
     public void release(float x, float y) {
-        Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
+    	 if (world.villages().get(0).manna() >= MANNA_COST_PER_DROP) {
+    	Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
         world.villages().get(0).spawnAvatar(worldPoint.x, worldPoint.y, currentTrait);
-    }
+        world.villages().get(0).costManna(MANNA_COST_PER_DROP);
+    	 }}
 
     @Override
     public void drag(float x, float y) {
@@ -125,6 +128,6 @@ public class SpawnAvatarTool extends Tool {
 
     @Override
     public String costDescription() {
-        return "3 souls";
+    	return MANNA_COST_PER_DROP + " manna";
     }
 }
