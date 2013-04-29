@@ -19,6 +19,8 @@ public abstract class Tool implements PointerFocusable {
     public abstract void render(Surface surface, float x, float y, float width, float height);
 
     public abstract String name();
+    
+    public abstract String costDescription();
 
     public abstract PointerFocusable press(float x, float y);
 

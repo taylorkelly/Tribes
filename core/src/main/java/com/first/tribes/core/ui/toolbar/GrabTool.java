@@ -36,7 +36,7 @@ class GrabTool extends Tool {
 
     public GrabTool(TribesWorld world) {
         super(world);
-        
+
         dragLayer = graphics().createImmediateLayer(new ImmediateLayer.Renderer() {
             @Override
             public void render(Surface surface) {
@@ -91,11 +91,15 @@ class GrabTool extends Tool {
         return "Grab Tool";
     }
 
+    public String costDescription() {
+        return "Free!";
+    }
+
     @Override
     public PointerFocusable press(float x, float y) {
         dragStart = world.worldPointFromScreenPoint(new Point(x, y));
         dragCurrent = dragStart;
-        
+
         return this;
     }
 

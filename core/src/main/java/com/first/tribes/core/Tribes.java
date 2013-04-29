@@ -6,6 +6,7 @@ import com.first.tribes.core.util.Timer;
 import com.first.tribes.core.util.Timer.TimerTask;
 import com.first.tribes.core.util.Updatee;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,9 +57,11 @@ public class Tribes implements Game {
     @Override
     public void update(float delta) {
         world.update(delta);
-        for (Updatee updatee : updatees) {
-            updatee.update(delta);
-        }
+        try {
+            for (Updatee updatee : updatees) {
+                updatee.update(delta);
+            }
+        } catch (ConcurrentModificationException e) {}
     }
 
     @Override

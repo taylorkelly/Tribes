@@ -58,10 +58,15 @@ public class Toolbar implements PointerFocusable {
 
         Font textFont = graphics().createFont("Sans serif", Font.Style.BOLD, 15);
         TextLayout nameLayout = graphics().layoutText(tools.get(activeTool).name(), new TextFormat().withFont(textFont));
-        CanvasImage nameBox = graphics().createImage((int) nameLayout.width(), (int) 20f);
+        Font costFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 15);
+        TextLayout costLayout = graphics().layoutText( tools.get(activeTool).costDescription(), new TextFormat().withFont(costFont));
+        CanvasImage nameBox = graphics().createImage(nameLayout.width() + costLayout.width() + 5, (int) 20f);
 //        nameBox.canvas().setFillColor(Color.argb(200, 255, 255, 255));
         nameBox.canvas().setFillColor(Color.argb(200, 255, 255, 255));
         nameBox.canvas().fillText(nameLayout, 0, 0);
+        nameBox.canvas().setFillColor(Color.argb(200, 200, 200, 200));
+        nameBox.canvas().fillText(costLayout, nameLayout.width()+5, 0);
+
         surface.drawImage(nameBox, (width() - nameBox.width()) / 2, height() - 22f);
 
         for (int i = 0; i < tools.size(); i++) {

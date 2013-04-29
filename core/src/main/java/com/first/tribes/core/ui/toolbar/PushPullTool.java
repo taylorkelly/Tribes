@@ -20,6 +20,7 @@ import pythagoras.f.Point;
  */
 public class PushPullTool extends Tool {
 
+    public static final int MANNA_COST_PER_DELTA = 100;
     public static final int HIT_RADIUS = 4;
     public static final float HEIGHT_CHANGE = 1.0f;
 
@@ -36,24 +37,32 @@ public class PushPullTool extends Tool {
         return "Push/Pull Tool";
     }
 
+    public String costDescription() {
+        return MANNA_COST_PER_DELTA + " manna/update";
+    }
+
     @Override
     public PointerFocusable press(float x, float y) {
-        float heightChange = HEIGHT_CHANGE;
-        if (Tribes.SHIFT) {
-            heightChange = -heightChange;
-        }
+        if (world.villages().get(0).manna() >= MANNA_COST_PER_DELTA) {
 
-        Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
-        HashSet<Tile> tiles = new HashSet<Tile>();
-
-        tiles.add(world.tileAt(worldPoint.x, worldPoint.y));
-        for (int i = 0; i < HIT_RADIUS; i++) {
-            HashSet<Tile> newTiles = new HashSet<Tile>();
-            for (Tile tile : tiles) {
-                newTiles.addAll(Arrays.asList(tile.neighbors()));
-                tile.setHeight(tile.height() + heightChange);
+            float heightChange = HEIGHT_CHANGE;
+            if (Tribes.SHIFT) {
+                heightChange = -heightChange;
             }
-            tiles.addAll(newTiles);
+
+            Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
+            HashSet<Tile> tiles = new HashSet<Tile>();
+
+            tiles.add(world.tileAt(worldPoint.x, worldPoint.y));
+            for (int i = 0; i < HIT_RADIUS; i++) {
+                HashSet<Tile> newTiles = new HashSet<Tile>();
+                for (Tile tile : tiles) {
+                    newTiles.addAll(Arrays.asList(tile.neighbors()));
+                    tile.setHeight(tile.height() + heightChange);
+                }
+                tiles.addAll(newTiles);
+            }
+            world.villages().get(0).costManna(MANNA_COST_PER_DELTA);
         }
         return this;
     }

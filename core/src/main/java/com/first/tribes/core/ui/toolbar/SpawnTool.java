@@ -14,35 +14,43 @@ import pythagoras.f.Point;
  *
  * @author taylor
  */
-    class SpawnTool extends Tool {
+class SpawnTool extends Tool {
+    public static final int MANNA_COST_PER_DROP = 100;
+    public static final int SPAWN_TYPE = 0;
 
-        public static final int SPAWN_TYPE = 0;
-        
-        public SpawnTool(TribesWorld world) {
-            super(world);
-        }
+    public SpawnTool(TribesWorld world) {
+        super(world);
+    }
 
-        public void render(Surface surface, float x, float y, float width, float height) {
-            surface.setFillColor(Color.rgb(0, (selected ? 255 : 200), (selected ? 255 : 200)));
-            surface.fillRect(x, y, width, height);
-        }
+    public void render(Surface surface, float x, float y, float width, float height) {
+        surface.setFillColor(Color.rgb(0, (selected ? 255 : 200), (selected ? 255 : 200)));
+        surface.fillRect(x, y, width, height);
+    }
 
-        public String name() {
-            return "Spawn Tool";
-        }
+    public String name() {
+        return "Spawn Tool";
+    }
 
-        @Override
-        public PointerFocusable press(float x, float y) {
-            return this;
-        }
+    public String costDescription() {
+        return MANNA_COST_PER_DROP + " manna";
+    }
 
-        @Override
-        public void release(float x, float y) {
+    @Override
+    public PointerFocusable press(float x, float y) {
+        return this;
+    }
+
+    @Override
+    public void release(float x, float y) {
+        if (world.villages().get(0).manna() >= MANNA_COST_PER_DROP) {
             Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
             world.villages().get(0).spawnVillager(worldPoint.x, worldPoint.y);
+            world.villages().get(0).costManna(MANNA_COST_PER_DROP);
         }
 
-        @Override
-        public void drag(float x, float y) {
-        }
     }
+
+    @Override
+    public void drag(float x, float y) {
+    }
+}

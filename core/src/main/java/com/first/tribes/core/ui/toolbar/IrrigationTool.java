@@ -22,6 +22,8 @@ import pythagoras.f.Rectangle;
  */
 public class IrrigationTool extends Tool {
 
+    public static final int MANNA_COST_PER_DROP = 1000;
+
     public IrrigationTool(TribesWorld world) {
         super(world);
     }
@@ -37,17 +39,22 @@ public class IrrigationTool extends Tool {
         return "Irrigation Tool";
     }
 
+    public String costDescription() {
+        return MANNA_COST_PER_DROP + " manna";
+    }
+
     @Override
     public PointerFocusable press(float x, float y) {
-        Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
-
-        world.addExtraDrawnObject(new IrrigationPipe(worldPoint.x, worldPoint.y));
-        
         return this;
     }
 
     @Override
     public void release(float x, float y) {
+        if (world.villages().get(0).manna() >= MANNA_COST_PER_DROP) {
+            Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
+            world.addExtraDrawnObject(new IrrigationPipe(worldPoint.x, worldPoint.y));
+            world.villages().get(0).costManna(MANNA_COST_PER_DROP);
+        }
     }
 
     @Override

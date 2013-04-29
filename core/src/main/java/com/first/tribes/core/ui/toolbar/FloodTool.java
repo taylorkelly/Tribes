@@ -12,7 +12,8 @@ import playn.core.Surface;
 
 public class FloodTool extends Tool {
 
-    private static final float WATER_LEVEL_DELTA = .1f;
+    public static final int MANNA_COST_PER_DELTA = 50;
+    private static final float WATER_LEVEL_DELTA = 1f;
     private static final long TIMER_DELAY = 200;
 
     public FloodTool(TribesWorld world) {
@@ -31,16 +32,26 @@ public class FloodTool extends Tool {
     public String name() {
         return "Flood Tool";
     }
+    
+    public final int MANNA_COST_PER_DELTA() {
+        return (int)(50 + Math.pow((world.waterLevel - TribesWorld.NORMAL_WATER_LEVEL)*10,2));
+    }
+
+    public String costDescription() {
+        return MANNA_COST_PER_DELTA() + " manna/update";
+    }
 
     @Override
     public PointerFocusable press(float x, float y) {
-        if (Tribes.SHIFT) {
-            world.waterLevel -= WATER_LEVEL_DELTA;
-
-        } else {
-            world.waterLevel += WATER_LEVEL_DELTA;
+        if (world.villages().get(0).manna() >= MANNA_COST_PER_DELTA()) {
+            if (Tribes.SHIFT) {
+                world.waterLevel -= WATER_LEVEL_DELTA;
+            } else {
+                world.waterLevel += WATER_LEVEL_DELTA;
+            }
+            world.villages().get(0).costManna(MANNA_COST_PER_DELTA());
         }
-        
+
         return this;
     }
 
@@ -49,10 +60,10 @@ public class FloodTool extends Tool {
         final Timer timer = new Timer(world.game());
         timer.schedule(new TimerTask() {
             public void run() {
-                if(world.waterLevel < TribesWorld.NORMAL_WATER_LEVEL) {
+                if (world.waterLevel < TribesWorld.NORMAL_WATER_LEVEL) {
                     world.waterLevel += WATER_LEVEL_DELTA;
-                } else if(world.waterLevel > TribesWorld.NORMAL_WATER_LEVEL) {
-                    world.waterLevel -= WATER_LEVEL_DELTA;                
+                } else if (world.waterLevel > TribesWorld.NORMAL_WATER_LEVEL) {
+                    world.waterLevel -= WATER_LEVEL_DELTA;
                 } else {
                     timer.cancel();
                 }

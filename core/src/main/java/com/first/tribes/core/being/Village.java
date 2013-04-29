@@ -29,38 +29,37 @@ public class Village implements Updatee {
 
     public static final float POSITION_DEVIATION = 10.0f;
     public static final float REPRODUCTIVE_BASE_RATE = 0.03f;
-    
     public static final float FOOD_PRODUCTION_THRESHOLD = 0.35f;
     public static final float FOOD_PRODUCTION_RATE = .3f;
-    
-    
     public static final int MIN_POPULATION = 10;
     public static final int MAX_POPULATION = 1000;
     public static final float POPULATION_DAMPEN_EXP = 0.07f;
-    
-    
-    
-    
+    public static final int INITIAL_MANNA = 10000000;
+    public static final int MANNA_PER_BIRTH = 1;
+    public static final int MANNA_PER_DEATH = 1;
+    public static final int MANNA_PER_KILL = 2;
     private List<Villager> villagers;
     private float[][] densityMap;
     private TribesWorld world;
     private int color;
     private int foodPool;
+    private int manna;
 
     public Village(float x, float y, int numVillagers, TribesWorld world, int color) {
         this.world = world;
         this.color = color;
+        manna = INITIAL_MANNA;
         villagers = new ArrayList<Villager>(numVillagers * 30);
 
         densityMap = new float[world.tileWidth()][world.tileHeight()];
-        for(int i=0; i<densityMap.length; i++){
-        	for(int j=0; j<densityMap[i].length; j++){
-            	densityMap[i][j]=0f;
+        for (int i = 0; i < densityMap.length; i++) {
+            for (int j = 0; j < densityMap[i].length; j++) {
+                densityMap[i][j] = 0f;
             }
         }
-        
-        
-        
+
+
+
         for (int i = 0; i < numVillagers; i++) {
             float villagerX = randomDist(x, POSITION_DEVIATION);
             float villagerY = randomDist(y, POSITION_DEVIATION);
@@ -130,7 +129,7 @@ public class Village implements Updatee {
     public float reproductiveBaseRate() {
         if (villagers.size() < MIN_POPULATION) {
             return REPRODUCTIVE_BASE_RATE * 10 / (float) (Math.sqrt(villagers.size()));
-        } else if(villagers.size() > MAX_POPULATION){
+        } else if (villagers.size() > MAX_POPULATION) {
             return REPRODUCTIVE_BASE_RATE / (float) Math.pow(villagers.size() - MAX_POPULATION, POPULATION_DAMPEN_EXP);
         } else {
             return REPRODUCTIVE_BASE_RATE;
@@ -139,40 +138,41 @@ public class Village implements Updatee {
 
     @Override
     public void update(float delta) {
-    	
-    	float SPREAD_CONST=0.1f;
-    	
-    	for(int i=0; i< densityMap.length; i++){
-    		for(int j=0; j<densityMap[i].length; j++){
-    			float temp = densityMap[i][j]*=SPREAD_CONST;
-    			
-    			densityMap[i][j]*=1f-SPREAD_CONST;
-    			if(densityMap[i][j]<0){
-    				densityMap[i][j]=0f;
-    			}
-    			int rad = 1;
-    			for(int k=Math.max(i-rad,0); k<=Math.min(i+rad,densityMap.length-1); k++){
-    				for(int l=Math.max(j-rad+(k-i),0); l<=Math.min(j+rad-(k-i),densityMap[k].length-1); l++){
-        				densityMap[k][l]+=temp/((float)rad);
-        			}	
-    			}
-    		}
-    	}
-    	
-    	
-    	for(int i=0; i< villagers.size(); i++){
-    		
-    		Villager villager = villagers.get(i);
-            densityMap[tileAt(villager.xPos, villager.yPos).getXIndex()][tileAt(villager.xPos, villager.yPos).getYIndex()]+=1f;
-    		
-    	}
-    	
-    	
+
+        float SPREAD_CONST = 0.1f;
+
+        for (int i = 0; i < densityMap.length; i++) {
+            for (int j = 0; j < densityMap[i].length; j++) {
+                float temp = densityMap[i][j] *= SPREAD_CONST;
+
+                densityMap[i][j] *= 1f - SPREAD_CONST;
+                if (densityMap[i][j] < 0) {
+                    densityMap[i][j] = 0f;
+                }
+                int rad = 1;
+                for (int k = Math.max(i - rad, 0); k <= Math.min(i + rad, densityMap.length - 1); k++) {
+                    for (int l = Math.max(j - rad + (k - i), 0); l <= Math.min(j + rad - (k - i), densityMap[k].length - 1); l++) {
+                        densityMap[k][l] += temp / ((float) rad);
+                    }
+                }
+            }
+        }
+
+
+        for (int i = 0; i < villagers.size(); i++) {
+
+            Villager villager = villagers.get(i);
+            densityMap[tileAt(villager.xPos, villager.yPos).getXIndex()][tileAt(villager.xPos, villager.yPos).getYIndex()] += 1f;
+
+        }
+
+
         for (int i = 0; i < villagers.size(); i++) {
             Villager villager = villagers.get(i);
             villager.update(delta);
             if (villager.isDead()) {
                 villagers.remove(villager);
+                manna += MANNA_PER_DEATH;
                 i--;
             }
         }
@@ -181,26 +181,27 @@ public class Village implements Updatee {
         for (Villager villager : new ArrayList<Villager>(villagers.subList(0, villageSize))) {
             if (villager.personality.reproductiveAppeal() * reproductiveBaseRate() > random()) {
                 reproduce(villager);
+                manna += MANNA_PER_BIRTH;
             }
         }
-        
-        
-        if(System.currentTimeMillis() > lastVisualInfoUpdate + VISUAL_INFO_UPDATE_TIME) {
+
+
+        if (System.currentTimeMillis() > lastVisualInfoUpdate + VISUAL_INFO_UPDATE_TIME) {
             lastVisualInfoUpdate = System.currentTimeMillis();
             visualInfo = null;
         }
     }
-    
-    public float getDensityAt(int x, int y){
-    	return densityMap[x][y];
+
+    public float getDensityAt(int x, int y) {
+        return densityMap[x][y];
     }
-    
-    public float getDensityAt(float x, float y){
-    	return getDensityAt(tileAt(x,y));
+
+    public float getDensityAt(float x, float y) {
+        return getDensityAt(tileAt(x, y));
     }
-    
-    public float getDensityAt(Tile t){
-    	return densityMap[t.getXIndex()][t.getYIndex()];
+
+    public float getDensityAt(Tile t) {
+        return densityMap[t.getXIndex()][t.getYIndex()];
     }
 
     public void reproduce(Villager matingVillager) {
@@ -246,12 +247,12 @@ public class Village implements Updatee {
     float gatherFood(Villager villager, float requestedFood) {
         Tile tile = world.tileAt(villager.xPos, villager.yPos);
         float foodGathered = Math.min(tile.numFood, requestedFood * (float) Math.pow(1 - villager.personality.intelligence(), 3));
-        
-        if(villager.personality.intelligence()>FOOD_PRODUCTION_THRESHOLD){
-        	float foodProduced = villager.personality.intelligence()*FOOD_PRODUCTION_RATE;
-        	tile.numFood += foodProduced;
+
+        if (villager.personality.intelligence() > FOOD_PRODUCTION_THRESHOLD) {
+            float foodProduced = villager.personality.intelligence() * FOOD_PRODUCTION_RATE;
+            tile.numFood += foodProduced;
         }
-        
+
         tile.numFood -= foodGathered;
         foodGathered = foodGathered / (float) Math.pow(1 - villager.personality.intelligence(), 3);
         return foodGathered;
@@ -276,7 +277,6 @@ public class Village implements Updatee {
 
         return area;
     }
-
     public static final float STATS_BOX_HEIGHT = 200f;
     CanvasImage visualInfo;
     private long lastVisualInfoUpdate;
@@ -312,13 +312,13 @@ public class Village implements Updatee {
 
 //            visualInfo.canvas().setFillGradient(graphics().createLinearGradient(width, 0, width, height, new int[]{Color.rgb(50, 50, 50), Color.rgb(0, 0, 0)}, new float[]{0, 1}));
             visualInfo.canvas().setFillColor(Color.rgb(0, 0, 0));
-            visualInfo.canvas().fillRect(0,0, width, height);
+            visualInfo.canvas().fillRect(0, 0, width, height);
 
             visualInfo.canvas().setFillColor(this.color);
             visualInfo.canvas().fillRect(5, 5, width - 10, height - 10);
 
             Font titleFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 18);
-            TextLayout nameLayout = graphics().layoutText(villagers.size() + " villagers", new TextFormat().withFont(titleFont).withWrapWidth(width));
+            TextLayout nameLayout = graphics().layoutText(villagers.size() + " villagers -- " + manna + " manna", new TextFormat().withFont(titleFont).withWrapWidth(width));
             visualInfo.canvas().setFillColor(Color.argb(200, 255, 255, 255));
             visualInfo.canvas().fillText(nameLayout, 8, 4);
 
@@ -357,7 +357,7 @@ public class Village implements Updatee {
     public Collection<? extends Villager> villagers() {
         return villagers;
     }
-    
+
     public List<Village> enemyVillages() {
         List<Village> enemies = world.villages();
         enemies.remove(this);
@@ -366,5 +366,13 @@ public class Village implements Updatee {
 
     public int color() {
         return color;
+    }
+
+    public int manna() {
+        return manna;
+    }
+
+    public void costManna(int mannaCost) {
+        manna -= mannaCost;
     }
 }

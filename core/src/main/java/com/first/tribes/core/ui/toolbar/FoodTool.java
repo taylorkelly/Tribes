@@ -21,7 +21,8 @@ class FoodTool extends Tool {
 
     public static final int HIT_RADIUS = 7;
     public static final float FOOD_AMOUNT = 4.0f;
-    
+    public static final int MANNA_COST_PER_DROP = 200;
+
     public FoodTool(TribesWorld world) {
         super(world);
     }
@@ -35,6 +36,10 @@ class FoodTool extends Tool {
         return "Food Tool";
     }
 
+    public String costDescription() {
+        return MANNA_COST_PER_DROP + " manna";
+    }
+
     @Override
     public PointerFocusable press(float x, float y) {
         return this;
@@ -42,21 +47,21 @@ class FoodTool extends Tool {
 
     @Override
     public void release(float x, float y) {
-        Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
-        HashSet<Tile> tiles = new HashSet<Tile>();
+        if (world.villages().get(0).manna() >= MANNA_COST_PER_DROP) {
+            Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
+            HashSet<Tile> tiles = new HashSet<Tile>();
 
-        tiles.add(world.tileAt(worldPoint.x, worldPoint.y));
-        for (int i = 0; i < HIT_RADIUS; i++) {
-            HashSet<Tile> newTiles = new HashSet<Tile>();
-            for (Tile tile : tiles) {
-                newTiles.addAll(Arrays.asList(tile.neighbors()));
-                tile.numFood += FOOD_AMOUNT;
+            tiles.add(world.tileAt(worldPoint.x, worldPoint.y));
+            for (int i = 0; i < HIT_RADIUS; i++) {
+                HashSet<Tile> newTiles = new HashSet<Tile>();
+                for (Tile tile : tiles) {
+                    newTiles.addAll(Arrays.asList(tile.neighbors()));
+                    tile.numFood += FOOD_AMOUNT;
+                }
+                tiles.addAll(newTiles);
             }
-            tiles.addAll(newTiles);
+            world.villages().get(0).costManna(MANNA_COST_PER_DROP);
         }
-//            for (Tile tile : tiles) {
-//                tile.numFood += FOOD_AMOUNT;
-//            }
     }
 
     @Override
