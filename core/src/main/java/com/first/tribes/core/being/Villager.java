@@ -213,7 +213,7 @@ public class Villager extends Being {
 
     public float foodRequired() {
 //        return ((1.0f - personality.mobility()) / 2 + (1.0f - personality.intelligence()) / 2) / 2;
-        return ((1f - personality.intelligence()/2 + personality.hardiness()) / 2);
+        return ((1f - personality.intelligence())/2 + personality.hardiness()) / 2;
 
     }
 
