@@ -1,10 +1,16 @@
 package com.first.tribes.core.ui.toolbar;
 
+import static playn.core.PlayN.graphics;
+
 import com.first.tribes.core.Tribes.PointerFocusable;
 import com.first.tribes.core.TribesWorld;
 
+import playn.core.CanvasImage;
 import playn.core.Color;
+import playn.core.Font;
 import playn.core.Surface;
+import playn.core.TextFormat;
+import playn.core.TextLayout;
 import pythagoras.f.Point;
 
 public class SpawnAvatarTool extends Tool {
@@ -31,85 +37,42 @@ public class SpawnAvatarTool extends Tool {
 		int thickness=5;
 		 surface.setFillColor(Color.rgb(50, (selected ? 255 : 200), (selected ? 255 : 200)));
          surface.fillRect(x, y, width, height);
-         surface.setFillColor(Color.rgb(0,0,0));
+         String letter;
          switch(currentTrait){
          case 0://A
-        	 //left bar
-        	 surface.fillRect(x+width/thickness, y+5, width/thickness, height-10);
-        	 //right bar
-        	 surface.fillRect(x+(3)*width/thickness, y+5, width/thickness, height-10);
-        	 //top bar
-        	 surface.fillRect(x+width/thickness, y+5, 2*width/thickness, (height-10)/thickness);
-        	//middle bar
-        	 surface.fillRect(x+width/thickness, y+5+2*(height-10)/thickness, 2*width/thickness, (height-10)/thickness);
-        	 break;
+        	letter="A";
+        	break;
          case 1://S
-        	 //top
-        	 surface.fillRect(x+width/thickness, y+5,(thickness-2)*width/thickness, (height-10)/thickness);
-        	//middle
-        	 surface.fillRect(x+width/thickness, y+5+2*(height-10)/thickness, (thickness-2)*width/thickness, (height-10)/thickness);
-        	 //left half bar
-        	 surface.fillRect(x+width/thickness, y+5, width/thickness, 2*(height-10)/thickness);
-        	 //right half bar
-        	 surface.fillRect(x+(3)*width/thickness, y+5+2*(height-10)/thickness, width/thickness, 3*(height-10)/thickness);
-        	 //bottom
-        	 surface.fillRect(x+width/thickness, y+5+(thickness-1)*(height-10)/thickness,  (thickness-2)*width/thickness,(height-10)/thickness);
+        	letter="S";
         	 break;
          case 2://C
-        	 //left bar
-        	 surface.fillRect(x+width/thickness, y+5, width/thickness, height-10);
-        	 //top
-        	 surface.fillRect(x+width/thickness, y+5,(thickness-2)*width/thickness, (height-10)/thickness);
-        	 //bottom
-        	 surface.fillRect(x+width/thickness, y+5+(thickness-1)*(height-10)/thickness,  (thickness-2)*width/thickness,(height-10)/thickness);
-        	break;
+        	 letter="C";
+        	 break;
          case 3://I
-        	 //top
-        	 surface.fillRect(x+width/thickness, y+5,(thickness-2)*width/thickness, (height-10)/thickness);
-        	 //bottom
-        	 surface.fillRect(x+width/thickness, y+5+(thickness-1)*(height-10)/thickness,  (thickness-2)*width/thickness,(height-10)/thickness);
-        	//middle bar 
-        	 surface.fillRect(x+width/2-(width/thickness)/2, y+5, width/thickness, height-10);
-         	break;
+        	letter="I";
+        	 break;
          case 4://H
-        	//left bar
-        	 surface.fillRect(x+width/thickness, y+5, width/thickness, height-10);
-        	//right bar
-        	 surface.fillRect(x+(3)*width/thickness, y+5, width/thickness, height-10);
-        	//middle
-        	 surface.fillRect(x+width/thickness, y+5+2*(height-10)/thickness, (thickness-2)*width/thickness, (height-10)/thickness);
+        	 letter="H";
         	break;
          case 5://L
-        	//left bar
-        	 surface.fillRect(x+width/thickness, y+5, width/thickness, height-10);
-        	//bottom
-        	 surface.fillRect(x+width/thickness, y+5+(thickness-1)*(height-10)/thickness,  (thickness-2)*width/thickness,(height-10)/thickness);
+        	letter="L";
         	break;
          case 6://M
-        	//left bar
-        	 surface.fillRect(x+width/(2*thickness), y+5, width/thickness, height-10);
-        	//right bar
-        	 surface.fillRect(x+(2*thickness-3)*width/(2*thickness), y+5, width/thickness, height-10);
-        	//top-left diagonal
-        	 surface.drawLine(x+width/thickness, y+5, x+width/2, y+height/2, width/thickness);
-        	//top-Right diagonal
-        	 surface.drawLine(x+width/2,y+height/2, x+(thickness-1)*width/thickness, y+5, width/thickness);
-        	 
+        	letter="M";
         	 break;
         	 default://R
-        		//left bar
-            	 surface.fillRect(x+width/thickness, y+5, width/thickness, height-10);
-            	//middle
-            	 surface.fillRect(x+width/thickness, y+5+2*(height-10)/thickness, (thickness-2)*width/thickness, (height-10)/thickness);
-            	//top
-            	 surface.fillRect(x+width/thickness, y+5,(thickness-2)*width/thickness, (height-10)/thickness);
-            	 //right halfbar
-            	 surface.fillRect(x+(3)*width/thickness, y+5, width/thickness, 2*(height-10)/thickness);
-            	 //bottom left diagonal
-            	 surface.drawLine(thickness+x+width/thickness, y+5+height/2, x+(thickness-1)*width/thickness, y+(height-10), -1+width/thickness);
-             	
+        		letter="R";
         		 break;
          }
+         Font textFont = graphics().createFont("Sans serif", Font.Style.BOLD, 48);
+         TextLayout nameLayout = graphics().layoutText(letter, new TextFormat().withFont(textFont));
+         CanvasImage nameBox = graphics().createImage(height,  width);
+         nameBox.canvas().setFillColor(Color.rgb(0, 0, 0));
+         nameBox.canvas().fillText(nameLayout, 0, 0);
+         float yMargin=(height-nameBox.canvas().height());
+         float xMargin=(width-nameBox.canvas().width());
+         
+         surface.drawImageCentered(nameBox, x+width/2, y+height/2);
 	}
 	
 	@Override

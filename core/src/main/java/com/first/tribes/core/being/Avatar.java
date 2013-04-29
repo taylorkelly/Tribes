@@ -4,7 +4,7 @@ import static playn.core.PlayN.random;
 
 public class Avatar extends Villager {
 	private static final float AVATAR_SIZE = 20.0f;
-	private static final float AVATAR_TRAIT = 2f;
+	private static final float AVATAR_TRAIT = 5f;
 	private static final float AVATAR_LONGEVITY= 1f;
 	
 	/* aggression 0
