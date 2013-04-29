@@ -34,29 +34,32 @@ public class MiniMap implements PointerFocusable {
         }
 
         Canvas canvas = image.canvas();
-        float tileWidthDensity = world.tiles().length / width();
-        float tileHeightDensity = world.tiles()[0].length / height();
+        canvas.setFillColor(Color.rgb(0, 0, 0));
+        canvas.fillRect(0, 0, width(), height());
+        
+        float tileWidthDensity = world.tiles().length / mapWidth();
+        float tileHeightDensity = world.tiles()[0].length / mapHeight();
 
-        for (int x = 0; x < width(); x++) {
-            for (int y = 0; y < height(); y++) {
+        for (int x = 0; x < mapWidth(); x++) {
+            for (int y = 0; y < mapHeight(); y++) {
                 int i = (int) (x * tileWidthDensity);
                 int j = (int) (y * tileHeightDensity);
                 canvas.setFillColor(world.tiles()[i][j].color());
-                canvas.fillRect(x, y, 1, 1);
+                canvas.fillRect(x + 5, y + 5, 1, 1);
             }
         }
 
-        float viewPortStartX = world.viewPort().x / pointDensity() + 0.1f;
-        float viewPortStartY = world.viewPort().y / pointDensity() + 1.0f;
-        float viewPortEndX = (world.viewPort().x + world.viewPort().width) / pointDensity() - 1.0f;
-        float viewPortEndY = (world.viewPort().y + world.viewPort().height) / pointDensity() - 0.1f;
+        float viewPortStartX = world.viewPort().x / pointDensity() + 5f;
+        float viewPortStartY = world.viewPort().y / pointDensity() + 5f;
+        float viewPortEndX = (world.viewPort().x + world.viewPort().width) / pointDensity();
+        float viewPortEndY = (world.viewPort().y + world.viewPort().height) / pointDensity();
 
 
         for (Village village : world.villages()) {
             int brightenedVillageColor = Color.rgb((int) (Color.red(village.color()) * 1.25), (int) (Color.green(village.color()) * 1.25), (int) (Color.blue(village.color()) * 1.25));
             canvas.setFillColor(Color.withAlpha(brightenedVillageColor, 15));
             for (Villager villager : village.villagers()) {
-                canvas.fillCircle(villager.xPos() / pointDensity(), villager.yPos() / pointDensity(), 10);
+                canvas.fillCircle(villager.xPos() / pointDensity() + 5, villager.yPos() / pointDensity() + 5, 10);
             }
         }
 
@@ -69,46 +72,54 @@ public class MiniMap implements PointerFocusable {
 
         return image;
     }
-    
+
     float pointDensity() {
-        return world.absoluteSize().width / width();
+        return world.absoluteSize().width / mapWidth();
     }
 
     private final float MAX_DIMENSION_SIZE() {
         return 250f;
     }
 
-    public float height() {
+    public float mapHeight() {
         float scale = world.width() > world.height() ? MAX_DIMENSION_SIZE() / world.width() : MAX_DIMENSION_SIZE() / world.height();
 
-        return world.height() * scale;
+        return world.height() * scale - 10f;
+    }
+
+    public float mapWidth() {
+        float scale = world.width() > world.height() ? MAX_DIMENSION_SIZE() / world.width() : MAX_DIMENSION_SIZE() / world.height();
+        return world.width() * scale - 10f;
+    }
+
+    public float height() {
+        return mapHeight() + 10;
     }
 
     public float width() {
-        float scale = world.width() > world.height() ? MAX_DIMENSION_SIZE() / world.width() : MAX_DIMENSION_SIZE() / world.height();
-        return world.width() * scale;
+        return mapWidth() + 10;
     }
-    
+
     public float x() {
         return Tribes.SCREEN_WIDTH - (width() + 10);
     }
-    
+
     public float y() {
         return 10;
     }
 
     public boolean pointInMiniMap(float x, float y) {
-        return x > x() && x < x() + width() && y > y() && y < y() + height();
+        return x > x() && x < x() + mapWidth() && y > y() && y < y() + mapHeight();
     }
 
     public PointerFocusable press(float x, float y) {
         float worldX = (x - x()) * pointDensity();
         float worldY = (y - y()) * pointDensity();
-        
-        world.viewPort().x = worldX - world.viewPort().width/2;
-        world.viewPort().y = worldY - world.viewPort().height/2;
+
+        world.viewPort().x = worldX - world.viewPort().width / 2;
+        world.viewPort().y = worldY - world.viewPort().height / 2;
         world.verifyViewPortPosition();
-        
+
         return this;
     }
 

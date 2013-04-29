@@ -272,7 +272,7 @@ public class Village implements Updatee {
 
         return area;
     }
-    public static final float STATS_BOX_WIDTH = 200f;
+
     public static final float STATS_BOX_HEIGHT = 200f;
     CanvasImage visualInfo;
 
@@ -304,11 +304,12 @@ public class Village implements Updatee {
             aggression = ((int) ((aggression / villagers.size()) * 1000)) / 1000f;
             loyalty = ((int) ((loyalty / villagers.size()) * 1000)) / 1000f;
 
-            visualInfo.canvas().setFillGradient(graphics().createLinearGradient(width, 0, width, height, new int[]{Color.rgb(50, 50, 50), Color.rgb(0, 0, 0)}, new float[]{0, 1}));
-            visualInfo.canvas().fillRoundRect(0, 0, width, height, 10);
+//            visualInfo.canvas().setFillGradient(graphics().createLinearGradient(width, 0, width, height, new int[]{Color.rgb(50, 50, 50), Color.rgb(0, 0, 0)}, new float[]{0, 1}));
+            visualInfo.canvas().setFillColor(Color.rgb(0, 0, 0));
+            visualInfo.canvas().fillRect(0,0, width, height);
 
             visualInfo.canvas().setFillColor(this.color);
-            visualInfo.canvas().fillRoundRect(4, 4, width - 8, height - 8, 7);
+            visualInfo.canvas().fillRect(5, 5, width - 10, height - 10);
 
             Font titleFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 18);
             TextLayout nameLayout = graphics().layoutText(villagers.size() + " villagers", new TextFormat().withFont(titleFont).withWrapWidth(width));

@@ -254,11 +254,11 @@ public class Villager extends Being {
     public void drawStatsBoxAt(Surface surface, float x, float y, float width, float height) {
         if (visualInfo == null) {
             visualInfo = graphics().createImage((int) width, (int) height);
-            visualInfo.canvas().setFillGradient(graphics().createLinearGradient(width, 0, width, height, new int[]{Color.rgb(50, 50, 50), Color.rgb(0, 0, 0)}, new float[]{0, 1}));
-            visualInfo.canvas().fillRoundRect(0, 0, width, height, 10);
+            visualInfo.canvas().setFillColor(Color.rgb(0, 0, 0));
+            visualInfo.canvas().fillRect(0, 0, width, height);
 
             visualInfo.canvas().setFillColor(this.color);
-            visualInfo.canvas().fillRoundRect(4, 4, width - 8, height - 8, 7);
+            visualInfo.canvas().fillRect(5, 5, width - 10, height - 10);
 
             Font titleFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 16);
             TextLayout nameLayout = graphics().layoutText(name, new TextFormat().withFont(titleFont).withWrapWidth(200));
