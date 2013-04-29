@@ -122,7 +122,7 @@ public class Tribes implements Game {
                 case M:
                     SpawnAvatarTool.setCurrentTrait(6);
                     break;
-                    
+
                 case K0:
                 case K1:
                 case K2:
@@ -130,12 +130,12 @@ public class Tribes implements Game {
                 case K4:
                 case K5:
                 case K6:
-                case K7: 
+                case K7:
                 case K8:
                 case K9:
                     world.toolbar().keyPress(event.key());
                     break;
-                                     
+
             }
         }
 
@@ -174,11 +174,12 @@ public class Tribes implements Game {
                     case RIGHT:
                         world.moveViewPort(VIEWPORT_KEY_SHIFT, 0);
                         break;
-                    case PLUS:
-                    case EQUALS:
+                    case MINUS:
                         world.zoomDelta(ZOOM_AMOUNT);
                         break;
-                    case MINUS:
+                    case PLUS:
+                    case EQUALS:
+
                         world.zoomDelta(1 / ZOOM_AMOUNT);
                         break;
                 }
