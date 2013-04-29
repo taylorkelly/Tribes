@@ -108,8 +108,7 @@ public class Tribes implements Game {
                     SpawnAvatarTool.setCurrentTrait(1);
                     break;
                 case C:
-                    SpawnAvatarTool.setCurrentTrait(2);
-                    break;
+                     break;
                 case I:
                     SpawnAvatarTool.setCurrentTrait(3);
                     break;

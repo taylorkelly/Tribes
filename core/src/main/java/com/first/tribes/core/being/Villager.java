@@ -27,7 +27,7 @@ import playn.core.TextLayout;
  */
 public class Villager extends Being {
 
-    public static final int MAX_AGE = 50000;
+    public static final int MAX_AGE = 60000;
     private static final float VILLAGER_SIZE = 10.0f;
     private static final float MAX_ATTACK_RADIUS = 1000f;
     private static final float SOLDIER_APPEAL = .1f;
