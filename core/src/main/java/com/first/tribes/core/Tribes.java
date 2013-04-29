@@ -144,7 +144,7 @@ public class Tribes implements Game {
                 case M:
                     SpawnAvatarTool.setCurrentTrait(5);
                     break;
-
+                    
                 case K0:
                 case K1:
                 case K2:
@@ -202,6 +202,13 @@ public class Tribes implements Game {
                         world.zoomDelta(ZOOM_AMOUNT);
                         break;
                     case PLUS:
+                    	break;
+                    case Z:
+                    	Tile.changeProportion(-0.05f);
+                    	break;
+                    case X:
+                    	Tile.changeProportion(0.05f);
+                    	break;
                     case EQUALS:
 
                         world.zoomDelta(1 / ZOOM_AMOUNT);

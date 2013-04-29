@@ -164,13 +164,19 @@ public class Village implements Updatee {
     @Override
     public void update(float delta) {
 
-        float SPREAD_CONST = 0.2f;
-        float DECR_CONST = 0.4f;
+        float SPREAD_CONST = 0.01f;
+        float DECR_CONST = 0.90f;
 
+        for (int i = 0; i < villagers.size(); i++) {
+
+            Villager villager = villagers.get(i);
+            densityMap[tileAt(villager.xPos, villager.yPos).getXIndex()][tileAt(villager.xPos, villager.yPos).getYIndex()] = 1f;
+
+        }
+        
         for (int i = 0; i < densityMap.length; i++) {
             for (int j = 0; j < densityMap[i].length; j++) {
-                float temp = densityMap[i][j] * SPREAD_CONST;
-
+                
                 densityMap[i][j] *= (DECR_CONST);
                 if (densityMap[i][j] < 0) {
                     densityMap[i][j] = 0f;
@@ -181,20 +187,14 @@ public class Village implements Updatee {
 
                 int rad = 1;
                 for (int k = Math.max(i - rad, 0); k <= Math.min(i + rad, densityMap.length - 1); k++) {
-                    for (int l = Math.max(j - rad + (k - i), 0); l <= Math.min(j + rad - (k - i), densityMap[k].length - 1); l++) {
-                        densityMap[k][l] += temp / Math.pow((float) rad + 1, 2);
+                    for (int l = Math.max(j - rad, 0); l <= Math.min(j + rad, densityMap[k].length - 1); l++) {
+                        densityMap[i][j] += densityMap[k][l]*SPREAD_CONST;
                     }
                 }
             }
         }
 
 
-        for (int i = 0; i < villagers.size(); i++) {
-
-            Villager villager = villagers.get(i);
-            densityMap[tileAt(villager.xPos, villager.yPos).getXIndex()][tileAt(villager.xPos, villager.yPos).getYIndex()] += 1f;
-
-        }
 
         for (int i = 0; i < villagers.size(); i++) {
             Villager villager = villagers.get(i);

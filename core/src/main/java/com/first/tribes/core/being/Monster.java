@@ -23,7 +23,7 @@ public class Monster extends Being{
 	private static final float MAX_ATTACK_RADIUS = 1000f;
 	private static final float ENEMY_PRIORITY = 15f;
 	private static final float MONSTER_SIZE = 30.0f;
-    private static final float HEIGHT_PRIORITY = 5f;
+    private static final float HEIGHT_PRIORITY = .1f;
 	
 	private static int monsterCount = 0;
     private Cave cave;
@@ -181,7 +181,7 @@ public class Monster extends Being{
     
     public boolean newGoal(Tile myTile) {
 
-        if (Math.random()<.1) {
+        if (Math.random()<1) {
             return true;
         }
         

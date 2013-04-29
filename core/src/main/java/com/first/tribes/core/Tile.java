@@ -26,6 +26,8 @@ public class Tile extends DrawnObject implements Updatee {
     private float height = 2;
     public float numFood = 0;
     private TribesWorld world;
+    static boolean debug = true;
+    static float proportion = 1f;
 
     public Tile(int xIndex, int yIndex, TribesWorld world) {
         this.xIndex = xIndex;
@@ -102,28 +104,44 @@ public class Tile extends DrawnObject implements Updatee {
 
     public int color() {
 
-        if (height >= world.waterLevel) {
+    	int red=0;
+    	int blue=0;
+    	
+    	int c = 0;
+    	
+	    if (height >= world.waterLevel) {
             if (height <= SNOW_PEAK_HEIGHT) {
                 // flat plains up to mountains
                 if (height < TribesWorld.NORMAL_WATER_LEVEL) {
-                    return Color.rgb((int) (237 + height), (int) (216 + height), (int) (151 + height));
+                    c= Color.rgb((int) (237 + height), (int) (216 + height), (int) (151 + height));
                 } else {
-                    return Color.rgb((int) (255 - height * 4 - this.numFood * 2 < 0 ? 0 : 255 - height * 4 - this.numFood * 2), (int) (200 - height * 5 + (this.numFood) > 200 ? 200 : 200 - height * 5 + (this.numFood)), (int) (190 - height * 8 - this.numFood * 2 < 0 ? 0 : 190 - height * 8 - this.numFood * 2));
+                    c= Color.rgb((int) (255 - height * 4 - this.numFood * 2 < 0 ? 0 : 255 - height * 4 - this.numFood * 2), (int) (200 - height * 5 + (this.numFood) > 200 ? 200 : 200 - height * 5 + (this.numFood)), (int) (190 - height * 8 - this.numFood * 2 < 0 ? 0 : 190 - height * 8 - this.numFood * 2));
                 }
             } else {
                 // snow capped mountains
                 if (height <= 65) {
-                    return Color.rgb((int) (230 + (height - 40)), (int) (200 + (height * 2 - 80)), (int) (200 + (height * 2 - 80)));
+                    c= Color.rgb((int) (230 + (height - 40)), (int) (200 + (height * 2 - 80)), (int) (200 + (height * 2 - 80)));
                 } else {
-                    return Color.rgb(255, 255, 255);
+                    c= Color.rgb(255, 255, 255);
                 }
             }
         } else {
             // Water
             float heightSub = (float) Math.max(height - world.waterLevel, -100);
 
-            return Color.rgb((int) (200 + heightSub * 2), (int) (200 + heightSub * 2), (int) (255 + heightSub));
+            c= Color.rgb((int) (200 + heightSub * 2), (int) (200 + heightSub * 2), (int) (255 + heightSub));
         }
+	    
+	    if(debug){
+	    	float p = 1-proportion;
+    		red = (int) (255f*world.villages().get(0).getDensityAt(this));
+			blue = (int) (255f*world.villages().get(1).getDensityAt(this));
+			
+			return Color.rgb(  Math.max((int) (Color.red(c)*proportion+red*p)-1,0),Math.max((int) (Color.green(c)*proportion)-1,0),Math.max((int)(Color.blue(c)*proportion+blue*p)-1,0));
+	    
+	    }
+	    return c;
+    	
     }
 
     public float height() {
@@ -183,5 +201,15 @@ public class Tile extends DrawnObject implements Updatee {
 
     public int getYIndex() {
         return yIndex;
+    }
+    
+    public static void changeProportion(float f){
+    	proportion += f;
+    	if(proportion<0){
+    		proportion=0;
+    	}
+    	if(proportion>1){
+    		proportion=1;
+    	}
     }
 }
