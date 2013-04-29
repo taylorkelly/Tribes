@@ -26,7 +26,7 @@ public class Tribes implements Game {
     public static int SCREEN_WIDTH;
     public static int SCREEN_HEIGHT;
     public static boolean SHIFT = false;
-    private TribesWorld world;
+    protected TribesWorld world;
     private List<Updatee> updatees;
 
     public Tribes(int width, int height) {
@@ -36,16 +36,17 @@ public class Tribes implements Game {
 
     @Override
     public void init() {
-        PlayN.log().debug("Width: " + SCREEN_WIDTH);
         world = new TribesWorld(this);
         updatees = new ArrayList<Updatee>();
+        
+        registerUpdatee(new EndGame(this));
 
         graphics().rootLayer().add(world.getLayer());
         graphics().rootLayer().add(graphics().createImmediateLayer(new FPSRenderer()));
-
+                
         pointer().setListener(new TribesPointerListener());
         keyboard().setListener(new TribesKeyListener());
-        mouse().setListener(new TribesMouseListener());
+//        mouse().setListener(new TribesMouseListener());
     }
 
     @Override
