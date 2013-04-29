@@ -1,5 +1,7 @@
 package com.first.tribes.core;
 
+import com.first.tribes.core.being.Being.Personality;
+import com.first.tribes.core.being.Villager;
 import com.first.tribes.core.ui.FPSRenderer;
 import com.first.tribes.core.ui.toolbar.PushPullTool;
 import com.first.tribes.core.ui.toolbar.SpawnAvatarTool;
@@ -36,17 +38,37 @@ public class Tribes implements Game {
 
     @Override
     public void init() {
-        world = new TribesWorld(this);
+        init(null);
+    }
+
+    public void init(List<Personality> sample) {
+        world = new TribesWorld(this, sample);
         updatees = new ArrayList<Updatee>();
-        
+
         registerUpdatee(new EndGame(this));
 
         graphics().rootLayer().add(world.getLayer());
         graphics().rootLayer().add(graphics().createImmediateLayer(new FPSRenderer()));
-                
+
         pointer().setListener(new TribesPointerListener());
         keyboard().setListener(new TribesKeyListener());
 //        mouse().setListener(new TribesMouseListener());
+    }
+
+    void restoreListeners() {
+        pointer().setListener(new TribesPointerListener());
+        keyboard().setListener(new TribesKeyListener());
+        mouse().setListener(null);
+    }
+
+    void reset(boolean shouldSample) {
+        graphics().rootLayer().clear();
+        if (shouldSample) {
+            List<Personality> sample = world.villages().get(0).samplePersonalities(10);
+            init(sample);
+        } else {
+            init();
+        }
     }
 
     @Override
@@ -109,7 +131,7 @@ public class Tribes implements Game {
                     SpawnAvatarTool.setCurrentTrait(1);
                     break;
                 case C:
-                     break;
+                    break;
                 case I:
                     SpawnAvatarTool.setCurrentTrait(3);
                     break;
@@ -146,9 +168,11 @@ public class Tribes implements Game {
         @Override
         public void onKeyUp(Event event) {
             Timer timer = timerMap.remove(event.key().ordinal());
-            timer.cancel();
-            if (event.key() == Key.SHIFT) {
-                Tribes.SHIFT = false;
+            if (timer != null) {
+                timer.cancel();
+                if (event.key() == Key.SHIFT) {
+                    Tribes.SHIFT = false;
+                }
             }
         }
 

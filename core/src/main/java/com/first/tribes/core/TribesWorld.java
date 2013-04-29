@@ -6,6 +6,7 @@ package com.first.tribes.core;
 
 import com.first.tribes.core.Tribes.PointerFocusable;
 import com.first.tribes.core.being.Being;
+import com.first.tribes.core.being.Being.Personality;
 import com.first.tribes.core.being.Cave;
 import com.first.tribes.core.being.Village;
 import com.first.tribes.core.being.Villager;
@@ -46,11 +47,7 @@ public class TribesWorld implements PointerFocusable {
     private GroupLayer extraLayer;
     private Cave cave;
     private Dimension absoluteSize;
-   
-
-
-
-	private Rectangle viewPort;
+    private Rectangle viewPort;
     private List<Village> villages = new ArrayList<Village>();
     private List<DrawnObject> extraDrawnObjects = new ArrayList<DrawnObject>();
     private Tile[][] tiles;
@@ -62,7 +59,7 @@ public class TribesWorld implements PointerFocusable {
         return 60f / scale();
     }
 
-    public TribesWorld(Tribes game) {
+    public TribesWorld(Tribes game, List<Personality> sample) {
         this.game = game;
 
         if (platformType() == Platform.Type.HTML) {
@@ -99,7 +96,12 @@ public class TribesWorld implements PointerFocusable {
             yPos = random() * absoluteSize.height;
             isSafe = !this.unsafe(xPos, yPos, 10.0f);
         } while (!isSafe);
-        villages.add(new Village(xPos, yPos, 10, this, Color.rgb(200, 0, 0)));
+        if (sample == null) {
+            villages.add(new Village(xPos, yPos, 10, this, Color.rgb(200, 0, 0)));
+
+        } else {
+            villages.add(new Village(xPos, yPos, sample, this, Color.rgb(200, 0, 0)));
+        }
         isSafe = false;
         do {
             xPos = random() * absoluteSize.width;
@@ -108,7 +110,7 @@ public class TribesWorld implements PointerFocusable {
         } while (!isSafe);
         villages.add(new Village(xPos, yPos, 10, this, Color.rgb(0, 0, 200)));
 
-        cave= new Cave(this, Color.rgb(25, 50, 25));
+        cave = new Cave(this, Color.rgb(25, 50, 25));
         viewPort.x = villages.get(0).xPos() - viewPort.width / 2;
         viewPort.y = villages.get(0).yPos() - viewPort.height / 2;
 
@@ -167,6 +169,10 @@ public class TribesWorld implements PointerFocusable {
                 toolbar.render(surface);
             }
         }), toolbar.x(), toolbar.y());
+    }
+
+    public TribesWorld(Tribes game) {
+        this(game, null);
     }
 
     public List<Villager> villagers() {
@@ -372,9 +378,9 @@ public class TribesWorld implements PointerFocusable {
     }
 
     public Dimension getAbsoluteSize() {
-		return absoluteSize;
-	}
-    
+        return absoluteSize;
+    }
+
     public List<Villager> villagersInArea(Rectangle rectangle) {
         if (rectangle.width < 0) {
             rectangle.x = rectangle.x + rectangle.width;
@@ -439,9 +445,9 @@ public class TribesWorld implements PointerFocusable {
         }
     }
 
-	public ArrayList<Cave> caves() {
-		ArrayList<Cave> caves = new ArrayList<Cave>(1);
-		caves.add(cave);
-		return caves;
-	}
+    public ArrayList<Cave> caves() {
+        ArrayList<Cave> caves = new ArrayList<Cave>(1);
+        caves.add(cave);
+        return caves;
+    }
 }

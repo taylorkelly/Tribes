@@ -58,7 +58,7 @@ public class Village implements Updatee {
                 densityMap[i][j] = 0f;
             }
         }
-        
+
         for (int i = 0; i < numVillagers; i++) {
             float villagerX = randomDist(x, POSITION_DEVIATION);
             float villagerY = randomDist(y, POSITION_DEVIATION);
@@ -66,12 +66,34 @@ public class Village implements Updatee {
         }
     }
 
+    public Village(float x, float y, List<Personality> personalities, TribesWorld world, int color) {
+        this.world = world;
+        this.color = color;
+        manna = INITIAL_MANNA;
+        villagers = new ArrayList<Villager>(personalities.size() * 30);
+
+        densityMap = new float[world.tileWidth()][world.tileHeight()];
+        for (int i = 0; i < densityMap.length; i++) {
+            for (int j = 0; j < densityMap[i].length; j++) {
+                densityMap[i][j] = 0f;
+            }
+        }
+
+        for (Personality personality : personalities) {
+            float villagerX = randomDist(x, POSITION_DEVIATION);
+            float villagerY = randomDist(y, POSITION_DEVIATION);
+            Villager villager = new Villager(villagerX, villagerY, this, randomVillagerColor());
+            villager.personality = personality;
+            villagers.add(villager);
+        }
+    }
+
     public void spawnVillager(float x, float y) {
         villagers.add(new Villager(x, y, this, randomVillagerColor()));
     }
-    
-    public void spawnAvatar(float x, float y, int trait){
-    	villagers.add(new Avatar(x, y, this, randomVillagerColor(),trait));
+
+    public void spawnAvatar(float x, float y, int trait) {
+        villagers.add(new Avatar(x, y, this, randomVillagerColor(), trait));
     }
 
     public int randomVillagerColor() {
@@ -153,14 +175,14 @@ public class Village implements Updatee {
                 if (densityMap[i][j] < 0) {
                     densityMap[i][j] = 0f;
                 }
-                if (densityMap[i][j] > 1){
-                	densityMap[i][j] =1f;
+                if (densityMap[i][j] > 1) {
+                    densityMap[i][j] = 1f;
                 }
-                
+
                 int rad = 1;
                 for (int k = Math.max(i - rad, 0); k <= Math.min(i + rad, densityMap.length - 1); k++) {
                     for (int l = Math.max(j - rad + (k - i), 0); l <= Math.min(j + rad - (k - i), densityMap[k].length - 1); l++) {
-                        densityMap[k][l] += temp / Math.pow((float) rad+1,2);
+                        densityMap[k][l] += temp / Math.pow((float) rad + 1, 2);
                     }
                 }
             }
@@ -186,7 +208,7 @@ public class Village implements Updatee {
 
         int villageSize = villagers.size();
         for (Villager villager : new ArrayList<Villager>(villagers.subList(0, villageSize))) {
-            if (Math.pow(villager.personality.reproductiveAppeal(),REPRODUCTIVE_MODIFIER) * reproductiveBaseRate() > random()) {
+            if (Math.pow(villager.personality.reproductiveAppeal(), REPRODUCTIVE_MODIFIER) * reproductiveBaseRate() > random()) {
                 reproduce(villager);
                 manna += MANNA_PER_BIRTH;
             }
@@ -207,7 +229,6 @@ public class Village implements Updatee {
     public float getDensityAt(float x, float y) {
         return getDensityAt(tileAt(x, y));
     }
-
 
     public float getDensityAt(Tile t) {
         return densityMap[t.getXIndex()][t.getYIndex()];
@@ -292,7 +313,7 @@ public class Village implements Updatee {
     private static final long VISUAL_INFO_UPDATE_TIME = 1000;
     private Font titleFont;
     private Font textFont;
-    
+
     public void drawStatsBoxAt(Surface surface, float x, float y, float width, float height) {
         if (visualInfo == null) {
             visualInfo = graphics().createImage((int) width, (int) height);
@@ -328,7 +349,8 @@ public class Village implements Updatee {
             visualInfo.canvas().setFillColor(this.color);
             visualInfo.canvas().fillRect(5, 5, width - 10, height - 10);
 
-            if(titleFont == null) titleFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 18);
+            if (titleFont == null)
+                titleFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 18);
             TextLayout nameLayout = graphics().layoutText(villagers.size() + " villagers -- " + manna + " manna", new TextFormat().withFont(titleFont).withWrapWidth(width));
             visualInfo.canvas().setFillColor(Color.argb(200, 255, 255, 255));
             visualInfo.canvas().fillText(nameLayout, 8, 4);
@@ -349,7 +371,8 @@ public class Village implements Updatee {
             stats.append("Avg Loyalty: " + loyalty);
             stats.append('\n');
 
-            if(textFont == null) textFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 15);
+            if (textFont == null)
+                textFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 15);
             TextLayout intelligenceLayout = graphics().layoutText(stats.toString(), new TextFormat().withFont(textFont).withWrapWidth(width));
             visualInfo.canvas().setFillColor(Color.argb(200, 255, 255, 255));
             visualInfo.canvas().fillText(intelligenceLayout, 8, 10 + nameLayout.height());
@@ -383,10 +406,21 @@ public class Village implements Updatee {
         return manna;
     }
 
-    public ArrayList<Cave> enemyCaves(){
-    	return world.caves();
+    public ArrayList<Cave> enemyCaves() {
+        return world.caves();
     }
+
     public void costManna(int mannaCost) {
         manna -= mannaCost;
+    }
+
+    public List<Personality> samplePersonalities(int i) {
+        List<Personality> sample = new ArrayList<Personality>();
+
+        while (sample.size() < i) {
+            sample.add(villagers.get((int) (random() * villagers.size())).personality.copy());
+        }
+
+        return sample;
     }
 }

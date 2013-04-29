@@ -46,13 +46,24 @@ public class EndGame implements Updatee {
             keyboard().setListener(dialog);
             mouse().setListener(dialog);
             game.unregisterUpdatee(this);
-
         }
+    }
+
+    private void reset(boolean sample) {
+        game.reset(sample);
+    }
+
+    private void continueGame() {
+        graphics().rootLayer().remove(graphics().rootLayer().get(graphics().rootLayer().size() - 1));
+        game.restoreListeners();
     }
 
     abstract class EndGameDialog implements Renderer, Pointer.Listener, Keyboard.Listener, Mouse.Listener {
 
         protected CanvasImage image;
+        private LayoutObject currHover;
+        private LayoutObject currClick;
+        StackLayout layout;
 
         public float width() {
             return 500;
@@ -81,15 +92,73 @@ public class EndGame implements Updatee {
         }
 
         @Override
-        public void onPointerStart(Pointer.Event event) {
+        public void onMouseMove(Mouse.MotionEvent event) {
+            float x = event.x() - x();
+            float y = event.y() - y();
+            LayoutObject mousedObject = layout.objectAt(x, y, image.width());
+            if (mousedObject != currHover) {
+                if (currHover != null)
+                    currHover.unhover();
+                image = null;
+            }
+            if (mousedObject != null && mousedObject.hover()) {
+                currHover = mousedObject;
+                image = null;
+            } else if (mousedObject == null) {
+                currHover = null;
+            }
         }
 
-        @Override
-        public void onPointerEnd(Pointer.Event event) {
+        public void onPointerStart(Pointer.Event event) {
+            float x = event.x() - x();
+            float y = event.y() - y();
+            LayoutObject mousedObject = layout.objectAt(x, y, image.width());
+            if (mousedObject != currClick) {
+                if (currClick != null)
+                    currClick.unclick();
+                image = null;
+            }
+            if (mousedObject != null && mousedObject.click()) {
+                currClick = mousedObject;
+                image = null;
+            } else if (mousedObject == null) {
+                currClick = null;
+            }
         }
 
         @Override
         public void onPointerDrag(Pointer.Event event) {
+            float x = event.x() - x();
+            float y = event.y() - y();
+            LayoutObject mousedObject = layout.objectAt(x, y, image.width());
+
+            if (currClick != null) {
+                if (mousedObject != currClick && mousedObject != null && mousedObject.click()) {
+                    currClick.unclick();
+                    currClick = mousedObject;
+                    image = null;
+                }
+            }
+        }
+
+        @Override
+        public void onPointerEnd(Pointer.Event event) {
+            float x = event.x() - x();
+            float y = event.y() - y();
+            LayoutObject mousedObject = layout.objectAt(x, y, image.width());
+
+
+            if (currClick != null) {
+                currClick.unclick();
+                if (mousedObject != currClick && mousedObject != null && mousedObject.click()) {
+                    currClick = mousedObject;
+                    currClick.unclick();
+                } else if(mousedObject != null) {
+                    currClick.fire();                
+                }
+                currClick = null;
+                image = null;
+            }
         }
 
         @Override
@@ -112,10 +181,6 @@ public class EndGame implements Updatee {
 
         @Override
         public void onMouseUp(Mouse.ButtonEvent event) {
-        }
-
-        @Override
-        public void onMouseMove(Mouse.MotionEvent event) {
         }
 
         @Override
@@ -177,6 +242,25 @@ public class EndGame implements Updatee {
         abstract float height();
 
         public abstract void draw(Canvas canvas, float x, float y);
+
+        public boolean hover() {
+            return false;
+        }
+
+        public boolean unhover() {
+            return false;
+        }
+
+        public boolean click() {
+            return false;
+        }
+
+        public boolean unclick() {
+            return false;
+        }
+
+        public void fire() {
+        }
     }
 
     class Label extends LayoutObject {
@@ -239,23 +323,34 @@ public class EndGame implements Updatee {
         }
     }
 
+    interface Target {
+
+        public void fired(int tag);
+    }
+
     class Button extends LayoutObject {
 
+        boolean hovered;
+        boolean clicked;
         int textColor;
         int frameColor;
         String text;
         int minWidth;
         TextLayout layout;
+        Target target;
+        int tag;
 
-        public Button(String text, int textColor, float fontSize, int frameColor) {
-            this(text, textColor, fontSize, frameColor, -1);
+        public Button(String text, int textColor, float fontSize, int frameColor, Target target, int tag) {
+            this(text, textColor, fontSize, frameColor, -1, target, tag);
         }
 
-        public Button(String text, int textColor, float fontSize, int frameColor, int minWidth) {
+        public Button(String text, int textColor, float fontSize, int frameColor, int minWidth, Target target, int tag) {
             this.textColor = textColor;
             this.frameColor = frameColor;
             this.text = text;
             this.minWidth = minWidth;
+            this.target = target;
+            this.tag = tag;
             Font buttonFont = graphics().createFont("Sans serif", Font.Style.PLAIN, fontSize);
             layout = graphics().layoutText(text, new TextFormat().withFont(buttonFont));
         }
@@ -273,11 +368,50 @@ public class EndGame implements Updatee {
         }
 
         public void draw(Canvas canvas, float x, float y) {
+            if (clicked) {
+                canvas.setFillColor(textColor);
+                canvas.fillRect(x, y, width(), height());
+                canvas.setStrokeColor(frameColor);
+                canvas.setStrokeWidth(3);
+                drawRect(canvas, x, y, width(), height());
+            } else {
+                if (hovered) {
+                    canvas.setFillColor(frameColor);
+                    canvas.fillRect(x, y, width(), height());
+                } else {
+                    canvas.setStrokeColor(frameColor);
+                    canvas.setStrokeWidth(3);
+                    drawRect(canvas, x, y, width(), height());
+
+                }
+            }
             canvas.setFillColor(textColor);
             canvas.fillText(layout, x + (width() - layout.width()) / 2, y + BUTTON_PADDING);
-            canvas.setStrokeColor(frameColor);
-            canvas.setStrokeWidth(3);
-            drawRect(canvas, x, y, width(), height());
+
+        }
+
+        public boolean hover() {
+            hovered = true;
+            return true;
+        }
+
+        public boolean unhover() {
+            hovered = false;
+            return true;
+        }
+
+        public boolean click() {
+            clicked = true;
+            return true;
+        }
+
+        public boolean unclick() {
+            clicked = false;
+            return true;
+        }
+
+        public void fire() {
+            target.fired(this.tag);
         }
 
         protected final void drawRect(Canvas canvas, float x, float y, float width, float height) {
@@ -292,29 +426,30 @@ public class EndGame implements Updatee {
         }
     }
 
-    class LoseDialog extends EndGameDialog {
+    class LoseDialog extends EndGameDialog implements Target {
 
-        StackLayout layout;
+        private static final int TRY_AGAIN_TAG = 1;
 
         public CanvasImage createImage() {
-            Font titleFont = graphics().createFont("Sans serif", Font.Style.BOLD, 36);
-            TextLayout nameLayout = graphics().layoutText("You lose.", new TextFormat().withFont(titleFont));
+            if (layout == null) {
+                Font titleFont = graphics().createFont("Sans serif", Font.Style.BOLD, 36);
+                TextLayout nameLayout = graphics().layoutText("You lose.", new TextFormat().withFont(titleFont));
 
-            Font detailFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 18);
-            String text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In adipiscing dui at dolor eleifend in convallis metus dictum. Donec at metus elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.";
-            TextLayout detailText = graphics().layoutText(text, new TextFormat().withFont(detailFont).withWrapWidth(width() - LayoutObject.FRAME_PADDING * 2 - LayoutObject.TEXT_PADDING * 2));
+                Font detailFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 18);
+                String text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In adipiscing dui at dolor eleifend in convallis metus dictum. Donec at metus elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.";
+                TextLayout detailText = graphics().layoutText(text, new TextFormat().withFont(detailFont).withWrapWidth(width() - LayoutObject.FRAME_PADDING * 2 - LayoutObject.TEXT_PADDING * 2));
 
-            layout = new StackLayout();
-            layout.objects.add(new Spacing(LayoutObject.FRAME_PADDING, LayoutObject.FRAME_PADDING));
-            layout.objects.add(new Spacing(LayoutObject.PADDING_TOP, LayoutObject.PADDING_TOP));
-            layout.objects.add(new Label(nameLayout, Color.rgb(255, 255, 255)));
-            layout.objects.add(new Spacing(LayoutObject.INTERNAL_SPACING, LayoutObject.INTERNAL_SPACING));
-            layout.objects.add(new Label(detailText, Color.rgb(255, 255, 255)));
-            layout.objects.add(new Spacing(LayoutObject.INTERNAL_SPACING, LayoutObject.INTERNAL_SPACING));
-            layout.objects.add(new Button("Try again?", Color.rgb(255, 255, 255), 20, Color.rgb(200, 200, 200)));
-            layout.objects.add(new Spacing(LayoutObject.PADDING_BOTTOM, LayoutObject.PADDING_BOTTOM));
-            layout.objects.add(new Spacing(LayoutObject.FRAME_PADDING, LayoutObject.FRAME_PADDING));
-
+                layout = new StackLayout();
+                layout.objects.add(new Spacing(LayoutObject.FRAME_PADDING, LayoutObject.FRAME_PADDING));
+                layout.objects.add(new Spacing(LayoutObject.PADDING_TOP, LayoutObject.PADDING_TOP));
+                layout.objects.add(new Label(nameLayout, Color.rgb(255, 255, 255)));
+                layout.objects.add(new Spacing(LayoutObject.INTERNAL_SPACING, LayoutObject.INTERNAL_SPACING));
+                layout.objects.add(new Label(detailText, Color.rgb(255, 255, 255)));
+                layout.objects.add(new Spacing(LayoutObject.INTERNAL_SPACING, LayoutObject.INTERNAL_SPACING));
+                layout.objects.add(new Button("Try again?", Color.rgb(255, 255, 255), 20, Color.rgb(200, 200, 200), this, TRY_AGAIN_TAG));
+                layout.objects.add(new Spacing(LayoutObject.PADDING_BOTTOM, LayoutObject.PADDING_BOTTOM));
+                layout.objects.add(new Spacing(LayoutObject.FRAME_PADDING, LayoutObject.FRAME_PADDING));
+            }
 
             CanvasImage canvas = graphics().createImage(width(), layout.height());
             canvas.canvas().setFillColor(Color.rgb(255, 255, 255));
@@ -327,41 +462,45 @@ public class EndGame implements Updatee {
         }
 
         @Override
-        public void onMouseMove(Mouse.MotionEvent event) {
-            float x = event.x() - x();
-            float y = event.y() - y();
-            LayoutObject mousedObject = layout.objectAt(x, y, image.width());
+        public void fired(int tag) {
+            System.out.println(tag);
+            if (tag == TRY_AGAIN_TAG) {
+                EndGame.this.reset(false);
+            }
         }
     }
 
-    class WinDialog extends EndGameDialog {
+    class WinDialog extends EndGameDialog implements Target {
 
-        StackLayout layout;
+        private static final int CONTINUE_TAG = 1;
+        private static final int FROM_SCRATCH_TAG = 2;
+        private static final int FROM_SAMPLE_TAG = 3;
 
         public CanvasImage createImage() {
-            Font titleFont = graphics().createFont("Sans serif", Font.Style.BOLD, 36);
-            TextLayout nameLayout = graphics().layoutText("You win.", new TextFormat().withFont(titleFont));
+            if (layout == null) {
+                Font titleFont = graphics().createFont("Sans serif", Font.Style.BOLD, 36);
+                TextLayout nameLayout = graphics().layoutText("You win.", new TextFormat().withFont(titleFont));
 
-            Font detailFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 18);
-            String text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In adipiscing dui at dolor eleifend in convallis metus dictum. Donec at metus elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.";
-            TextLayout detailText = graphics().layoutText(text, new TextFormat().withFont(detailFont).withWrapWidth(width() - LayoutObject.FRAME_PADDING * 2 - LayoutObject.TEXT_PADDING * 2));
+                Font detailFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 18);
+                String text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In adipiscing dui at dolor eleifend in convallis metus dictum. Donec at metus elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.";
+                TextLayout detailText = graphics().layoutText(text, new TextFormat().withFont(detailFont).withWrapWidth(width() - LayoutObject.FRAME_PADDING * 2 - LayoutObject.TEXT_PADDING * 2));
 
-            layout = new StackLayout();
-            layout.objects.add(new Spacing(LayoutObject.FRAME_PADDING, LayoutObject.FRAME_PADDING));
-            layout.objects.add(new Spacing(LayoutObject.PADDING_TOP, LayoutObject.PADDING_TOP));
-            layout.objects.add(new Label(nameLayout, Color.rgb(0, 0, 0)));
-            layout.objects.add(new Spacing(LayoutObject.INTERNAL_SPACING, LayoutObject.INTERNAL_SPACING));
-            layout.objects.add(new Label(detailText, Color.rgb(0, 0, 0)));
-            layout.objects.add(new Spacing(LayoutObject.INTERNAL_SPACING, LayoutObject.INTERNAL_SPACING));
-            layout.objects.add(new Button("Continue with this world?", Color.rgb(0, 0, 0), 20, Color.rgb(50, 50, 50), 350));
-            layout.objects.add(new Spacing(LayoutObject.BETWEEN_BUTTON_SPACING, LayoutObject.BETWEEN_BUTTON_SPACING));
-            layout.objects.add(new Button("Start world from scratch?", Color.rgb(0, 0, 0), 20, Color.rgb(50, 50, 50), 350));
-            layout.objects.add(new Spacing(LayoutObject.BETWEEN_BUTTON_SPACING, LayoutObject.BETWEEN_BUTTON_SPACING));
-            layout.objects.add(new Button("Start world from sample?", Color.rgb(0, 0, 0), 20, Color.rgb(50, 50, 50), 350));
-            layout.objects.add(new Spacing(LayoutObject.BETWEEN_BUTTON_SPACING, LayoutObject.BETWEEN_BUTTON_SPACING));
-            layout.objects.add(new Spacing(LayoutObject.PADDING_BOTTOM, LayoutObject.PADDING_BOTTOM));
-            layout.objects.add(new Spacing(LayoutObject.FRAME_PADDING, LayoutObject.FRAME_PADDING));
-
+                layout = new StackLayout();
+                layout.objects.add(new Spacing(LayoutObject.FRAME_PADDING, LayoutObject.FRAME_PADDING));
+                layout.objects.add(new Spacing(LayoutObject.PADDING_TOP, LayoutObject.PADDING_TOP));
+                layout.objects.add(new Label(nameLayout, Color.rgb(0, 0, 0)));
+                layout.objects.add(new Spacing(LayoutObject.INTERNAL_SPACING, LayoutObject.INTERNAL_SPACING));
+                layout.objects.add(new Label(detailText, Color.rgb(0, 0, 0)));
+                layout.objects.add(new Spacing(LayoutObject.INTERNAL_SPACING, LayoutObject.INTERNAL_SPACING));
+                layout.objects.add(new Button("Continue with this world?", Color.rgb(0, 0, 0), 20, Color.rgb(100, 100, 100), 350, this, CONTINUE_TAG));
+                layout.objects.add(new Spacing(LayoutObject.BETWEEN_BUTTON_SPACING, LayoutObject.BETWEEN_BUTTON_SPACING));
+                layout.objects.add(new Button("Start world from scratch?", Color.rgb(0, 0, 0), 20, Color.rgb(100, 100, 100), 350, this, FROM_SCRATCH_TAG));
+                layout.objects.add(new Spacing(LayoutObject.BETWEEN_BUTTON_SPACING, LayoutObject.BETWEEN_BUTTON_SPACING));
+                layout.objects.add(new Button("Start world from sample?", Color.rgb(0, 0, 0), 20, Color.rgb(100, 100, 100), 350, this, FROM_SAMPLE_TAG));
+                layout.objects.add(new Spacing(LayoutObject.BETWEEN_BUTTON_SPACING, LayoutObject.BETWEEN_BUTTON_SPACING));
+                layout.objects.add(new Spacing(LayoutObject.PADDING_BOTTOM, LayoutObject.PADDING_BOTTOM));
+                layout.objects.add(new Spacing(LayoutObject.FRAME_PADDING, LayoutObject.FRAME_PADDING));
+            }
             CanvasImage canvas = graphics().createImage(width(), layout.height());
             canvas.canvas().setFillColor(Color.rgb(0, 0, 0));
             canvas.canvas().fillRect(0, 0, width(), layout.height());
@@ -370,6 +509,21 @@ public class EndGame implements Updatee {
             layout.draw(canvas.canvas());
 
             return canvas;
+        }
+
+        @Override
+        public void fired(int tag) {
+            switch (tag) {
+                case CONTINUE_TAG:
+                    EndGame.this.continueGame();
+                    break;
+                case FROM_SCRATCH_TAG:
+                    EndGame.this.reset(false);
+                    break;
+                case FROM_SAMPLE_TAG:
+                    EndGame.this.reset(true);
+                    break;
+            }
         }
     }
 }

@@ -16,8 +16,7 @@ import static playn.core.PlayN.*;
  */
 public abstract class Being extends DrawnObject {
 
-	
-	enum DeathReason {
+    enum DeathReason {
 
         AGE, STARVING, DROWNING, KILLED_BY_VILLAGER, KILLED_BY_MONSTER;
 
@@ -38,19 +37,13 @@ public abstract class Being extends DrawnObject {
             }
         }
     }
-
-	
     protected Personality personality;
     protected float xPos, yPos;
     protected float xVel, yVel;
     protected float width, height;
-
-    
     protected DeathReason deathReason;
-    
     protected CanvasImage visualInfo;
-    
-    
+
     public Being(float xPos, float yPos, float width, float height) {
         this.xPos = xPos;
         this.yPos = yPos;
@@ -63,15 +56,14 @@ public abstract class Being extends DrawnObject {
         return new Rectangle(xPos, yPos, width, height);
     }
 
-    
     public float xPos() {
         return xPos;
     }
-    
+
     public float yPos() {
         return yPos;
     }
-    
+
     public class Personality {
 
         public static final float MUTATION_RATE = 0.05f;
@@ -98,34 +90,40 @@ public abstract class Being extends DrawnObject {
             normalize();
         }
 
-        public void setAggression(float a){
-        	aggression=a;
+        public void setAggression(float a) {
+            aggression = a;
         }
-        public void setStrength(float a){
-        	strength=a;
+
+        public void setStrength(float a) {
+            strength = a;
         }
-       
-        public void setIntelligence(float a){
-        	intelligence=a;
+
+        public void setIntelligence(float a) {
+            intelligence = a;
         }
-        public void setLongevity(float a){
-        	longevity=a;
+
+        public void setLongevity(float a) {
+            longevity = a;
         }
-        public void setHardiness(float a){
-        	hardiness=a;
+
+        public void setHardiness(float a) {
+            hardiness = a;
         }
-        public void setMobility(float a){
-        	mobility=a;
+
+        public void setMobility(float a) {
+            mobility = a;
         }
-        public void setReproductiveAppeal(float a){
-        	reproductiveAppeal=a;
+
+        public void setReproductiveAppeal(float a) {
+            reproductiveAppeal = a;
         }
-        public void setLoyalty(float a){
-        	loyalty=a;
+
+        public void setLoyalty(float a) {
+            loyalty = a;
         }
-        
+
         private void normalize() {
-            total = aggression + strength  + intelligence + hardiness + longevity + mobility + reproductiveAppeal + loyalty;
+            total = aggression + strength + intelligence + hardiness + longevity + mobility + reproductiveAppeal + loyalty;
         }
 
         public float reproductiveAppeal() {
@@ -184,9 +182,9 @@ public abstract class Being extends DrawnObject {
         float intelligence() {
             return intelligence / total;
         }
-        
-        float strength(){
-        	return strength /total;
+
+        float strength() {
+            return strength / total;
         }
 
         float loyalty() {
@@ -204,14 +202,28 @@ public abstract class Being extends DrawnObject {
         float aggression() {
             return aggression / total;
         }
+
+        Personality copy() {
+            Personality personality = new Personality();
+            personality.aggression = this.aggression;
+            personality.hardiness = this.hardiness;
+            personality.intelligence = this.intelligence;
+            personality.longevity = this.longevity;
+            personality.loyalty = this.loyalty;
+            personality.mobility = this.mobility;
+            personality.reproductiveAppeal = this.reproductiveAppeal;
+            personality.strength = this.strength;
+            personality.total = this.total;
+            return personality;
+        }
     }
-    
+
     public boolean isDead() {
         return deathReason != null;
     }
-    
+
     public abstract void attack(Being b);
-    
+
     protected void setDead(DeathReason deathReason) {
         if (this.deathReason != deathReason) {
             this.deathReason = deathReason;
