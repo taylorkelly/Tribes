@@ -30,8 +30,14 @@ public class Village implements Updatee {
     public static final float POSITION_DEVIATION = 10.0f;
     public static final float REPRODUCTIVE_BASE_RATE = 0.03f;
     
-    public static final float FOOD_PRODUCTION_THRESHOLD = 0.25f;
-    public static final float FOOD_PRODUCTION_RATE = .7f;
+    public static final float FOOD_PRODUCTION_THRESHOLD = 0.35f;
+    public static final float FOOD_PRODUCTION_RATE = .3f;
+    
+    
+    public static final int MIN_POPULATION = 10;
+    public static final int MAX_POPULATION = 1000;
+    public static final float POPULATION_DAMPEN_EXP = 0.07f;
+    
     
     
     
@@ -122,10 +128,10 @@ public class Village implements Updatee {
     }
 
     public float reproductiveBaseRate() {
-        if (villagers.size() < 10) {
+        if (villagers.size() < MIN_POPULATION) {
             return REPRODUCTIVE_BASE_RATE * 10 / (float) (Math.sqrt(villagers.size()));
-        } else if(villagers.size() > 1000){
-            return REPRODUCTIVE_BASE_RATE / (float) Math.pow(villagers.size() - 1000, 0.2);
+        } else if(villagers.size() > MAX_POPULATION){
+            return REPRODUCTIVE_BASE_RATE / (float) Math.pow(villagers.size() - MAX_POPULATION, POPULATION_DAMPEN_EXP);
         } else {
             return REPRODUCTIVE_BASE_RATE;
         }
