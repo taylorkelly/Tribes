@@ -28,8 +28,8 @@ import pythagoras.f.Rectangle;
 public class Village implements Updatee {
 
     public static final float POSITION_DEVIATION = 10.0f;
-    public static final float REPRODUCTIVE_BASE_RATE = 0.05f;
-    public static final float REPRODUCTIVE_MODIFIER = 0.75f;
+    public static final float REPRODUCTIVE_BASE_RATE = 0.02f;
+    public static final float REPRODUCTIVE_MODIFIER = 0.6f;
     public static final float FOOD_PRODUCTION_THRESHOLD = 0.35f;
     public static final float FOOD_PRODUCTION_RATE = .3f;
     public static final int MIN_POPULATION = 10;
@@ -186,7 +186,7 @@ public class Village implements Updatee {
 
         int villageSize = villagers.size();
         for (Villager villager : new ArrayList<Villager>(villagers.subList(0, villageSize))) {
-            if (villager.personality.reproductiveAppeal()*REPRODUCTIVE_MODIFIER * reproductiveBaseRate() > random()) {
+            if (Math.pow(villager.personality.reproductiveAppeal(),REPRODUCTIVE_MODIFIER) * reproductiveBaseRate() > random()) {
                 reproduce(villager);
                 manna += MANNA_PER_BIRTH;
             }
