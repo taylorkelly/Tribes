@@ -13,6 +13,7 @@ import playn.core.Canvas;
 import playn.core.CanvasImage;
 import playn.core.Color;
 import playn.core.Image;
+import playn.core.Platform;
 import static playn.core.PlayN.*;
 
 /**
@@ -36,7 +37,7 @@ public class MiniMap implements PointerFocusable {
         Canvas canvas = image.canvas();
         canvas.setFillColor(Color.rgb(0, 0, 0));
         canvas.fillRect(0, 0, width(), height());
-        
+
         float tileWidthDensity = world.tiles().length / mapWidth();
         float tileHeightDensity = world.tiles()[0].length / mapHeight();
 
@@ -62,6 +63,7 @@ public class MiniMap implements PointerFocusable {
                 canvas.fillCircle(villager.xPos() / pointDensity() + 5, villager.yPos() / pointDensity() + 5, 10);
             }
         }
+
 
         canvas.setStrokeColor(Color.rgb(255, 0, 0));
         canvas.drawLine(viewPortStartX, viewPortStartY, viewPortStartX, viewPortEndY);

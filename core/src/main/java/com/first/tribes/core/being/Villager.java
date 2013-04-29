@@ -29,6 +29,15 @@ public class Villager extends Being {
     private static final float VILLAGER_SIZE = 10.0f;
     private static final float MAX_ATTACK_RADIUS = 1000f;
     
+    
+    //Movement calculation constants
+    private static final float FOOD_PRIORITY = 0.5f;
+    private static final float ENEMY_PRIORITY = 15f;
+    private static final float FRIEND_PRIORITY = 1.5f;
+    private static final float HEIGHT_PRIORITY = 5f;
+    
+    
+    
     private static int villagerCount = 0;
     private Village village;
     private int color;
@@ -104,11 +113,14 @@ public class Villager extends Being {
         }
 
         Tile myTile = village.tileAt(this.xPos, this.yPos);
-
+        
+        if(personality.aggression() > (float)Math.random()){
+        	attack(findTarget());
+        }
+        
         if (newGoal(myTile)) {
+                
             Tile bestTile = pickTile(myTile);
-
-            //attack(findTarget());
             
             xVel = bestTile.bounds().center().x - this.xPos;
             yVel = bestTile.bounds().center().y - this.yPos;
@@ -160,15 +172,21 @@ public class Villager extends Being {
     }
     
     public float calculateScore(Tile tile){
-    	float foundFood = (tile.numFood + random());
+    	float foundFood = (tile.numFood)*FOOD_PRIORITY+random();
     	float foundEnemy = 0;
     	List<Village> enemies = village.enemyVillages();
     	for(int i=0; i<enemies.size(); i++){
     		foundEnemy += enemies.get(i).getDensityAt(tile)*personality.aggression()/((float)enemies.size()) ;
     	}
-    	float foundFriend = village.getDensityAt(tile)*personality.loyalty();
+    	foundEnemy*=ENEMY_PRIORITY+random();
+    	float foundFriend = village.getDensityAt(tile)*personality.loyalty()*FRIEND_PRIORITY+random();
     	
-    	return foundFood;//+foundEnemy+foundFriend;
+    	float heightValue = tile.height()*personality.hardiness()*HEIGHT_PRIORITY+random();
+    	
+    	if(Math.random()<0.01)
+    		System.out.println(foundFood+" "+foundEnemy+" "+foundFriend+" "+heightValue);
+    	
+    	return foundFood+foundEnemy+foundFriend-heightValue;
     }
     
     public Villager findTarget(){
@@ -182,12 +200,12 @@ public class Villager extends Being {
     	for(int i=0; i<v.size(); i++){
     		e.addAll(v.get(i).villagersInArea( new Rectangle(xPos-radius,yPos-radius,2*radius,2*radius) ));
     	}
-    	
-    	float minDist = radius;
+    	float minDist = radius*radius;
     	int minLoc = -1;
     	for(int i=0; i<e.size(); i++){
-    		if(e.get(i).xPos()*e.get(i).xPos()+e.get(i).yPos()*e.get(i).yPos()<minDist*minDist){
+    		if(Math.pow(e.get(i).xPos()-xPos(), 2)+Math.pow(e.get(i).yPos()-yPos(),2)<minDist){
     			minLoc=i;
+    			minDist = (float) (Math.pow(e.get(i).xPos()-xPos(), 2)+Math.pow(e.get(i).yPos()-yPos(),2));
     		}
     	}
     	
@@ -203,9 +221,7 @@ public class Villager extends Being {
         if (foodRequired() > myTile.numFood) {
             return true;
         }
-        /*if (personality.aggression() > (float)Math.random()){
-        	return true;
-        }*/
+        
         
         
         return false;
@@ -224,6 +240,7 @@ public class Villager extends Being {
     		float b = ((float) Math.random() * v.personality.hardiness());
         	if (a > b) {
         		v.setDead(DeathReason.KILLED_BY_VILLAGER);
+        		hunger -= v.foodRequired();
         	}
     	}
     }
@@ -248,7 +265,11 @@ public class Villager extends Being {
     public String toString() {
         return personality.toString();
     }
-    CanvasImage visualInfo;
+    
+    
+    
+    
+    private CanvasImage visualInfo;
     public static final float STATS_BOX_HEIGHT = 96f;
 
     public void drawStatsBoxAt(Surface surface, float x, float y, float width, float height) {

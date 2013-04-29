@@ -59,7 +59,8 @@ public class Tribes implements Game {
             for (Updatee updatee : updatees) {
                 updatee.update(delta);
             }
-        } catch (ConcurrentModificationException e) {}
+        } catch (ConcurrentModificationException e) {
+        }
     }
 
     @Override

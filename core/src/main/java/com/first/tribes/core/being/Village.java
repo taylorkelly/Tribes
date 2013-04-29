@@ -141,20 +141,21 @@ public class Village implements Updatee {
     @Override
     public void update(float delta) {
 
-        float SPREAD_CONST = 0.1f;
+        float SPREAD_CONST = 0.2f;
+        float DECR_CONST = 0.4f;
 
         for (int i = 0; i < densityMap.length; i++) {
             for (int j = 0; j < densityMap[i].length; j++) {
-                float temp = densityMap[i][j] *= SPREAD_CONST;
+                float temp = densityMap[i][j] * SPREAD_CONST;
 
-                densityMap[i][j] *= 1f - SPREAD_CONST;
+                densityMap[i][j] *= (1f - DECR_CONST);
                 if (densityMap[i][j] < 0) {
                     densityMap[i][j] = 0f;
                 }
                 int rad = 1;
                 for (int k = Math.max(i - rad, 0); k <= Math.min(i + rad, densityMap.length - 1); k++) {
                     for (int l = Math.max(j - rad + (k - i), 0); l <= Math.min(j + rad - (k - i), densityMap[k].length - 1); l++) {
-                        densityMap[k][l] += temp / ((float) rad);
+                        densityMap[k][l] += temp / Math.pow((float) rad+1,2);
                     }
                 }
             }
@@ -284,7 +285,9 @@ public class Village implements Updatee {
     CanvasImage visualInfo;
     private long lastVisualInfoUpdate;
     private static final long VISUAL_INFO_UPDATE_TIME = 1000;
-
+    private Font titleFont;
+    private Font textFont;
+    
     public void drawStatsBoxAt(Surface surface, float x, float y, float width, float height) {
         if (visualInfo == null) {
             visualInfo = graphics().createImage((int) width, (int) height);
@@ -320,7 +323,7 @@ public class Village implements Updatee {
             visualInfo.canvas().setFillColor(this.color);
             visualInfo.canvas().fillRect(5, 5, width - 10, height - 10);
 
-            Font titleFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 18);
+            if(titleFont == null) titleFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 18);
             TextLayout nameLayout = graphics().layoutText(villagers.size() + " villagers -- " + manna + " manna", new TextFormat().withFont(titleFont).withWrapWidth(width));
             visualInfo.canvas().setFillColor(Color.argb(200, 255, 255, 255));
             visualInfo.canvas().fillText(nameLayout, 8, 4);
@@ -341,7 +344,7 @@ public class Village implements Updatee {
             stats.append("Avg Loyalty: " + loyalty);
             stats.append('\n');
 
-            Font textFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 15);
+            if(textFont == null) textFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 15);
             TextLayout intelligenceLayout = graphics().layoutText(stats.toString(), new TextFormat().withFont(textFont).withWrapWidth(width));
             visualInfo.canvas().setFillColor(Color.argb(200, 255, 255, 255));
             visualInfo.canvas().fillText(intelligenceLayout, 8, 10 + nameLayout.height());
