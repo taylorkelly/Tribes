@@ -21,9 +21,9 @@ public class Monster extends Being{
 
 	
 	private static final float MAX_ATTACK_RADIUS = 1000f;
-	private static final float ENEMY_PRIORITY = 15f;
+	private static final float ENEMY_PRIORITY = 30f;
 	private static final float MONSTER_SIZE = 30.0f;
-    private static final float HEIGHT_PRIORITY = .1f;
+    private static final float HEIGHT_PRIORITY = .01f;
 	
 	private static int monsterCount = 0;
     private Cave cave;
@@ -142,9 +142,9 @@ public class Monster extends Being{
     	for(int i=0; i<enemies.size(); i++){
     		foundEnemy += enemies.get(i).getDensityAt(tile)*personality.aggression()/((float)enemies.size()) ;
     	}
-    	foundEnemy*=ENEMY_PRIORITY+random();
+    	foundEnemy*=ENEMY_PRIORITY;
     	
-    	float heightValue = tile.height()*personality.hardiness()*HEIGHT_PRIORITY+random();
+    	float heightValue = tile.height()*personality.hardiness()*HEIGHT_PRIORITY;
     	
 //    	if(Math.random()<0.01)
 //    		System.out.println(foundFood+" "+foundEnemy+" "+foundFriend+" "+heightValue);

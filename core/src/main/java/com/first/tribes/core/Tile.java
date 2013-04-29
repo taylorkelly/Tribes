@@ -104,9 +104,9 @@ public class Tile extends DrawnObject implements Updatee {
 
     public int color() {
 
-    	int red=0;
-    	int blue=0;
-    	
+    	float red=0;
+    	float blue=0;
+    	float green =0;
     	int c = 0;
     	
 	    if (height >= world.waterLevel) {
@@ -134,10 +134,13 @@ public class Tile extends DrawnObject implements Updatee {
 	    
 	    if(debug){
 	    	float p = 1-proportion;
-    		red = (int) (255f*world.villages().get(0).getDensityAt(this));
-			blue = (int) (255f*world.villages().get(1).getDensityAt(this));
+    		red =  (255f*world.villages().get(0).getDensityAt(this));
+			blue =  (255f*world.villages().get(1).getDensityAt(this));
+			green =  (255f*world.caves().get(0).getDensityAt(this));
+			//green = (255f*world.monsters().get(0).calculateScore(this));
 			
-			return Color.rgb(  Math.max((int) (Color.red(c)*proportion+red*p)-1,0),Math.max((int) (Color.green(c)*proportion)-1,0),Math.max((int)(Color.blue(c)*proportion+blue*p)-1,0));
+			
+			return Color.rgb(  (int)Math.min(Math.max( (Color.red(c)*proportion+red*p)-1,0),255),(int)Math.min(Math.max( (Color.green(c)*proportion)-1+green*p,0),255),(int)Math.min(Math.max((Color.blue(c)*proportion+blue*p)-1,0),255));
 	    
 	    }
 	    return c;
