@@ -12,6 +12,6 @@ public class TribesHtml extends HtmlGame {
   public void start() {
     HtmlPlatform platform = HtmlPlatform.register();
     platform.assets().setPathPrefix("Tribes/");
-    PlayN.run(new Tribes());
+    PlayN.run(new Tribes(900, 800));
   }
 }

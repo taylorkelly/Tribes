@@ -24,14 +24,20 @@ import pythagoras.f.Point;
 
 public class Tribes implements Game {
 
-    public static final int SCREEN_WIDTH = 1400;
-    public static final int SCREEN_HEIGHT = 1000;
+    public static int SCREEN_WIDTH;
+    public static int SCREEN_HEIGHT;
     public static boolean SHIFT = false;
     private TribesWorld world;
     private List<Updatee> updatees;
 
+    public Tribes(int width, int height) {
+        SCREEN_WIDTH = width;
+        SCREEN_HEIGHT = height;
+    }
+
     @Override
     public void init() {
+        PlayN.log().debug("Width: " + SCREEN_WIDTH);
         world = new TribesWorld(this);
         updatees = new ArrayList<Updatee>();
 

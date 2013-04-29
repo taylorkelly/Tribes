@@ -10,9 +10,8 @@ public class TribesJava {
 
     public static void main(String[] args) {
         Config config = new Config();
-        config.width = Tribes.SCREEN_WIDTH;
-        config.height = Tribes.SCREEN_HEIGHT;
-        JavaPlatform.register(config);
-        PlayN.run(new Tribes());
+        JavaPlatform platform = JavaPlatform.register(config);
+        platform.graphics().setSize(platform.graphics().screenWidth() - 100, platform.graphics().screenHeight() - 100);
+        PlayN.run(new Tribes(platform.graphics().screenWidth() - 100, platform.graphics().screenHeight() - 100));
     }
 }
