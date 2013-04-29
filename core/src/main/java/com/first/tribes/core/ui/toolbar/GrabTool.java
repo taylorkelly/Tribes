@@ -33,10 +33,12 @@ class GrabTool extends Tool {
     private Point dragCurrent;
     private List<Villager> selectedVillagers;
     private List<Villager> displayedVillagers;
+    private Font font;
 
     public GrabTool(TribesWorld world) {
         super(world);
-
+        font = graphics().createFont("Sans serif", Font.Style.BOLD, 14);
+        
         dragLayer = graphics().createImmediateLayer(new ImmediateLayer.Renderer() {
             @Override
             public void render(Surface surface) {
@@ -54,12 +56,9 @@ class GrabTool extends Tool {
                     selectedVillagers = GrabTool.this.world.villagersInArea(new Rectangle(dragStart, new Dimension(dragCurrent.x - dragStart.x, dragCurrent.y - dragStart.y)));
                     int numVillagers = selectedVillagers.size();
 
-                    int fontColor = Color.rgb(40, 40, 170);
-                    int fontSize = 14;
-                    Font font = graphics().createFont("Sans serif", Font.Style.BOLD, fontSize);
                     TextLayout layout = graphics().layoutText(numVillagers + " villagers", new TextFormat().withFont(font).withWrapWidth(200));
                     CanvasImage fpsImage = graphics().createImage((int) Math.ceil(layout.width()), (int) Math.ceil(layout.height()));
-                    fpsImage.canvas().setFillColor(fontColor);
+                    fpsImage.canvas().setFillColor(Color.rgb(40, 40, 170));
                     fpsImage.canvas().fillText(layout, 0, 0);
                     surface.drawImage(fpsImage, Math.max(2, Math.min(dragStartScreen.x, dragCurrScreen.x) + 2), Math.max(3, Math.min(dragStartScreen.y, dragCurrScreen.y) - (fpsImage.height() + 3)));
                 }
