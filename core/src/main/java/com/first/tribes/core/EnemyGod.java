@@ -9,6 +9,8 @@ import static playn.core.PlayN.*;
 
 
 public class EnemyGod implements TimerTask {
+	public static final boolean ON=true;
+	
 	private static final int FLOOD_POSITION=5;//Flood tool Position in toolbar
 	private static final int FOOD_POSITION=3;//Food Tool Position in toolbar
 	private static final int IRRIGATION_POSITION=6;//Irrigation tool
