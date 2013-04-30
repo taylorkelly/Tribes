@@ -17,6 +17,7 @@ public class EnemyGod implements TimerTask {
 	private static final int SPAWN_POSITION=4;
 	private static final int SPAWN_MONSTER_POSITION=7;
 	
+	@SuppressWarnings("unused")
 	private static final int numberOfPowers=7;
 	private static final int REPEATAMOUNT = 4;
 	private TribesWorld world;
@@ -43,7 +44,7 @@ public class EnemyGod implements TimerTask {
 	
 	@Override
 	public void run() {
-		switch((int) random()*10){
+		switch((int) (random()*10)){
 		case 0://flood
 			FloodTool flTool = (FloodTool) world.toolbar().getTools().get(FLOOD_POSITION);
 			if(ownVillage.manna()>flTool.MANNA_COST_PER_DELTA()){
