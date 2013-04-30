@@ -4,6 +4,8 @@
  */
 package com.first.tribes.core.ui;
 
+import java.util.ArrayList;
+
 import com.first.tribes.core.Tile;
 import com.first.tribes.core.Tribes;
 import com.first.tribes.core.Tribes.PointerFocusable;
@@ -15,19 +17,21 @@ import playn.core.CanvasImage;
 import playn.core.Color;
 import playn.core.Image;
 import playn.core.Platform;
+import pythagoras.f.Point;
 import static playn.core.PlayN.*;
 
 /**
  *
- * @author taylor
+ * @author taylor and william
  */
 public class MiniMap implements PointerFocusable {
 
     private CanvasImage image;
     private TribesWorld world;
-
+    private ArrayList<Ping> pings;
     public MiniMap(TribesWorld world) {
         this.world = world;
+        pings = new ArrayList<Ping>(1);
     }
 
     public Image image() {
@@ -65,6 +69,17 @@ public class MiniMap implements PointerFocusable {
             }
         }
 
+        Ping p;
+        for(int i =0;i<pings.size();i++){
+        	p=pings.get(i);
+        	canvas.setFillColor(Color.argb(p.alphaLevel(),Ping.REDCOLOR,Ping.GREENCOLOR,Ping.BLUECOLOR));
+        	canvas.fillCircle(p.point().x/pointDensity(), p.point().y/pointDensity(), Ping.RADIUS);
+        	p.update();
+        	if(p.alphaLevel()<=0){
+    			pings.remove(p);
+    			i--;
+    		}
+        }
 
         canvas.setStrokeColor(Color.rgb(255, 0, 0));
         canvas.drawLine(viewPortStartX, viewPortStartY, viewPortStartX, viewPortEndY);
@@ -75,7 +90,12 @@ public class MiniMap implements PointerFocusable {
 
         return image;
     }
-
+    
+    public void addPing(Point p){
+    	pings.add(new Ping(p));
+    }
+    
+    
     float pointDensity() {
         return world.absoluteSize().width / mapWidth();
     }
@@ -132,4 +152,6 @@ public class MiniMap implements PointerFocusable {
     public void drag(float x, float y) {
         press(x, y);
     }
+
+	
 }

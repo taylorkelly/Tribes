@@ -53,6 +53,8 @@ public class EnemyGod implements TimerTask {
 				}
 				ownVillage.costManna(flTool.MANNA_COST_PER_DELTA());
 				flTool.release(0,0);
+			
+			world.ping(randomPoint());
 			}
 			break;
 		case 1://food
@@ -61,6 +63,7 @@ public class EnemyGod implements TimerTask {
 				Point p = randomPoint();
 				fTool.dropFood(p.x,p.y);
 				ownVillage.costManna(FoodTool.MANNA_COST_PER_DROP);
+			world.ping(p);
 			}
 			break;
 		case 2://irrigation
@@ -69,6 +72,7 @@ public class EnemyGod implements TimerTask {
 				Point p = safeCoordinates();
 				iTool.dropIrrigation(p);
 				ownVillage.costManna(IrrigationTool.MANNA_COST_PER_DROP);
+				world.ping(p);
 			}
 			break;
 		case 3://push pull
@@ -79,6 +83,7 @@ public class EnemyGod implements TimerTask {
 					pTool.bulldoze(p, random()<0.5f);
 					}
 				ownVillage.costManna(PushPullTool.MANNA_COST_PER_DELTA);
+				world.ping(p);
 			}
 			break;
 		case 4://spawn avatar of aggression
@@ -87,6 +92,7 @@ public class EnemyGod implements TimerTask {
 				Point p = safeCoordinates();
 				saTool.spawn(p.x, p.y,1, 0);
 				ownVillage.costManna(SpawnAvatarTool.MANNA_COST_PER_DROP);
+				world.ping(p);
 			}
 			break;
 		case 5://spawn monster
@@ -95,6 +101,7 @@ public class EnemyGod implements TimerTask {
 				Point p = safeCoordinates();
 				smTool.spawn(p.x, p.y);
 				ownVillage.costManna(SpawnMonsterTool.MANNA_COST_PER_DROP);
+				world.ping(p);
 			}
 			break;
 		default://spawn tool
@@ -103,6 +110,7 @@ public class EnemyGod implements TimerTask {
 					Point p = safeCoordinates();
 					sTool.spawn(p.x, p.y,1);
 					ownVillage.costManna(SpawnTool.MANNA_COST_PER_DROP);
+					world.ping(p);
 				}
 			break;
 			

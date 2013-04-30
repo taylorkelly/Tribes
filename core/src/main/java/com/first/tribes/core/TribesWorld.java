@@ -478,6 +478,10 @@ public class TribesWorld implements PointerFocusable {
         }
     }
 
+    public void ping(Point p){
+    	miniMap.addPing(p);
+    }
+    
     public ArrayList<Cave> caves() {
         ArrayList<Cave> caves = new ArrayList<Cave>(1);
         caves.add(cave);

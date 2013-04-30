@@ -50,6 +50,7 @@ public class SpawnTool extends Tool {
             Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
             spawn(worldPoint.x,worldPoint.y,0);
             world.villages().get(0).costManna(MANNA_COST_PER_DROP);
+            world.ping(worldPoint);
         }
 
     }
