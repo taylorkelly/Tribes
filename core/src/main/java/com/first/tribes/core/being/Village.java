@@ -39,7 +39,7 @@ public class Village implements Updatee {
     public static final int MIN_POPULATION = 10;
     public static final int MAX_POPULATION = 1000;
     public static final float POPULATION_DAMPEN_EXP = 0.09f;
-    public static final int INITIAL_MANNA = 10000000;
+    public static final int INITIAL_MANNA = 200;
     public static final int MANNA_PER_BIRTH = 1;
     public static final int MANNA_PER_DEATH = 1;
     public static final int MANNA_PER_KILL = 2;
