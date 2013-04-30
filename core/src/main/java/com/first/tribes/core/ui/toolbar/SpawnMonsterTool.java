@@ -36,11 +36,15 @@ public class SpawnMonsterTool extends Tool {
         return this;
     }
 
+    public void spawn(float x, float y){
+    	 world.caves().get(0).spawnMonster(x, y);
+    }
+    
     @Override
     public void release(float x, float y) {
         if (world.villages().get(0).manna() >= MANNA_COST_PER_DROP) {
             Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
-            world.caves().get(0).spawnMonster(worldPoint.x, worldPoint.y);
+            spawn(worldPoint.x,worldPoint.y);
             world.villages().get(0).costManna(MANNA_COST_PER_DROP);
         }
 
@@ -49,4 +53,5 @@ public class SpawnMonsterTool extends Tool {
     @Override
     public void drag(float x, float y) {
     }
+
 }

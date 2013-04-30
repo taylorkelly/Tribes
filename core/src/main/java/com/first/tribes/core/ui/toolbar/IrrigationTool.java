@@ -34,7 +34,7 @@ public class IrrigationTool extends Tool {
         surface.setFillColor(Color.rgb((selected ? 255 : 200), (selected ? 255 : 200), 0));
         surface.fillRect(x, y, width, height);
     }
-
+    
     @Override
     public String name() {
         return "Irrigation Tool";
@@ -49,12 +49,16 @@ public class IrrigationTool extends Tool {
         return this;
     }
 
+    public void dropIrrigation(Point p){
+    	 IrrigationPipe pipe = new IrrigationPipe(p.x, p.y, world);
+         pipe.addToWorld();
+    }
+    
     @Override
     public void release(float x, float y) {
         if (world.villages().get(0).manna() >= MANNA_COST_PER_DROP) {
             Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
-            IrrigationPipe pipe = new IrrigationPipe(worldPoint.x, worldPoint.y, world);
-            pipe.addToWorld();
+           dropIrrigation(worldPoint);
             world.villages().get(0).costManna(MANNA_COST_PER_DROP);
         }
     }

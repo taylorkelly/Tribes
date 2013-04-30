@@ -35,9 +35,9 @@ public class Toolbar implements PointerFocusable {
         tools = new ArrayList<Tool>(10);
         tools.add(new GrabTool(world));
         tools.add(new PushPullTool(world));
+        tools.add(new SpawnAvatarTool(world));
         tools.add(new FoodTool(world));
         tools.add(new SpawnTool(world));
-        tools.add(new SpawnAvatarTool(world));
         tools.add(new FloodTool(world));
         tools.add(new IrrigationTool(world));
         tools.add(new SpawnMonsterTool(world));

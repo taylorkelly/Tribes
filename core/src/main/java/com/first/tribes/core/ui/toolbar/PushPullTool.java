@@ -41,6 +41,20 @@ public class PushPullTool extends Tool {
         return MANNA_COST_PER_DELTA + " manna/update";
     }
 
+    public void bulldoze(Point p, boolean up){
+    	 HashSet<Tile> tiles = new HashSet<Tile>();
+
+         tiles.add(world.tileAt(p.x, p.y));
+         for (int i = 0; i < HIT_RADIUS; i++) {
+             HashSet<Tile> newTiles = new HashSet<Tile>();
+             for (Tile tile : tiles) {
+                 newTiles.addAll(Arrays.asList(tile.neighbors()));
+                 tile.setHeight(tile.height() + (up?HEIGHT_CHANGE:-1*HEIGHT_CHANGE));
+             }
+             tiles.addAll(newTiles);
+         }
+    }
+    
     @Override
     public PointerFocusable press(float x, float y) {
         if (world.villages().get(0).manna() >= MANNA_COST_PER_DELTA) {
@@ -51,17 +65,7 @@ public class PushPullTool extends Tool {
             }
 
             Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
-            HashSet<Tile> tiles = new HashSet<Tile>();
-
-            tiles.add(world.tileAt(worldPoint.x, worldPoint.y));
-            for (int i = 0; i < HIT_RADIUS; i++) {
-                HashSet<Tile> newTiles = new HashSet<Tile>();
-                for (Tile tile : tiles) {
-                    newTiles.addAll(Arrays.asList(tile.neighbors()));
-                    tile.setHeight(tile.height() + heightChange);
-                }
-                tiles.addAll(newTiles);
-            }
+           bulldoze(worldPoint,!Tribes.SHIFT);
             world.villages().get(0).costManna(MANNA_COST_PER_DELTA);
         }
         return this;

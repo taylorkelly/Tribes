@@ -108,11 +108,15 @@ public class SpawnAvatarTool extends Tool {
         }
     }
 
+    public void spawn(float x, float y, int village, int trait){
+    	world.villages().get(village).spawnAvatar(x, y, trait);
+    }
+    
     @Override
     public void release(float x, float y) {
     	 if (world.villages().get(0).manna() >= MANNA_COST_PER_DROP) {
     	Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
-        world.villages().get(0).spawnAvatar(worldPoint.x, worldPoint.y, currentTrait);
+        spawn(worldPoint.x, worldPoint.y,0, currentTrait);
         world.villages().get(0).costManna(MANNA_COST_PER_DROP);
     	 }}
 
