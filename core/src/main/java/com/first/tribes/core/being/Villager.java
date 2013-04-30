@@ -148,6 +148,7 @@ public class Villager extends Being {
                 v.setDead(DeathReason.KILLED_BY_VILLAGER);
                 hunger -= v.personality.hardiness() * SPOILS_CONSTANT;
                 personality.setReproductiveAppeal(personality.reproductiveAppeal() + SOLDIER_APPEAL);
+                village.addManna(Village.MANNA_PER_KILL);
             }
         }
     }

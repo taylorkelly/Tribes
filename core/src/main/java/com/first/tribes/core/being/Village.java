@@ -343,6 +343,7 @@ public class Village implements Updatee {
             float mobility = 0;
             float hardiness = 0;
             float aggression = 0;
+            float strength = 0;
 
             for (Villager villager : villagers) {
                 repAppeal += villager.personality.reproductiveAppeal();
@@ -352,6 +353,7 @@ public class Village implements Updatee {
                 mobility += villager.personality.mobility();
                 hardiness += villager.personality.hardiness();
                 aggression += villager.personality.aggression();
+                strength += villager.personality.strength();
             }
             intelligence = ((int) ((intelligence / villagers.size()) * 1000)) / 1000f;
             mobility = ((int) ((mobility / villagers.size()) * 1000)) / 1000f;
@@ -360,6 +362,7 @@ public class Village implements Updatee {
             longevity = ((int) ((longevity / villagers.size()) * 1000)) / 1000f;
             aggression = ((int) ((aggression / villagers.size()) * 1000)) / 1000f;
             loyalty = ((int) ((loyalty / villagers.size()) * 1000)) / 1000f;
+            strength = ((int) ((strength / villagers.size()) * 1000)) / 1000f;
 
 //            visualInfo.canvas().setFillGradient(graphics().createLinearGradient(width, 0, width, height, new int[]{Color.rgb(50, 50, 50), Color.rgb(0, 0, 0)}, new float[]{0, 1}));
             visualInfo.canvas().setFillColor(Color.rgb(0, 0, 0));
@@ -377,7 +380,7 @@ public class Village implements Updatee {
             StringBuilder stats = new StringBuilder();
             stats.append("Avg Rep. Appeal: " + repAppeal);
             stats.append('\n');
-            stats.append("Avg Longevity: " + longevity);
+            stats.append("Avg Longevity: " + (longevity * Villager.MAX_AGE / 1000.0) + " secs");
             stats.append('\n');
             stats.append("Avg Intelligence: " + intelligence);
             stats.append('\n');
@@ -388,6 +391,8 @@ public class Village implements Updatee {
             stats.append("Avg Aggression: " + aggression);
             stats.append('\n');
             stats.append("Avg Loyalty: " + loyalty);
+            stats.append('\n');
+            stats.append("Avg Strength: " + strength);
             stats.append('\n');
 
             if (textFont == null)
@@ -441,5 +446,9 @@ public class Village implements Updatee {
         }
 
         return sample;
+    }
+
+    void addManna(int mannaEarned) {
+        manna += mannaEarned;
     }
 }

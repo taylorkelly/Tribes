@@ -95,15 +95,6 @@ public class Cave implements Updatee {
         return enemies;
     }
 
-    // Time 0:00  --- Monster 1
-    // Time 1:00  --- Monster 2
-    // Time 1:45  --- Monster 3
-    // Time 2:18  --- Monster 4
-    // Time 2:43  --- Monster 5
-    // Time 2:43  --- Monster 5
-    // Time 3:01  --- Monster 6
-    // Time 3:15  --- Monster 7
-    // Time 3:25  --- Monster 8
     @Override
     public void update(float delta) {
         currentMonsterTime += delta;
@@ -114,7 +105,6 @@ public class Cave implements Updatee {
                 nextMonsterDelay = MINIMUM_MONSTER_DELAY;
             }
             maxMonsters++;
-            System.out.println(System.currentTimeMillis()/1000 + ": " + maxMonsters);
         }
 
 

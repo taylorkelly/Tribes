@@ -17,33 +17,28 @@ import static playn.core.PlayN.*;
 import playn.core.TextFormat;
 import playn.core.TextLayout;
 
-public class Monster extends Being{
+public class Monster extends Being {
 
-	
-	private static final float MAX_ATTACK_RADIUS = 500f;
-	private static final float ENEMY_PRIORITY = 30f;
-	private static final float MONSTER_SIZE = 30.0f;
+    private static final float MAX_ATTACK_RADIUS = 500f;
+    private static final float ENEMY_PRIORITY = 30f;
+    private static final float MONSTER_SIZE = 30.0f;
     private static final float HEIGHT_PRIORITY = .01f;
-	
-	private static int monsterCount = 0;
+    private static int monsterCount = 0;
     private Cave cave;
-    
     private String name;
     private int number;
-
     private int color;
-	
-	public Monster(float xPos, float yPos, Cave cave, int color) {
-		super(xPos, yPos, MONSTER_SIZE, MONSTER_SIZE);
+
+    public Monster(float xPos, float yPos, Cave cave, int color) {
+        super(xPos, yPos, MONSTER_SIZE, MONSTER_SIZE);
         this.cave = cave;
         this.color = color;
         this.xVel = (random() - 0.5f) * personality.mobility() * 4;
         this.yVel = (random() - 0.5f) * personality.mobility() * 4;
         name = genName();
         number = ++monsterCount;
-	}
-	
-	final static String firstSounds[] = {"'Ai", "Ali'", "Al", "'Au", "'Eh", "Ha'", "Ha", "Hi'", "Ho'", "'Io", "Ka'", "Ka", "Kai", "Ke'", "Ke", "Ki", "Ko", "Ku", "Ku'", "La'", "La", "Lei", "Li", "Lo", "Lu", "Ma", "Me", "Mi", "Mo", "Na'", "Nai'", "No", "Ona", "Pa", "Pi'", "Po'", "Pu", "U'", "Ulu", "Wa"};
+    }
+    final static String firstSounds[] = {"'Ai", "Ali'", "Al", "'Au", "'Eh", "Ha'", "Ha", "Hi'", "Ho'", "'Io", "Ka'", "Ka", "Kai", "Ke'", "Ke", "Ki", "Ko", "Ku", "Ku'", "La'", "La", "Lei", "Li", "Lo", "Lu", "Ma", "Me", "Mi", "Mo", "Na'", "Nai'", "No", "Ona", "Pa", "Pi'", "Po'", "Pu", "U'", "Ulu", "Wa"};
     final static String laterSounds[] = {"la", "loa", "ka", "ne", "na", "kai", "hu", "wa", "ok", "ni", "pa", "ke", "leo", "le", "mi", "mue", "pe", "ma", "mo", "ki", "lo", "pau", "nu", "ke"};
 
     public static String genName() {
@@ -56,9 +51,8 @@ public class Monster extends Being{
 
         return name;
     }
-
     private CanvasImage monsterImage;
-    
+
     public void paintToRect(Rectangle rect, Surface surface) {
         if (monsterImage == null) {
             monsterImage = graphics().createImage(width, height);
@@ -73,15 +67,15 @@ public class Monster extends Being{
             return;
 
         Tile myTile = cave.tileAt(this.xPos, this.yPos);
-        
-        if(personality.aggression() > (float)Math.random()){
-        	attack(findTarget());
+
+        if (personality.aggression() > (float) Math.random()) {
+            attack(findTarget());
         }
-        
+
         if (newGoal(myTile)) {
-                
+
             Tile bestTile = pickTile(myTile);
-            
+
             xVel = bestTile.bounds().center().x - this.xPos;
             yVel = bestTile.bounds().center().y - this.yPos;
             float speed = (float) Math.sqrt(xVel * xVel + yVel * yVel);
@@ -108,25 +102,24 @@ public class Monster extends Being{
     }
 
     public void attack(Being v) {
-        
-    	if(v!=null){
-    		float a = ((float) Math.random() * personality.strength());
-    		float b = ((float) Math.random() * v.personality.hardiness());
-        	if (a > b) {
-        		v.setDead(DeathReason.KILLED_BY_MONSTER);
-        	}
-    	}
+
+        if (v != null) {
+            float a = ((float) Math.random() * personality.strength());
+            float b = ((float) Math.random() * v.personality.hardiness());
+            if (a > b) {
+                v.setDead(DeathReason.KILLED_BY_MONSTER);
+            }
+        }
     }
-    
 
     public Tile pickTile(Tile myTile) {
         Tile bestTile = myTile;
         float bestScore = calculateScore(myTile);
-        
+
         float foundScore;
         for (Tile tile : myTile.neighbors()) {
             if (tile.isSafe(0)) {
-            	foundScore = calculateScore(tile);
+                foundScore = calculateScore(tile);
                 if (foundScore > bestScore) {
                     bestScore = foundScore;
                     bestTile = tile;
@@ -135,60 +128,58 @@ public class Monster extends Being{
         }
         return bestTile;
     }
-    
-    public float calculateScore(Tile tile){
-    	float foundEnemy = 0;
-    	List<Village> enemies = cave.enemyVillages();
-    	for(int i=0; i<enemies.size(); i++){
-    		foundEnemy += enemies.get(i).getDensityAt(tile)*personality.aggression()/((float)enemies.size()) ;
-    	}
-    	foundEnemy*=ENEMY_PRIORITY;
-    	
-    	float heightValue = tile.height()*personality.hardiness()*HEIGHT_PRIORITY;
-    	
+
+    public float calculateScore(Tile tile) {
+        float foundEnemy = 0;
+        List<Village> enemies = cave.enemyVillages();
+        for (int i = 0; i < enemies.size(); i++) {
+            foundEnemy += enemies.get(i).getDensityAt(tile) * personality.aggression() / ((float) enemies.size());
+        }
+        foundEnemy *= ENEMY_PRIORITY;
+
+        float heightValue = tile.height() * personality.hardiness() * HEIGHT_PRIORITY;
+
 //    	if(Math.random()<0.01)
 //    		System.out.println(foundFood+" "+foundEnemy+" "+foundFriend+" "+heightValue);
-    	
-    	return foundEnemy+heightValue;
+
+        return foundEnemy + heightValue;
     }
-    
-    public Being findTarget(){
-    	
-    	List<Being> e = new ArrayList<Being>();
-    	
-    	List<Village> v = cave.enemyVillages();
-    	
-    	float radius = MAX_ATTACK_RADIUS;
-    	
-    	for(int i=0; i<v.size(); i++){
-    		e.addAll(v.get(i).villagersInArea( new Rectangle(xPos-radius,yPos-radius,2*radius,2*radius) ));
-    	}
-    	float minDist = radius*radius;
-    	int minLoc = -1;
-    	for(int i=0; i<e.size(); i++){
-    		if(Math.pow(e.get(i).xPos()-xPos(), 2)+Math.pow(e.get(i).yPos()-yPos(),2)<minDist){
-    			minLoc=i;
-    			minDist = (float) (Math.pow(e.get(i).xPos()-xPos(), 2)+Math.pow(e.get(i).yPos()-yPos(),2));
-    		}
-    	}
-    	
-    	
-    	if(minLoc==-1){
-    		return null;
-    	}
-    	return e.get(minLoc);
+
+    public Being findTarget() {
+
+        List<Being> e = new ArrayList<Being>();
+
+        List<Village> v = cave.enemyVillages();
+
+        float radius = MAX_ATTACK_RADIUS;
+
+        for (int i = 0; i < v.size(); i++) {
+            e.addAll(v.get(i).villagersInArea(new Rectangle(xPos - radius, yPos - radius, 2 * radius, 2 * radius)));
+        }
+        float minDist = radius * radius;
+        int minLoc = -1;
+        for (int i = 0; i < e.size(); i++) {
+            if (Math.pow(e.get(i).xPos() - xPos(), 2) + Math.pow(e.get(i).yPos() - yPos(), 2) < minDist) {
+                minLoc = i;
+                minDist = (float) (Math.pow(e.get(i).xPos() - xPos(), 2) + Math.pow(e.get(i).yPos() - yPos(), 2));
+            }
+        }
+
+
+        if (minLoc == -1) {
+            return null;
+        }
+        return e.get(minLoc);
     }
-    
+
     public boolean newGoal(Tile myTile) {
 
-        if (Math.random()<1) {
+        if (Math.random() < 1) {
             return true;
         }
-        
+
         return false;
     }
-
-
     public static final float STATS_BOX_HEIGHT = 96f;
 
     public void drawStatsBoxAt(Surface surface, float x, float y, float width, float height) {
@@ -243,8 +234,4 @@ public class Monster extends Being{
         }
         surface.drawImage(visualInfo, x, y);
     }
-
-	
-	
-	
 }

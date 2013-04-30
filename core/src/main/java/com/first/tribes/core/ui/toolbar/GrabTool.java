@@ -11,6 +11,7 @@ import java.util.List;
 import playn.core.CanvasImage;
 import playn.core.Color;
 import playn.core.Font;
+import playn.core.Image;
 import playn.core.ImmediateLayer;
 import playn.core.Surface;
 import playn.core.TextFormat;
@@ -34,10 +35,12 @@ class GrabTool extends Tool {
     private List<Villager> selectedVillagers;
     private List<Villager> displayedVillagers;
     private Font font;
+    private Image pointerImage;
 
     public GrabTool(TribesWorld world) {
         super(world);
         font = graphics().createFont("Sans serif", Font.Style.BOLD, 14);
+        pointerImage = assets().getImage("images/pointer.png");
         
         dragLayer = graphics().createImmediateLayer(new ImmediateLayer.Renderer() {
             @Override
@@ -84,6 +87,7 @@ class GrabTool extends Tool {
     public void render(Surface surface, float x, float y, float width, float height) {
         surface.setFillColor(Color.rgb((selected ? 255 : 200), 0, 0));
         surface.fillRect(x, y, width, height);
+        surface.drawImage(pointerImage, x + width * 0.125f, y + height * 0.125f, width * 0.75f, height  * 0.75f);
     }
 
     public String name() {
