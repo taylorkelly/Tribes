@@ -60,12 +60,13 @@ public class FloodTool extends Tool {
     @Override
     public PointerFocusable press(float x, float y) {
         if (world.villages().get(0).manna() >= MANNA_COST_PER_DELTA()) {
+            int cost = MANNA_COST_PER_DELTA();
             if (Tribes.SHIFT) {
                 flood(false);
             } else {
                 flood(true);
             }
-            world.villages().get(0).costManna(MANNA_COST_PER_DELTA());
+            world.villages().get(0).costManna(cost);
         }
 
         return this;

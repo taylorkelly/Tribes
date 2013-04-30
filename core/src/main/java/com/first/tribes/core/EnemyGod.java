@@ -53,8 +53,9 @@ public class EnemyGod implements TimerTask {
 			
 			boolean up = random()<.6f;
 			while(i<REPEATAMOUNT&&ownVillage.manna()>flTool.MANNA_COST_PER_DELTA()){
+                            int cost = flTool.MANNA_COST_PER_DELTA();
 				flTool.flood(up);
-				ownVillage.costManna(flTool.MANNA_COST_PER_DELTA());
+				ownVillage.costManna(cost);
 			i++;
 			}
 			if(i>0){
