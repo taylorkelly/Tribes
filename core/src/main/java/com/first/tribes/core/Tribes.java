@@ -42,8 +42,9 @@ public class Tribes implements Game {
     }
 
     public void init(List<Personality> sample) {
-        world = new TribesWorld(this, sample);
-        updatees = new ArrayList<Updatee>();
+    	updatees = new ArrayList<Updatee>();
+    	world = new TribesWorld(this, sample);
+        
 
         registerUpdatee(new EndGame(this));
 

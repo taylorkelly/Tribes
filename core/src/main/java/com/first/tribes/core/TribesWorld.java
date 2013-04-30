@@ -13,6 +13,7 @@ import com.first.tribes.core.being.Village;
 import com.first.tribes.core.being.Villager;
 import com.first.tribes.core.ui.MiniMap;
 import com.first.tribes.core.ui.toolbar.Toolbar;
+import com.first.tribes.core.util.Timer;
 import com.first.tribes.core.pcg.*;
 import static playn.core.PlayN.*;
 import java.util.ArrayList;
@@ -54,8 +55,12 @@ public class TribesWorld implements PointerFocusable {
     private List<DrawnObject> extraDrawnObjects = new ArrayList<DrawnObject>();
     private Tile[][] tiles;
     private Tribes game;
+    private EnemyGod enemy;
+    private Timer enemyTimer;
     public float waterLevel = 0;
     public static final float NORMAL_WATER_LEVEL = 0;
+	private static final long REPEATED_ENEMY_DELAY = 5000;
+	private static final long INITIAL_ENEMY_DELAY = 25000;
 
     private final float EXTRA_VIEWPORT_PADDING() {
         return 60f / scale();
@@ -174,6 +179,10 @@ public class TribesWorld implements PointerFocusable {
                 toolbar.render(surface);
             }
         }), toolbar.x(), toolbar.y());
+        
+        enemy=new EnemyGod(this);
+        enemyTimer = new Timer(game);
+        enemyTimer.schedule(enemy, INITIAL_ENEMY_DELAY, REPEATED_ENEMY_DELAY);
     }
 
     public TribesWorld(Tribes game) {
