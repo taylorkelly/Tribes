@@ -104,8 +104,8 @@ public class Monster extends Being {
     public void attack(Being v) {
 
         if (v != null) {
-            float a = ((float) Math.random() * personality.strength());
-            float b = ((float) Math.random() * v.personality.hardiness());
+            float a = (personality.strength() * 0.75f + personality.strength() * random() * 0.25f);
+            float b = (v.personality.hardiness() * 0.75f + v.personality.hardiness() * random() * 0.25f);
             if (a > b) {
                 v.setDead(DeathReason.KILLED_BY_MONSTER);
             }

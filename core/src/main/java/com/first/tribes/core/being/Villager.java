@@ -62,7 +62,6 @@ public class Villager extends Being {
         villager.personality = this.personality.copy();
         return villager;
     }
-    
     final static String firstSounds[] = {"'Ai", "Ali'", "Al", "'Au", "'Eh", "Ha'", "Ha", "Hi'", "Ho'", "'Io", "Ka'", "Ka", "Kai", "Ke'", "Ke", "Ki", "Ko", "Ku", "Ku'", "La'", "La", "Lei", "Li", "Lo", "Lu", "Ma", "Me", "Mi", "Mo", "Na'", "Nai'", "No", "Ona", "Pa", "Pi'", "Po'", "Pu", "U'", "Ulu", "Wa"};
     final static String laterSounds[] = {"la", "loa", "ka", "ne", "na", "kai", "hu", "wa", "ok", "ni", "pa", "ke", "leo", "le", "mi", "mue", "pe", "ma", "mo", "ki", "lo", "pau", "nu", "ke"};
 
@@ -142,8 +141,8 @@ public class Villager extends Being {
     public void attack(Being v) {
 
         if (v != null) {
-            float a = ((float) Math.random() * personality.strength());
-            float b = ((float) Math.random() * v.personality.hardiness());
+            float a = (personality.strength() * 0.75f + personality.strength() * random() * 0.25f);
+            float b = (v.personality.hardiness() * 0.75f + v.personality.hardiness() * random() * 0.25f);
             if (a > b) {
                 v.setDead(DeathReason.KILLED_BY_VILLAGER);
                 hunger -= v.personality.hardiness() * SPOILS_CONSTANT;
@@ -180,10 +179,10 @@ public class Villager extends Being {
         foundEnemy *= ENEMY_PRIORITY + random();
         float foundFriend = village.getDensityAt(tile) * personality.loyalty() * FRIEND_PRIORITY + random();
 
-        if(tile.equals(village.tileAt(xPos(), yPos()))){
-        	foundFriend = 0;
+        if (tile.equals(village.tileAt(xPos(), yPos()))) {
+            foundFriend = 0;
         }
-        
+
         float heightValue = tile.height() * personality.hardiness() * HEIGHT_PRIORITY + random();
 
 //    	if(Math.random()<0.01)
