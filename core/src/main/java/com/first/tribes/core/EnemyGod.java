@@ -10,11 +10,11 @@ import static playn.core.PlayN.*;
 public class EnemyGod implements TimerTask {
 	private static final int FLOOD_POSITION=5;//Flood tool Position in toolbar
 	private static final int FOOD_POSITION=2;//Food Tool Position in toolbar
-	private static final int IRRIGATION_POSITION=;//Irrigation tool
-	private static final int PUSHPULL_POSITION=;//push
-	private static final int SPAWN_AVATAR_POSITION=;
-	private static final int SPAWN_POSITION=;
-	private static final int SPAWN_MONSTER_POSITION=;
+//	private static final int IRRIGATION_POSITION=;//Irrigation tool
+//	private static final int PUSHPULL_POSITION=;//push
+//	private static final int SPAWN_AVATAR_POSITION=;
+//	private static final int SPAWN_POSITION=;
+//	private static final int SPAWN_MONSTER_POSITION=;
 	
 	private static final int numberOfPowers=7;
 	private static final int REPEATAMOUNT = 4;

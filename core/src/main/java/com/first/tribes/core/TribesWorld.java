@@ -47,6 +47,7 @@ public class TribesWorld implements PointerFocusable {
     private Toolbar toolbar;
     private GroupLayer.Clipped groupLayer;
     private GroupLayer extraLayer;
+    private List<Layer> rightLayers = new ArrayList<Layer>();
     private Cave cave;
     private Dimension absoluteSize;
     private Rectangle viewPort;
@@ -148,23 +149,28 @@ public class TribesWorld implements PointerFocusable {
         // Layer for various extras (drag appearance, villager stats)
         groupLayer.add(extraLayer);
 
+
         // Layer for Minimap
-        groupLayer.addAt(graphics().createImmediateLayer((int) miniMap.width(), (int) miniMap.height(), new ImmediateLayer.Renderer() {
+        Layer miniMapLayer = graphics().createImmediateLayer((int) miniMap.width(), (int) miniMap.height(), new ImmediateLayer.Renderer() {
             @Override
             public void render(Surface surface) {
                 surface.drawImage(miniMap.image(), 0, 0);
             }
-        }), miniMap.x(), miniMap.y());
+        });
+        groupLayer.addAt(miniMapLayer, miniMap.x(), miniMap.y());
+        rightLayers.add(miniMapLayer);
 
         // Layer for Village stats
-        groupLayer.addAt(graphics().createImmediateLayer(new ImmediateLayer.Renderer() {
+        Layer villageStats = graphics().createImmediateLayer(new ImmediateLayer.Renderer() {
             @Override
             public void render(Surface surface) {
                 for (int i = 0; i < villages.size(); i++) {
                     villages.get(i).drawStatsBoxAt(surface, 0, (Village.STATS_BOX_HEIGHT + 5) * i, miniMap.width(), Village.STATS_BOX_HEIGHT);
                 }
             }
-        }), miniMap.x(), miniMap.y() + miniMap.height() + 10);
+        });
+        groupLayer.addAt(villageStats, miniMap.x(), miniMap.y() + miniMap.height() + 10);
+        rightLayers.add(villageStats);
 
 
         // Layer for Toolbar
@@ -188,9 +194,8 @@ public class TribesWorld implements PointerFocusable {
         return villagers;
     }
 
-
-    public List<Monster> monsters(){
-    	return cave.monsters();
+    public List<Monster> monsters() {
+        return cave.monsters();
     }
 
     public int addExtraLayer(Layer additionalLayer) {
@@ -300,8 +305,12 @@ public class TribesWorld implements PointerFocusable {
         } else {
             //Center it
             viewPort.x = (absoluteSize.width - viewPort.width) / 2;
-
         }
+
+        for (Layer layer : rightLayers) {
+            layer.setAlpha(1f - ((viewPort.x + viewPort.width - 5000) / absoluteSize.width)/1.2f);
+        }
+
 
         if (viewPort.height <= absoluteSize.height) {
             if (viewPort.y < -EXTRA_VIEWPORT_PADDING()) {

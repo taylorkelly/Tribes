@@ -105,7 +105,7 @@ public class Cave implements Updatee {
             for (int j = 0; j < densityMap[i].length; j++) {
                 
                 densityMap[i][j] *= (DECR_CONST);
-                if (densityMap[i][j] < 0) {
+                if (densityMap[i][j] < 0 || !world.tiles()[i][j].isSafe(0)) {
                     densityMap[i][j] = 0f;
                 }
                 if (densityMap[i][j] > 1) {

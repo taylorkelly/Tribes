@@ -201,13 +201,13 @@ public class Tribes implements Game {
                         world.zoomDelta(ZOOM_AMOUNT);
                         break;
                     case PLUS:
-                    	break;
+                        break;
                     case Z:
-                    	Tile.changeProportion(-0.05f);
-                    	break;
+                        Tile.changeProportion(-0.05f);
+                        break;
                     case X:
-                    	Tile.changeProportion(0.05f);
-                    	break;
+                        Tile.changeProportion(0.05f);
+                        break;
                     case EQUALS:
 
                         world.zoomDelta(1 / ZOOM_AMOUNT);
@@ -228,13 +228,17 @@ public class Tribes implements Game {
 
         @Override
         public void onPointerEnd(Pointer.Event event) {
-            focused.release(event.x(), event.y());
-            focused = null;
+            if (focused != null) {
+                focused.release(event.x(), event.y());
+                focused = null;
+            }
         }
 
         @Override
         public void onPointerDrag(Pointer.Event event) {
-            focused.drag(event.x(), event.y());
+            if (focused != null) {
+                focused.drag(event.x(), event.y());
+            }
         }
 
         @Override

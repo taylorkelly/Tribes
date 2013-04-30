@@ -20,7 +20,7 @@ import playn.core.TextLayout;
 public class Monster extends Being{
 
 	
-	private static final float MAX_ATTACK_RADIUS = 1000f;
+	private static final float MAX_ATTACK_RADIUS = 500f;
 	private static final float ENEMY_PRIORITY = 30f;
 	private static final float MONSTER_SIZE = 30.0f;
     private static final float HEIGHT_PRIORITY = .01f;

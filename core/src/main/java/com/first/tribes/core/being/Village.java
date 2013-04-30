@@ -182,7 +182,7 @@ public class Village implements Updatee {
             for (int j = 0; j < densityMap[i].length; j++) {
 
                 densityMap[i][j] *= (DECR_CONST);
-                if (densityMap[i][j] < 0) {
+                if (densityMap[i][j] < 0 || !world.tiles()[i][j].isSafe(0)) {
                     densityMap[i][j] = 0f;
                 }
                 if (densityMap[i][j] > 1) {
@@ -220,8 +220,11 @@ public class Village implements Updatee {
                 if (intelligenceDensity[i][j] > MIN_INTELLIGENCE_TO_BUILD_IRRIGATION_PIPE) {
                     if(world.tileAt(i, j).accessories().size() == 0) {
                         System.out.println("Building Pipe");
-                        IrrigationPipe pipe = new IrrigationPipe(world.tileAt(i, j).bounds().centerX(), world.tileAt(i, j).bounds().centerY(), world);
+                        IrrigationPipe pipe = new IrrigationPipe(world.tiles()[i][j].bounds().centerX(), world.tiles()[i][j].bounds().centerY(), world);
                         pipe.addToWorld();
+                        System.out.println("We should have 1: " + world.tileAt(i, j).accessories().size());
+                    } else {
+                        System.out.println("not building a pipe.. already there");
                     }
                 }
             }
@@ -229,7 +232,7 @@ public class Village implements Updatee {
 
         int villageSize = villagers.size();
         for (Villager villager : new ArrayList<Villager>(villagers.subList(0, villageSize))) {
-            if (Math.pow(villager.personality.reproductiveAppeal(), REPRODUCTIVE_MODIFIER) * reproductiveBaseRate() > random()) {
+            if (villager.personality.reproductiveAppeal() * reproductiveBaseRate() > random()) {
                 reproduce(villager);
                 manna += MANNA_PER_BIRTH;
             }
