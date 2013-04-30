@@ -29,8 +29,8 @@ import pythagoras.f.Rectangle;
 public class Village implements Updatee {
 
 
-    public static final float MIN_INTELLIGENCE_TO_BUILD_IRRIGATION_PIPE = 2f;
-    public static final float INTELLIGENCE_BASELINE = 0.15f;
+    public static final float MIN_INTELLIGENCE_TO_BUILD_IRRIGATION_PIPE = 4f;
+    public static final float INTELLIGENCE_BASELINE = 0.17f;
     public static final float POSITION_DEVIATION = 10.0f;
     public static final float REPRODUCTIVE_BASE_RATE = 0.02f;
     public static final float REPRODUCTIVE_MODIFIER = 0.6f;
@@ -295,7 +295,7 @@ public class Village implements Updatee {
 
     float gatherFood(Villager villager, float requestedFood) {
         Tile tile = world.tileAt(villager.xPos, villager.yPos);
-        float foodGathered = Math.min(tile.numFood, requestedFood * (float) Math.pow(1 - villager.personality.intelligence(), 3));
+        float foodGathered = Math.min(tile.numFood, requestedFood * (float) Math.pow(1 - villager.personality.intelligence(), 2));
 
         if (villager.personality.intelligence() > FOOD_PRODUCTION_THRESHOLD) {
             float foodProduced = (villager.personality.intelligence() - FOOD_PRODUCTION_THRESHOLD) * FOOD_PRODUCTION_RATE;
@@ -303,7 +303,7 @@ public class Village implements Updatee {
         }
 
         tile.numFood -= foodGathered;
-        foodGathered = foodGathered / (float) Math.pow(1 - villager.personality.intelligence(), 3);
+        foodGathered = foodGathered / (float) Math.pow(1 - villager.personality.intelligence(), 2);
         return foodGathered;
     }
 

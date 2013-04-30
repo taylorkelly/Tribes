@@ -13,7 +13,12 @@ import com.first.tribes.core.util.Updatee;
 
 public class Cave implements Updatee {
 
-    private static final int STARTING_MONSTERS = 7;
+    private static final int STARTING_MONSTERS = 1;
+    private static final float INITIAL_MONSTER_DELAY = 30000; // 1 minute
+    private static final float MINIMUM_MONSTER_DELAY = 5000; // 10 seconds
+    private static final float ADDITIONAL_MONSTER_TIME_DECAY = 0.70f;
+    private float nextMonsterDelay;
+    private float currentMonsterTime;
     private static final int MONSTER_MULTIPLIER = 10;//how much stronger a monster is than an average human
     private ArrayList<Monster> monsterList;
     private int maxMonsters;
@@ -25,6 +30,7 @@ public class Cave implements Updatee {
         this.world = world;
         monsterColor = color;
         maxMonsters = STARTING_MONSTERS;
+        nextMonsterDelay = INITIAL_MONSTER_DELAY;
         monsterList = new ArrayList<Monster>(STARTING_MONSTERS);
 
         densityMap = new float[world.tileWidth()][world.tileHeight()];
@@ -33,7 +39,7 @@ public class Cave implements Updatee {
                 densityMap[i][j] = 0f;
             }
         }
-        
+
         while (monsterList.size() < maxMonsters) {
             monsterList.add(newMonster());
         }
@@ -51,7 +57,7 @@ public class Cave implements Updatee {
         monster.personality.setHardiness(MONSTER_MULTIPLIER * monster.personality.hardiness());
         monster.personality.setStrength(MONSTER_MULTIPLIER * monster.personality.strength());
         monster.personality.setMobility(MONSTER_MULTIPLIER * monster.personality.mobility());
-        
+
         return monster;
     }
 
@@ -89,9 +95,30 @@ public class Cave implements Updatee {
         return enemies;
     }
 
+    // Time 0:00  --- Monster 1
+    // Time 1:00  --- Monster 2
+    // Time 1:45  --- Monster 3
+    // Time 2:18  --- Monster 4
+    // Time 2:43  --- Monster 5
+    // Time 2:43  --- Monster 5
+    // Time 3:01  --- Monster 6
+    // Time 3:15  --- Monster 7
+    // Time 3:25  --- Monster 8
     @Override
     public void update(float delta) {
-    	for (int i = 0; i < monsterList.size(); i++) {
+        currentMonsterTime += delta;
+        if (currentMonsterTime >= nextMonsterDelay) {
+            currentMonsterTime -= nextMonsterDelay;
+            nextMonsterDelay *= ADDITIONAL_MONSTER_TIME_DECAY;
+            if (nextMonsterDelay < MINIMUM_MONSTER_DELAY) {
+                nextMonsterDelay = MINIMUM_MONSTER_DELAY;
+            }
+            maxMonsters++;
+            System.out.println(System.currentTimeMillis()/1000 + ": " + maxMonsters);
+        }
+
+
+        for (int i = 0; i < monsterList.size(); i++) {
 
             Monster m = monsterList.get(i);
             densityMap[tileAt(m.xPos, m.yPos).getXIndex()][tileAt(m.xPos, m.yPos).getYIndex()] = 1f;
@@ -100,10 +127,10 @@ public class Cave implements Updatee {
         float SPREAD_CONST = 0.01f;
         float DECR_CONST = 0.90f;
 
-        
+
         for (int i = 0; i < densityMap.length; i++) {
             for (int j = 0; j < densityMap[i].length; j++) {
-                
+
                 densityMap[i][j] *= (DECR_CONST);
                 if (densityMap[i][j] < 0 || !world.tiles()[i][j].isSafe(0)) {
                     densityMap[i][j] = 0f;
@@ -115,30 +142,30 @@ public class Cave implements Updatee {
                 int rad = 1;
                 for (int k = Math.max(i - rad, 0); k <= Math.min(i + rad, densityMap.length - 1); k++) {
                     for (int l = Math.max(j - rad, 0); l <= Math.min(j + rad, densityMap[k].length - 1); l++) {
-                        densityMap[i][j] += densityMap[k][l]*SPREAD_CONST;
+                        densityMap[i][j] += densityMap[k][l] * SPREAD_CONST;
                     }
                 }
             }
         }
 
-    	
-    	
-    	
-    	  for (int i = 0; i < monsterList.size(); i++) {
-              Being being = monsterList.get(i);
-              being.update(delta);
-              if (being.isDead()) {
-                 monsterList.remove(being);
-                  i--;
-              }
-          }
-    	
-    	while (monsterList.size() < maxMonsters) {
+
+
+
+        for (int i = 0; i < monsterList.size(); i++) {
+            Being being = monsterList.get(i);
+            being.update(delta);
+            if (being.isDead()) {
+                monsterList.remove(being);
+                i--;
+            }
+        }
+
+        while (monsterList.size() < maxMonsters) {
             monsterList.add(newMonster());
         }
 
     }
-    
+
     public float getDensityAt(int x, int y) {
         return densityMap[x][y];
 
@@ -151,7 +178,6 @@ public class Cave implements Updatee {
     public float getDensityAt(Tile t) {
         return densityMap[t.getXIndex()][t.getYIndex()];
     }
-
 
     public ArrayList<Monster> monsters() {
         return monsterList;
