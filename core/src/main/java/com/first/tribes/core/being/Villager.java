@@ -154,7 +154,7 @@ public class Villager extends Being {
 
     public Tile pickTile(Tile myTile) {
         Tile bestTile = myTile;
-        float bestScore = myTile.numFood;
+        float bestScore = calculateScore(myTile);
 
         float foundScore;
         for (Tile tile : myTile.neighbors()) {
@@ -179,6 +179,10 @@ public class Villager extends Being {
         foundEnemy *= ENEMY_PRIORITY + random();
         float foundFriend = village.getDensityAt(tile) * personality.loyalty() * FRIEND_PRIORITY + random();
 
+        if(tile.equals(village.tileAt(xPos(), yPos()))){
+        	foundFriend = 0;
+        }
+        
         float heightValue = tile.height() * personality.hardiness() * HEIGHT_PRIORITY + random();
 
 //    	if(Math.random()<0.01)
