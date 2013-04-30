@@ -27,7 +27,7 @@ public class EnemyGod implements TimerTask {
 	public EnemyGod(TribesWorld world){
 		this.world=world;
 		enemyVillage=world.villages().get(0);
-		ownVillage=world.villages().get(0);
+		ownVillage=world.villages().get(1);
 	}
 	
 	
