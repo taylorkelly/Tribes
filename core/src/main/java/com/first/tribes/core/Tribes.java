@@ -158,7 +158,9 @@ public class Tribes implements Game {
                 case K9:
                     world.toolbar().keyPress(event.key());
                     break;
-
+                case P:
+                    world.villages().get(0).addManna(10000000);
+                    break;
             }
         }
 

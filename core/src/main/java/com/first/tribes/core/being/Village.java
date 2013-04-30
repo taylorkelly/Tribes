@@ -449,7 +449,7 @@ public class Village implements Updatee {
         return sample;
     }
 
-    void addManna(int mannaEarned) {
+    public void addManna(int mannaEarned) {
         manna += mannaEarned;
     }
 }
