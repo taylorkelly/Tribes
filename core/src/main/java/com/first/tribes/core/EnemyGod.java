@@ -46,10 +46,11 @@ public class EnemyGod implements TimerTask {
 	
 	@Override
 	public void run() {
+		int i=0;
 		switch((int) (random()*10)){
 		case 0://flood
 			FloodTool flTool = (FloodTool) world.toolbar().getTools().get(FLOOD_POSITION);
-			int i=0;
+			
 			boolean up = random()<.6f;
 			while(i<REPEATAMOUNT&&ownVillage.manna()>flTool.MANNA_COST_PER_DELTA()){
 				flTool.flood(up);
@@ -83,7 +84,7 @@ public class EnemyGod implements TimerTask {
 			PushPullTool pTool = (PushPullTool) world.toolbar().getTools().get(PUSHPULL_POSITION);
 			if(ownVillage.manna()>PushPullTool.MANNA_COST_PER_DELTA){
 				Point p = randomPoint();
-				for(int i=0;i<REPEATAMOUNT;i++){
+				for(i=0;i<REPEATAMOUNT;i++){
 					pTool.bulldoze(p, random()<0.5f);
 					}
 				ownVillage.costManna(PushPullTool.MANNA_COST_PER_DELTA);
