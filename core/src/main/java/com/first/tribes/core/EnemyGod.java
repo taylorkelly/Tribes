@@ -9,6 +9,8 @@ import static playn.core.PlayN.*;
 
 
 public class EnemyGod implements TimerTask {
+	public static final boolean ON=true;
+	
 	private static final int FLOOD_POSITION=5;//Flood tool Position in toolbar
 	private static final int FOOD_POSITION=3;//Food Tool Position in toolbar
 	private static final int IRRIGATION_POSITION=6;//Irrigation tool
@@ -44,18 +46,20 @@ public class EnemyGod implements TimerTask {
 	
 	@Override
 	public void run() {
+		int i=0;
 		switch((int) (random()*10)){
 		case 0://flood
 			FloodTool flTool = (FloodTool) world.toolbar().getTools().get(FLOOD_POSITION);
-			if(ownVillage.manna()>flTool.MANNA_COST_PER_DELTA()){
-				boolean up = random()<.6f;
-				for(int i=0;i<REPEATAMOUNT;i++){
-				flTool.flood(up);
-				}
-				ownVillage.costManna(flTool.MANNA_COST_PER_DELTA());
-				flTool.release(0,0);
 			
-			world.ping(randomPoint());
+			boolean up = random()<.6f;
+			while(i<REPEATAMOUNT&&ownVillage.manna()>flTool.MANNA_COST_PER_DELTA()){
+				flTool.flood(up);
+				ownVillage.costManna(flTool.MANNA_COST_PER_DELTA());
+			i++;
+			}
+			if(i>0){
+				world.ping(randomPoint());
+				flTool.release(0,0);
 			}
 			break;
 		case 1://food
@@ -80,7 +84,7 @@ public class EnemyGod implements TimerTask {
 			PushPullTool pTool = (PushPullTool) world.toolbar().getTools().get(PUSHPULL_POSITION);
 			if(ownVillage.manna()>PushPullTool.MANNA_COST_PER_DELTA){
 				Point p = randomPoint();
-				for(int i=0;i<REPEATAMOUNT;i++){
+				for(i=0;i<REPEATAMOUNT;i++){
 					pTool.bulldoze(p, random()<0.5f);
 					}
 				ownVillage.costManna(PushPullTool.MANNA_COST_PER_DELTA);

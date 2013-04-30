@@ -122,18 +122,19 @@ public class Cave implements Updatee {
             for (int j = 0; j < densityMap[i].length; j++) {
 
                 densityMap[i][j] *= (DECR_CONST);
-                if (densityMap[i][j] < 0 || !world.tiles()[i][j].isSafe(0)) {
-                    densityMap[i][j] = 0f;
-                }
-                if (densityMap[i][j] > 1) {
-                    densityMap[i][j] = 1f;
-                }
+                
 
                 int rad = 1;
                 for (int k = Math.max(i - rad, 0); k <= Math.min(i + rad, densityMap.length - 1); k++) {
                     for (int l = Math.max(j - rad, 0); l <= Math.min(j + rad, densityMap[k].length - 1); l++) {
                         densityMap[i][j] += densityMap[k][l] * SPREAD_CONST;
                     }
+                }
+                if (densityMap[i][j] < 0 || !world.tiles()[i][j].isSafe(0)) {
+                    densityMap[i][j] = 0f;
+                }
+                if (densityMap[i][j] > 1) {
+                    densityMap[i][j] = 1f;
                 }
             }
         }

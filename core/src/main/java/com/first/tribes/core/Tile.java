@@ -151,6 +151,10 @@ public class Tile extends DrawnObject implements Updatee {
     	
     }
 
+    public boolean equals(Tile t){
+    	return t.getXIndex()==getXIndex() && t.getYIndex() == getYIndex();
+    }
+    
     public float height() {
         return height;
     }

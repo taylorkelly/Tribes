@@ -186,9 +186,11 @@ public class TribesWorld implements PointerFocusable {
             }
         }), toolbar.x(), toolbar.y());
         
+        if(EnemyGod.ON){
         enemy=new EnemyGod(this);
         enemyTimer = new Timer(game);
         enemyTimer.schedule(enemy, INITIAL_ENEMY_DELAY, REPEATED_ENEMY_DELAY);
+    }
     }
 
     public TribesWorld(Tribes game) {
