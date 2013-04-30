@@ -436,7 +436,7 @@ public class EndGame implements Updatee {
                 TextLayout nameLayout = graphics().layoutText("You lose.", new TextFormat().withFont(titleFont));
 
                 Font detailFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 18);
-                String text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In adipiscing dui at dolor eleifend in convallis metus dictum. Donec at metus elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.";
+                String text = "Your villagers lay dead before you, the world has not been kind to them. Evolution will continue without them, as natural selection has left them behind. You can try your luck in a new world...";
                 TextLayout detailText = graphics().layoutText(text, new TextFormat().withFont(detailFont).withWrapWidth(width() - LayoutObject.FRAME_PADDING * 2 - LayoutObject.TEXT_PADDING * 2));
 
                 layout = new StackLayout();
@@ -482,7 +482,7 @@ public class EndGame implements Updatee {
                 TextLayout nameLayout = graphics().layoutText("You win.", new TextFormat().withFont(titleFont));
 
                 Font detailFont = graphics().createFont("Sans serif", Font.Style.PLAIN, 18);
-                String text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In adipiscing dui at dolor eleifend in convallis metus dictum. Donec at metus elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.";
+                String text = "Whether by luck or by skill, your village was victorious over the enemy. You can keep playing to see how long your villagers will last in an ever increasingly dangerous world, or start over in a new one...";
                 TextLayout detailText = graphics().layoutText(text, new TextFormat().withFont(detailFont).withWrapWidth(width() - LayoutObject.FRAME_PADDING * 2 - LayoutObject.TEXT_PADDING * 2));
 
                 layout = new StackLayout();

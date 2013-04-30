@@ -38,18 +38,18 @@ public class Tribes implements Game {
 
     @Override
     public void init() {
-        init(null);
+        init(null, null);
     }
 
-    public void init(List<Personality> sample) {
+    public void init(List<Personality> sample, List<Personality> sample2) {
     	updatees = new ArrayList<Updatee>();
-    	world = new TribesWorld(this, sample);
+    	world = new TribesWorld(this, sample, sample2);
         
 
         registerUpdatee(new EndGame(this));
 
         graphics().rootLayer().add(world.getLayer());
-        graphics().rootLayer().add(graphics().createImmediateLayer(new FPSRenderer()));
+//        graphics().rootLayer().add(graphics().createImmediateLayer(new FPSRenderer()));
 
         pointer().setListener(new TribesPointerListener());
         keyboard().setListener(new TribesKeyListener());
@@ -66,7 +66,8 @@ public class Tribes implements Game {
         graphics().rootLayer().clear();
         if (shouldSample) {
             List<Personality> sample = world.villages().get(0).samplePersonalities(10);
-            init(sample);
+            List<Personality> sample2 = world.villages().get(0).samplePersonalities(10);
+            init(sample, sample2);
         } else {
             init();
         }

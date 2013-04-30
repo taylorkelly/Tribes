@@ -60,14 +60,14 @@ public class TribesWorld implements PointerFocusable {
     private Timer enemyTimer;
     public float waterLevel = 0;
     public static final float NORMAL_WATER_LEVEL = 0;
-	private static final long REPEATED_ENEMY_DELAY = 5000;
-	private static final long INITIAL_ENEMY_DELAY = 25000;
+    private static final long REPEATED_ENEMY_DELAY = 5000;
+    private static final long INITIAL_ENEMY_DELAY = 25000;
 
     private final float EXTRA_VIEWPORT_PADDING() {
         return 60f / scale();
     }
 
-    public TribesWorld(Tribes game, List<Personality> sample) {
+    public TribesWorld(Tribes game, List<Personality> sample, List<Personality> sample2) {
         this.game = game;
 
         if (platformType() == Platform.Type.HTML) {
@@ -106,7 +106,6 @@ public class TribesWorld implements PointerFocusable {
         } while (!isSafe);
         if (sample == null) {
             villages.add(new Village(xPos, yPos, 10, this, Color.rgb(200, 0, 0)));
-
         } else {
             villages.add(new Village(xPos, yPos, sample, this, Color.rgb(200, 0, 0)));
         }
@@ -116,7 +115,11 @@ public class TribesWorld implements PointerFocusable {
             yPos = random() * absoluteSize.height;
             isSafe = !this.unsafe(xPos, yPos, 10.0f);
         } while (!isSafe);
-        villages.add(new Village(xPos, yPos, 10, this, Color.rgb(0, 0, 200)));
+        if (sample2 == null) {
+            villages.add(new Village(xPos, yPos, 10, this, Color.rgb(0, 0, 200)));
+        } else {
+            villages.add(new Village(xPos, yPos, sample2, this, Color.rgb(0, 0, 200)));
+        }
 
         cave = new Cave(this, Color.rgb(25, 50, 25));
         viewPort.x = villages.get(0).xPos() - viewPort.width / 2;
@@ -185,16 +188,16 @@ public class TribesWorld implements PointerFocusable {
                 toolbar.render(surface);
             }
         }), toolbar.x(), toolbar.y());
-        
-        if(EnemyGod.ON){
-        enemy=new EnemyGod(this);
-        enemyTimer = new Timer(game);
-        enemyTimer.schedule(enemy, INITIAL_ENEMY_DELAY, REPEATED_ENEMY_DELAY);
-    }
+
+        if (EnemyGod.ON) {
+            enemy = new EnemyGod(this);
+            enemyTimer = new Timer(game);
+            enemyTimer.schedule(enemy, INITIAL_ENEMY_DELAY, REPEATED_ENEMY_DELAY);
+        }
     }
 
     public TribesWorld(Tribes game) {
-        this(game, null);
+        this(game, null, null);
     }
 
     public List<Villager> villagers() {
@@ -319,7 +322,7 @@ public class TribesWorld implements PointerFocusable {
         }
 
         for (Layer layer : rightLayers) {
-            layer.setAlpha(1f - ((viewPort.x + viewPort.width - 5000) / absoluteSize.width)/1.2f);
+            layer.setAlpha(1f - ((viewPort.x + viewPort.width - 5000) / absoluteSize.width) / 1.2f);
         }
 
 
@@ -480,10 +483,10 @@ public class TribesWorld implements PointerFocusable {
         }
     }
 
-    public void ping(Point p){
-    	miniMap.addPing(p);
+    public void ping(Point p) {
+        miniMap.addPing(p);
     }
-    
+
     public ArrayList<Cave> caves() {
         ArrayList<Cave> caves = new ArrayList<Cave>(1);
         caves.add(cave);
