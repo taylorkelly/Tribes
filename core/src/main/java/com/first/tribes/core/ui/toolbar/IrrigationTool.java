@@ -35,7 +35,7 @@ public class IrrigationTool extends Tool {
 
     @Override
     public void render(Surface surface, float x, float y, float width, float height) {
-        surface.setFillColor(Color.rgb((selected ? 255 : 200), (selected ? 255 : 200), 0));
+        surface.setFillColor(Color.rgb(0, (selected ? 255 : 200), 0));
         surface.fillRect(x, y, width, height);
         surface.drawImage(wellImage, x + width * 0.125f, y + height * 0.125f, width * 0.75f, height * 0.75f);
 
