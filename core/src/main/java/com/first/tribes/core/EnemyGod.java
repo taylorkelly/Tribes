@@ -49,15 +49,16 @@ public class EnemyGod implements TimerTask {
 		switch((int) (random()*10)){
 		case 0://flood
 			FloodTool flTool = (FloodTool) world.toolbar().getTools().get(FLOOD_POSITION);
-			if(ownVillage.manna()>flTool.MANNA_COST_PER_DELTA()){
-				boolean up = random()<.6f;
-				for(int i=0;i<REPEATAMOUNT;i++){
+			int i=0;
+			boolean up = random()<.6f;
+			while(i<REPEATAMOUNT&&ownVillage.manna()>flTool.MANNA_COST_PER_DELTA()){
 				flTool.flood(up);
-				}
 				ownVillage.costManna(flTool.MANNA_COST_PER_DELTA());
+			i++;
+			}
+			if(i>0){
+				world.ping(randomPoint());
 				flTool.release(0,0);
-			
-			world.ping(randomPoint());
 			}
 			break;
 		case 1://food
