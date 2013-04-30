@@ -14,7 +14,7 @@ import pythagoras.f.Point;
  *
  * @author taylor
  */
-class SpawnTool extends Tool {
+public class SpawnTool extends Tool {
     public static final int MANNA_COST_PER_DROP = 100;
     public static final int SPAWN_TYPE = 0;
 
@@ -40,11 +40,15 @@ class SpawnTool extends Tool {
         return this;
     }
 
+    public void spawn(float x, float y, int village){
+    	 world.villages().get(village).spawnVillager(x, y);
+    }
+    
     @Override
     public void release(float x, float y) {
         if (world.villages().get(0).manna() >= MANNA_COST_PER_DROP) {
             Point worldPoint = world.worldPointFromScreenPoint(new Point(x, y));
-            world.villages().get(0).spawnVillager(worldPoint.x, worldPoint.y);
+            spawn(worldPoint.x,worldPoint.y,0);
             world.villages().get(0).costManna(MANNA_COST_PER_DROP);
         }
 
