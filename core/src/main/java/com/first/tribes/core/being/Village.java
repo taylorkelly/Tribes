@@ -29,8 +29,8 @@ import pythagoras.f.Rectangle;
 public class Village implements Updatee {
 
 
-    public static final float MIN_INTELLIGENCE_TO_BUILD_IRRIGATION_PIPE = 4f;
-    public static final float INTELLIGENCE_BASELINE = 0.17f;
+    public static final float MIN_INTELLIGENCE_TO_BUILD_IRRIGATION_PIPE = 2f;
+    public static final float INTELLIGENCE_BASELINE = 0.20f;
     public static final float POSITION_DEVIATION = 10.0f;
     public static final float REPRODUCTIVE_BASE_RATE = 0.02f;
     public static final float REPRODUCTIVE_MODIFIER = 0.6f;
@@ -38,7 +38,7 @@ public class Village implements Updatee {
     public static final float FOOD_PRODUCTION_RATE = .8f;
     public static final int MIN_POPULATION = 10;
     public static final int MAX_POPULATION = 1000;
-    public static final float POPULATION_DAMPEN_EXP = 0.07f;
+    public static final float POPULATION_DAMPEN_EXP = 0.09f;
     public static final int INITIAL_MANNA = 10000000;
     public static final int MANNA_PER_BIRTH = 1;
     public static final int MANNA_PER_DEATH = 1;

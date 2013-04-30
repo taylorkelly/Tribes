@@ -14,8 +14,8 @@ import com.first.tribes.core.util.Updatee;
 public class Cave implements Updatee {
 
     private static final int STARTING_MONSTERS = 1;
-    private static final float INITIAL_MONSTER_DELAY = 30000; // 1 minute
-    private static final float MINIMUM_MONSTER_DELAY = 5000; // 10 seconds
+    private static final float INITIAL_MONSTER_DELAY = 45000; // 45 seconds
+    private static final float MINIMUM_MONSTER_DELAY = 7000; // 7 seconds
     private static final float ADDITIONAL_MONSTER_TIME_DECAY = 0.70f;
     private float nextMonsterDelay;
     private float currentMonsterTime;
