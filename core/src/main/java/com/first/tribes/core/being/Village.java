@@ -218,13 +218,9 @@ public class Village implements Updatee {
         for (int i = 0; i < intelligenceDensity.length; i++) {
             for (int j = 0; j < intelligenceDensity[0].length; j++) {
                 if (intelligenceDensity[i][j] > MIN_INTELLIGENCE_TO_BUILD_IRRIGATION_PIPE) {
-                    if(world.tileAt(i, j).accessories().size() == 0) {
-                        System.out.println("Building Pipe");
+                    if(world.tiles()[i][j].accessories().size() == 0) {
                         IrrigationPipe pipe = new IrrigationPipe(world.tiles()[i][j].bounds().centerX(), world.tiles()[i][j].bounds().centerY(), world);
                         pipe.addToWorld();
-                        System.out.println("We should have 1: " + world.tileAt(i, j).accessories().size());
-                    } else {
-                        System.out.println("not building a pipe.. already there");
                     }
                 }
             }

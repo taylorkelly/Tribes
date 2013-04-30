@@ -22,7 +22,7 @@ public class IrrigationPipe extends DrawnObject implements Accessory {
     private float yPos;
     private final Dimension IRRIGATION_PIPE_SIZE = new Dimension(40, 40);
     public static final int HIT_RADIUS = 4;
-    public static final float FOOD_CHANGE = 0.01f;
+    public static final float FOOD_CHANGE = 0.007f;
     public static final float MAX_AGE = 60000;
     private TribesWorld world;
     private float age;
